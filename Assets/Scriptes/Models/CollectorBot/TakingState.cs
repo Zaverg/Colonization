@@ -1,6 +1,6 @@
 ﻿using System;
 
-public class TakingState : CollectorState
+public class TakingState : State
 {
     private IStateMachine _stateMachine;
 

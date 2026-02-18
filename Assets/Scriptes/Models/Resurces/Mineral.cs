@@ -7,7 +7,7 @@ public class Mineral : MonoBehaviour, IReleasable<Mineral>, IResource
 
     public event Action<Mineral> Released;
     public event Action<IResource> Taked;
-    public event Action<IResource> Dropped;
+    public event Action<IResource> Unlodered;
 
     public Transform Transform => transform;
     public MineralConfig Config => _mineralConfig;
@@ -30,7 +30,7 @@ public class Mineral : MonoBehaviour, IReleasable<Mineral>, IResource
 
     public void Drop()
     {
-        Dropped?.Invoke(this);
+        Unlodered?.Invoke(this);
     }
 
     public void ReturnToPool()

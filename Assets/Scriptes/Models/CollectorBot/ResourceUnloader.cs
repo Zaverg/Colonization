@@ -1,8 +1,11 @@
-﻿using UnityEngine;
+﻿using System;
+using UnityEngine;
 
 public class ResourceUnloader : Unloader
 {
     [SerializeField] private Storage _storage;
+
+    public override event Action<IResource> Unloaded;
 
     public override bool IsStorageEmpty => _storage.Item == null;
 
@@ -10,8 +13,9 @@ public class ResourceUnloader : Unloader
     {
         IResource collectable = _storage.Item;
         collectable.Drop();
-
         ClearStorage();
+
+        Unloaded?.Invoke(collectable);
 
         return collectable;
     }

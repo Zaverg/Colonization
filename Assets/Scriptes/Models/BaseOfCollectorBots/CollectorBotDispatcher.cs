@@ -1,15 +1,14 @@
-using UnityEngine;
 using System.Collections.Generic;
 
-public class CollectorBotDispatcher : MonoBehaviour
+public class CollectorBotDispatcher
 {
     private Queue<CollectorBot> _availableCollectors;
 
     public int AvailableCollectorsCount => _availableCollectors.Count;
 
-    public void Initialize(List<CollectorBot> collectorBots)
+    public CollectorBotDispatcher()
     {
-        _availableCollectors = new Queue<CollectorBot>(collectorBots);
+        _availableCollectors = new Queue<CollectorBot>();
     }
 
     public CollectorBot GetAvailableCollectorBot()

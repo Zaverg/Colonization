@@ -1,6 +1,6 @@
 ﻿using System;
 
-public class UnloaderState : CollectorState
+public class UnloaderState : State
 {
     private IStateMachine _stateMachine;
 
@@ -9,12 +9,12 @@ public class UnloaderState : CollectorState
     public override void Entry(IStateMachine stateMachine) 
     {
         _stateMachine = stateMachine;
-        _stateMachine.Dropper.ReleaseResource();
+        _stateMachine.Unloader.ReleaseResource();
     }
 
     public override void Run() 
     {
-        if (_stateMachine.Dropper.IsStorageEmpty)
+        if (_stateMachine.Unloader.IsStorageEmpty)
             Completed?.Invoke();
     }
 

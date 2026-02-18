@@ -25,14 +25,14 @@ public class MineralRegistry : MonoBehaviour
         _availableMinerals.Remove(collectable);
         _occupiedMinerals.Add(collectable);
 
-        collectable.Dropped += RemoveMineral;
+        collectable.Unlodered += RemoveMineral;
 
         return collectable;
     }
 
     public void RemoveMineral(IResource collectable)
     {
-        collectable.Dropped -= RemoveMineral;
+        collectable.Unlodered -= RemoveMineral;
         collectable.ReturnToPool();
 
         _occupiedMinerals.Remove(collectable);

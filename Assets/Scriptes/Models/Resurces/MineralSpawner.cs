@@ -15,7 +15,6 @@ public class MineralSpawner : MonoBehaviour
     [SerializeField] private TimerViewer _timerView;
 
     private MineralRegistry _mineralRegistry;
-    private ResurceCounter _resurceCounter;
 
     private Timer _timer;
     private int _currentCount;
@@ -44,13 +43,12 @@ public class MineralSpawner : MonoBehaviour
         StartSpawning();
     }
 
-    public void Initialize(ICoroutineRuner coroutineRuner, MineralRegistry mineralRegistry, ResurceCounter resurceCounter)
+    public void Initialize(ICoroutineRuner coroutineRuner, MineralRegistry mineralRegistry)
     {
         _timer = new Timer(coroutineRuner);
         _timer.SetDuration(_spawnInterval);
 
         _mineralRegistry = mineralRegistry;
-        _resurceCounter = resurceCounter;
 
         gameObject.SetActive(true);
     }
@@ -74,7 +72,6 @@ public class MineralSpawner : MonoBehaviour
             MineralType type = (MineralType)indexType;
 
             Mineral mineral = _mineralPool.GetMineral(type);
-            mineral.Dropped += _resurceCounter.UpdateCounter;
 
             _spawnGrid.OccupyCell(mineral);
 

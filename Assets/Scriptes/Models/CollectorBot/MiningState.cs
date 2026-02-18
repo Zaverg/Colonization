@@ -1,6 +1,6 @@
 using System;
 
-public class MiningState : CollectorState
+public class MiningState : State
 {
     private IStateMachine _stateMachine;
 

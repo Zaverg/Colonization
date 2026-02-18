@@ -1,4 +1,4 @@
-﻿public class MineralCountViewer : TextViewer
+﻿public class ResurceCounterViewer : TextViewer
 {
     public void UpdateView(int value)
     {

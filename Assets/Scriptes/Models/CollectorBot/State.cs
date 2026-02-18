@@ -1,6 +1,6 @@
 ﻿using System;
 
-public abstract class CollectorState
+public abstract class State
 {
     public abstract event Action Completed;
     public abstract void Entry(IStateMachine stateMachine);

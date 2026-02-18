@@ -2,7 +2,7 @@ using UnityEngine;
 
 public class CollectorBotMiner : Miner
 {
-    [SerializeField] private CoroutineRunner _runer;
+    [SerializeField] private CoroutineRunner _coroutineRunner;
 
     private Timer _timer;
 
@@ -10,7 +10,7 @@ public class CollectorBotMiner : Miner
 
     public void Awake()
     {
-        _timer = new Timer(_runer);
+        _timer = new Timer(_coroutineRunner);
     }
 
     public override void SetDuration(float duration)
@@ -21,5 +21,15 @@ public class CollectorBotMiner : Miner
     public override void StartMining()
     {
         _timer.Run();
+    }
+
+    public void SetCorutineRunner(CoroutineRunner coroutineRunner)
+    {
+        if (coroutineRunner == null)
+            return;
+
+        _coroutineRunner = coroutineRunner;
+
+        _timer = new Timer(_coroutineRunner);
     }
 }

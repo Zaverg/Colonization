@@ -14,6 +14,8 @@ public class Timer
     public event Action Ended;
     public event Action<float> Changed;
 
+    public float CurrentSeconds => _currentSeconds;
+
     public Timer(ICoroutineRuner corutineRuner)
     {
         _coroutineRuner = corutineRuner;
