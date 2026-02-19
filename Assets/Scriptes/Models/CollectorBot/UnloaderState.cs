@@ -1,6 +1,6 @@
 ﻿using System;
 
-public class UnloaderState : State
+public class UnloaderState : CollectorBotState
 {
     private IStateMachine _stateMachine;
 

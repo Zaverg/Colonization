@@ -1,6 +1,5 @@
 ﻿using UnityEngine;
 using System.Collections.Generic;
-using Unity.VisualScripting;
 using System;
 
 public class CollectorBotBase : MonoBehaviour, IClickeble
@@ -104,11 +103,21 @@ public class CollectorBotBase : MonoBehaviour, IClickeble
     }
 }
 
-public class MiningTaskState : State
+public abstract class CollectorBotBaseState : State
+{
+    public abstract void Entry(IBase collectorBase);
+}
+
+public class MiningTaskState : CollectorBotBaseState
 {
     public override event Action Completed;
 
-    public override void Entry(IStateMachine stateMachine)
+    public override void Entry()
+    {
+        throw new NotImplementedException();
+    }
+
+    public override void Entry(IBase stateMachine)
     {
         throw new NotImplementedException();
     }
@@ -156,4 +165,9 @@ public class MiningTask
 
         collector.AssignTasks(tasks);
     }
+}
+
+public interface IBase
+{
+
 }

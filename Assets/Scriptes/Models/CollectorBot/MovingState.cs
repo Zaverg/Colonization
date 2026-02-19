@@ -1,6 +1,6 @@
 ﻿using System;
 
-public class MovingState : State
+public class MovingState : CollectorBotState
 {
     private IStateMachine _stateMachine;
 

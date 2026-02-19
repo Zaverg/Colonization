@@ -1,6 +1,6 @@
 ﻿using System;
 
-public class IdleState : State
+public class IdleState : CollectorBotState
 {
     private IStateMachine _stateMachine;
 

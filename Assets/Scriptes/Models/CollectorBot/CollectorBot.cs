@@ -12,12 +12,12 @@ public class CollectorBot : MonoBehaviour, IStateMachine
     [SerializeField] private Unloader _unloader;
 
     private Queue<CollectorBotTask> _tasks = new Queue<CollectorBotTask>();
-    private Dictionary<StateType, State> _states = new Dictionary<StateType, State>();
+    private Dictionary<StateType, CollectorBotState> _states = new Dictionary<StateType, CollectorBotState>();
 
     private CollectorBotAnimator _animationController;
 
     private CollectorBotTask _currentTask;
-    private State _currentState;
+    private CollectorBotState _currentState;
 
     public event Action<CollectorBot> OnBotAvailable;
 
@@ -66,7 +66,7 @@ public class CollectorBot : MonoBehaviour, IStateMachine
     private void SwitchToState()
     {
         _currentTask = _tasks.Dequeue();
-        State state = _states[_currentTask.StateType];
+        CollectorBotState state = _states[_currentTask.StateType];
 
         _currentState.Completed -= SwitchToState;
         _currentState.Exit();
