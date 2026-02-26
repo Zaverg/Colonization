@@ -1,19 +1,24 @@
 ﻿using UnityEngine;
 using System.Collections.Generic;
 using System;
+using System.Threading.Tasks;
 
-public class CollectorBotBase : MonoBehaviour, IClickeble
+public class CollectorBotBase : MonoBehaviour, IClickable, ICollectorBase
 {
     [SerializeField] private List<CollectorBot> _collectors = new List<CollectorBot>();
+    [SerializeField] private int _countResourceToCreateBot;
 
-    [SerializeField] private int _countResurceToCreateBot;
+    private CollectorBaseTask _currentTask;
+
+    private MiningTask _miningTask;
+    private BuildTask _buildTask;
 
     private CollectorBotDispatcher _collectorBotDispatcher;
     private CollectorBotBaseConfig _config;
     private MineralRegistry _mineralRegistry;
     private Scanner _scanner;
-    private CollectorBotFactory _fabricCollectorBot;
     private BaseStats _baseStats;
+    private CollectorBotFactory _fabricCollectorBot;
 
     private void OnEnable()
     {
@@ -22,7 +27,7 @@ public class CollectorBotBase : MonoBehaviour, IClickeble
 
         _baseStats.Timer.Ended += ActivateScanner;
         _scanner.Detected += _mineralRegistry.Register;
-        _baseStats.ResurceCounter.MineralCountChanged += OnValidateCountResurce;
+        _baseStats.ResurceCounter.MineralCountChanged += OnValidateCountResource;
 
         foreach (CollectorBot collector in _collectors)
         {
@@ -38,7 +43,7 @@ public class CollectorBotBase : MonoBehaviour, IClickeble
 
         _baseStats.Timer.Ended -= ActivateScanner;
         _scanner.Detected -= _mineralRegistry.Register;
-        _baseStats.ResurceCounter.MineralCountChanged -= OnValidateCountResurce;
+        _baseStats.ResurceCounter.MineralCountChanged -= OnValidateCountResource;
 
         foreach (CollectorBot collector in _collectors)
         {
@@ -59,7 +64,7 @@ public class CollectorBotBase : MonoBehaviour, IClickeble
 
         CollectorBot collector = _collectorBotDispatcher.GetAvailableCollectorBot();
 
-        //AssignMiningTask(collector);
+        _currentTask.AssignTask(collector);
     }
 
     public void Initialize(Timer timer, BaseStats baseStats, CollectorBotBaseConfig config)
@@ -81,9 +86,14 @@ public class CollectorBotBase : MonoBehaviour, IClickeble
 
     }
 
-    public void OnValidateCountResurce(int count)
+    public void SwitchToBildTask(Flag flag)
     {
-        if (count != 0 && count % _countResurceToCreateBot == 0)
+        _currentTask = _buildTask;
+    }
+
+    public void OnValidateCountResource(int count)
+    {
+        if (count != 0 && count % _countResourceToCreateBot == 0)
             CreateCollectorBot();
     }
 
@@ -103,21 +113,23 @@ public class CollectorBotBase : MonoBehaviour, IClickeble
     }
 }
 
-public abstract class CollectorBotBaseState : State
+public abstract class CollectorBaseState
 {
-    public abstract void Entry(IBase collectorBase);
+    public abstract event Action Completed;
+
+    public abstract void Entry();
+    public abstract void Run();
+    public abstract void Exit();
 }
 
-public class MiningTaskState : CollectorBotBaseState
+public class ExtractiveState : CollectorBaseState
 {
+    public MiningTask _miningTask;
+    public 
+
     public override event Action Completed;
 
     public override void Entry()
-    {
-        throw new NotImplementedException();
-    }
-
-    public override void Entry(IBase stateMachine)
     {
         throw new NotImplementedException();
     }
@@ -133,41 +145,10 @@ public class MiningTaskState : CollectorBotBaseState
     }
 }
 
-public class MiningTask
+public class CollectorBotBuilderTask : CollectorBaseTask
 {
-    private MineralRegistry _mineralRegistry;
-    private CollectorBotDispatcher _collectorBotDispatcher;
-    private CoroutineRunner _coroutineRunner;
-
-    public MiningTask()
+    public override void AssignTask(CollectorBot collector)
     {
-
+      
     }
-    
-    private void AssignMiningTask(CollectorBot collector)
-    {
-        if (_mineralRegistry.AvailableMineralsCount == 0)
-        {
-            _collectorBotDispatcher.EnqueueCollector(collector);
-
-            return;
-        }
-
-        IResource mineral = _mineralRegistry.GetAvailableMineral();
-
-        Queue<CollectorBotTask> tasks = new Queue<CollectorBotTask>();
-
-        tasks.Enqueue(new CollectorBotTask(StateType.Moving, mineral.Transform.position));
-        tasks.Enqueue(new CollectorBotTask(StateType.Mining, mineral: mineral, coroutineStarter: _coroutineRunner));
-        tasks.Enqueue(new CollectorBotTask(StateType.Taking, mineral: mineral));
-        tasks.Enqueue(new CollectorBotTask(StateType.Moving, collector.transform.position));
-        tasks.Enqueue(new CollectorBotTask(StateType.Dropping));
-
-        collector.AssignTasks(tasks);
-    }
-}
-
-public interface IBase
-{
-
 }

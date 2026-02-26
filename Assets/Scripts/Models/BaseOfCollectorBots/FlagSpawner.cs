@@ -1,9 +1,11 @@
 using UnityEngine;
 using UnityEngine.InputSystem;
 
-public class FlagSpawner : MonoBehaviour, IClickeble
+public class FlagSpawner : MonoBehaviour, IClickable
 {
     [SerializeField] private Flag _flag;
+
+    private ICollectorBase _base;
 
     public void OnClick()
     {
@@ -16,6 +18,7 @@ public class FlagSpawner : MonoBehaviour, IClickeble
         Vector3 worldPosition = Camera.main.ScreenToWorldPoint(mousePosition);
         Vector3 spawnPosition = new Vector3(worldPosition.x, 1, worldPosition.z);
 
-        Instantiate(_flag, spawnPosition, Quaternion.identity);
+        Flag flag = Instantiate(_flag, spawnPosition, Quaternion.identity);
+        _flag.Installed += _base.SwitchToBildTask;
     }
 }

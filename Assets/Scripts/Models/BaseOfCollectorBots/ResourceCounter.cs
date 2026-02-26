@@ -1,6 +1,6 @@
 ﻿using System;
 
-public class ResurceCounter
+public class ResourceCounter
 {
     private int _collectedResources;
 

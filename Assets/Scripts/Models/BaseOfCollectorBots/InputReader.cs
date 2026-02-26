@@ -1,6 +1,5 @@
 using System;
 using UnityEngine;
-using UnityEngine.EventSystems;
 using UnityEngine.InputSystem;
 
 public class InputReader : MonoBehaviour
@@ -50,7 +49,7 @@ public class InputReader : MonoBehaviour
         else
             result = hit;
 
-        if (result.TryGetComponent(out IClickeble clickeble))
-            clickeble.OnClick();
+        if (result.TryGetComponent(out IClickable clickable))
+            clickable.OnClick();
     }
 }

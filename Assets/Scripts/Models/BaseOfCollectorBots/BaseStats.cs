@@ -3,7 +3,7 @@ using System;
 public class BaseStats : IUiStats
 {
     private Timer _timer;
-    private ResurceCounter _resurceCounter;
+    private ResourceCounter _resurceCounter;
 
     private ResurceCounterViewer _resurceCountViewer;
     private TimerViewer _timerViewer;
@@ -11,9 +11,9 @@ public class BaseStats : IUiStats
     public event Action<IUiStats> OnActiveChanged;
 
     public Timer Timer => _timer;
-    public ResurceCounter ResurceCounter => _resurceCounter;
+    public ResourceCounter ResurceCounter => _resurceCounter;
 
-    public BaseStats(Timer timer, ResurceCounter resurceCounter, TimerViewer timerViewer, ResurceCounterViewer resurceCounterViewer)
+    public BaseStats(Timer timer, ResourceCounter resurceCounter, TimerViewer timerViewer, ResurceCounterViewer resurceCounterViewer)
     {
         _timer = timer;
         _timerViewer = timerViewer;

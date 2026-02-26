@@ -16,7 +16,7 @@ public class Bootstrap : MonoBehaviour
 
     [SerializeField] private InputReader _inputReader;
     [SerializeField] private BaseStats _baseMenu;
-    [SerializeField] private BaseMenuViwer _baseMenuViwer;
+    [SerializeField] private BaseMenuViwer _baseMenuViewer;
     [SerializeField] private FlagSpawner _flagSpawner;
 
     private void Awake()

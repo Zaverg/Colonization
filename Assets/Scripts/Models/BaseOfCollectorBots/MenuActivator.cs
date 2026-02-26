@@ -1,6 +1,6 @@
 using UnityEngine;
 
-public class MenuActivater : MonoBehaviour
+public class MenuActivator : MonoBehaviour
 {
     public IUiStats _current;
 
