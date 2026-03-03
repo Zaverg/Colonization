@@ -1,4 +1,4 @@
-﻿public class ResurceCounterViewer : TextViewer
+﻿public class ResourceCounterViewer : TextViewer
 {
     public void UpdateView(int value)
     {

@@ -9,14 +9,14 @@ public class Timer
 
     private bool _isComplete = false;
     private Coroutine _coroutine;
-    private ICoroutineRuner _coroutineRuner;
+    private ICoroutineRunner _coroutineRuner;
     
     public event Action Ended;
     public event Action<float> Changed;
 
     public float CurrentSeconds => _currentSeconds;
 
-    public Timer(ICoroutineRuner corutineRuner)
+    public Timer(ICoroutineRunner corutineRuner)
     {
         _coroutineRuner = corutineRuner;
     }

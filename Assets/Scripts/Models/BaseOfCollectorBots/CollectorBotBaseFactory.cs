@@ -5,27 +5,19 @@ public class CollectorBotBaseFactory : MonoBehaviour
     [SerializeField] private CollectorBotBase _base;
     [SerializeField] private CollectorBotBaseConfig _config;
 
-    private ICoroutineRuner _coroutineRuner;
-    private ResurceCounterViewer _resurceCounterViewer;
-    private TimerViewer _timerViewer;
-    private CollectorBotFactory _collectorBotFactory;
+    private CollectorBaseService _collectorBaseService;
+    private BaseMenuService _baseMenuService;
 
-    public void Initialize(ICoroutineRuner coroutineRuner, CollectorBotFactory collectorBotFactory, 
-        ResurceCounterViewer resurceCounterViewer, TimerViewer timerViewer)
+    public void Initialize(CollectorBaseService service, BaseMenuService baseMenuService)
     {
-        _coroutineRuner = coroutineRuner;
-        _resurceCounterViewer = resurceCounterViewer;
-        _timerViewer = timerViewer;
+        _collectorBaseService = service;
+        _baseMenuService = baseMenuService;
     }
 
     public CollectorBotBase Create(Vector3 position)
     {
-        Timer timer = new Timer(_coroutineRuner);
-        ResourceCounter resurcCounter = new ResourceCounter();
-        BaseStats baseStats = new BaseStats(timer, resurcCounter, _timerViewer, _resurceCounterViewer);
-
         CollectorBotBase collectorBotBase = Instantiate(_base, position, Quaternion.identity);
-        collectorBotBase.Initialize(timer, baseStats, _config);
+        collectorBotBase.Initialize(_collectorBaseService, _baseMenuService);
 
         return collectorBotBase;
     }

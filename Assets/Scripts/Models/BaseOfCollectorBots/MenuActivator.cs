@@ -1,6 +1,4 @@
-using UnityEngine;
-
-public class MenuActivator : MonoBehaviour
+public class MenuActivator
 {
     public IUiStats _current;
 
@@ -9,8 +7,12 @@ public class MenuActivator : MonoBehaviour
         if (stats == _current)
             return;
 
-        _current.UnActivate();
+        _current.Deactivate();
         _current = stats;
+
+        if (stats == null)
+            return;
+
         _current.Activate();
     }
 }

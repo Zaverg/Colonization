@@ -6,9 +6,9 @@ public struct CollectorBotTask
     public Transform Target { get; private set; }
     public Vector3 TargetPosition { get; private set; }
     public IResource Mineral { get; private set; }
-    public ICoroutineRuner CoroutineStarter;
+    public ICoroutineRunner CoroutineStarter;
 
-    public CollectorBotTask(StateType stateType, Vector3 targetPosition = default, Transform target = null, IResource mineral = null, ICoroutineRuner coroutineStarter = null)
+    public CollectorBotTask(StateType stateType, Vector3 targetPosition = default, Transform target = null, IResource mineral = null, ICoroutineRunner coroutineStarter = null)
     {
         StateType = stateType;
         TargetPosition = targetPosition;

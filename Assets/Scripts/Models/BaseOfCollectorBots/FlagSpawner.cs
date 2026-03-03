@@ -19,6 +19,6 @@ public class FlagSpawner : MonoBehaviour, IClickable
         Vector3 spawnPosition = new Vector3(worldPosition.x, 1, worldPosition.z);
 
         Flag flag = Instantiate(_flag, spawnPosition, Quaternion.identity);
-        _flag.Installed += _base.SwitchToBildTask;
+        _flag.Installed += _base.PlaceFlag;
     }
 }

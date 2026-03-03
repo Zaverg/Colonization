@@ -43,7 +43,7 @@ public class MineralSpawner : MonoBehaviour
         StartSpawning();
     }
 
-    public void Initialize(ICoroutineRuner coroutineRuner, MineralRegistry mineralRegistry)
+    public void Initialize(ICoroutineRunner coroutineRuner, MineralRegistry mineralRegistry)
     {
         _timer = new Timer(coroutineRuner);
         _timer.SetDuration(_spawnInterval);

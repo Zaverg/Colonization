@@ -1,4 +1,12 @@
 ﻿public interface ICollectorBase
 {
-    public void SwitchToBildTask(Flag flag);
+    public BaseMenu Stats { get; }
+    public int CountResurceToCreateBot { get; }
+    public int CountResurceToBuildBase { get; }
+    public Timer Timer { get; }
+    public ResourceCounter ResurceCounter { get; }
+
+    public CollectorBotDispatcher BotDispatcher { get; }
+
+    public void PlaceFlag(Flag flag);
 }

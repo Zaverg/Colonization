@@ -6,7 +6,7 @@ public class MiningTask : CollectorBaseTask
     private CollectorBotDispatcher _collectorBotDispatcher;
     private CoroutineRunner _coroutineRunner;
 
-    public MiningTask()
+    public MiningTask(MineralRegistry mineralRegistry, CollectorBotDispatcher collectorBotDispatcher, CoroutineRunner coroutineRunner)
     {
 
     }

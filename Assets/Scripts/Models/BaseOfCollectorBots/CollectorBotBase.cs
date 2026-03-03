@@ -1,33 +1,42 @@
 ﻿using UnityEngine;
 using System.Collections.Generic;
-using System;
-using System.Threading.Tasks;
 
 public class CollectorBotBase : MonoBehaviour, IClickable, ICollectorBase
 {
     [SerializeField] private List<CollectorBot> _collectors = new List<CollectorBot>();
     [SerializeField] private int _countResourceToCreateBot;
+    [SerializeField] private int _countResourceToBuildBase;
 
-    private CollectorBaseTask _currentTask;
-
-    private MiningTask _miningTask;
-    private BuildTask _buildTask;
+    private CollectorBaseState _currentState;
+    private ExtractionState _extractionState;
+    private FlagPlaceState _flagPlaceState;
 
     private CollectorBotDispatcher _collectorBotDispatcher;
     private CollectorBotBaseConfig _config;
     private MineralRegistry _mineralRegistry;
     private Scanner _scanner;
-    private BaseStats _baseStats;
+    private BaseMenu _baseMenu;
     private CollectorBotFactory _fabricCollectorBot;
+
+    private Timer _timer;
+    private ResourceCounter _resurceCounter;
+
+    public Timer Timer => _timer;
+    public ResourceCounter ResurceCounter => _resurceCounter;
+    
+    public BaseMenu Stats => _baseMenu;
+    public int CountResurceToCreateBot => _countResourceToCreateBot;
+    public int CountResurceToBuildBase => _countResourceToBuildBase;
+    public CollectorBotDispatcher BotDispatcher => _collectorBotDispatcher;
 
     private void OnEnable()
     {
-        if (_baseStats == null)
+        if (_baseMenu == null)
             return;
 
-        _baseStats.Timer.Ended += ActivateScanner;
+        _timer.Ended += ActivateScanner;
         _scanner.Detected += _mineralRegistry.Register;
-        _baseStats.ResurceCounter.MineralCountChanged += OnValidateCountResource;
+        _resurceCounter.MineralCountChanged += OnValidateCountResource;
 
         foreach (CollectorBot collector in _collectors)
         {
@@ -38,12 +47,12 @@ public class CollectorBotBase : MonoBehaviour, IClickable, ICollectorBase
 
     private void OnDisable()
     {
-        if (_baseStats == null)
+        if (_baseMenu == null)
             return;
 
-        _baseStats.Timer.Ended -= ActivateScanner;
+        _timer.Ended -= ActivateScanner;
         _scanner.Detected -= _mineralRegistry.Register;
-        _baseStats.ResurceCounter.MineralCountChanged -= OnValidateCountResource;
+        _resurceCounter.MineralCountChanged -= OnValidateCountResource;
 
         foreach (CollectorBot collector in _collectors)
         {
@@ -54,27 +63,25 @@ public class CollectorBotBase : MonoBehaviour, IClickable, ICollectorBase
 
     private void Start()
     {
-        _baseStats.Timer.Run();
+        _timer.Run();
     }
 
     private void Update()
     {
-        if (_collectorBotDispatcher.AvailableCollectorsCount == 0)
+        if (_currentState == null)
             return;
 
-        CollectorBot collector = _collectorBotDispatcher.GetAvailableCollectorBot();
-
-        _currentTask.AssignTask(collector);
+       _currentState.Run();
     }
 
-    public void Initialize(Timer timer, BaseStats baseStats, CollectorBotBaseConfig config)
+    public void Initialize(CollectorBaseService collectorBaseService, BaseMenuService baseMenuService)
     {
-        _baseStats = baseStats;
-        _config = config;
+        _baseMenu = new BaseMenu(baseMenuService.TimerViewer, baseMenuService.ResourceCounterViewer, baseMenuService.MenuActivator);
+        _config = collectorBaseService.Config;
 
         _scanner = new Scanner(transform.position, _config.ScanLayer, _config.ScanRadius);
 
-        timer.SetDuration(_config.ScanInterval);
+        _timer = new Timer(collectorBaseService.CoroutineRunner);
 
         _collectorBotDispatcher = new CollectorBotDispatcher();
 
@@ -83,12 +90,19 @@ public class CollectorBotBase : MonoBehaviour, IClickable, ICollectorBase
 
     public void OnClick()
     {
-
+        _baseMenu.Show(this);
     }
 
-    public void SwitchToBildTask(Flag flag)
+    public void PlaceFlag(Flag flag)
     {
-        _currentTask = _buildTask;
+        SwitchState(_flagPlaceState);
+    }
+
+    public void SwitchState(CollectorBaseState state)
+    {
+        _currentState.Exit();
+        _currentState = state;
+        _currentState.Entry(this);
     }
 
     public void OnValidateCountResource(int count)
@@ -109,46 +123,6 @@ public class CollectorBotBase : MonoBehaviour, IClickable, ICollectorBase
     private void ActivateScanner()
     {
         _scanner.Scan();
-        _baseStats.Timer.Run();
-    }
-}
-
-public abstract class CollectorBaseState
-{
-    public abstract event Action Completed;
-
-    public abstract void Entry();
-    public abstract void Run();
-    public abstract void Exit();
-}
-
-public class ExtractiveState : CollectorBaseState
-{
-    public MiningTask _miningTask;
-    public 
-
-    public override event Action Completed;
-
-    public override void Entry()
-    {
-        throw new NotImplementedException();
-    }
-
-    public override void Exit()
-    {
-        throw new NotImplementedException();
-    }
-
-    public override void Run()
-    {
-        throw new NotImplementedException();
-    }
-}
-
-public class CollectorBotBuilderTask : CollectorBaseTask
-{
-    public override void AssignTask(CollectorBot collector)
-    {
-      
+        _timer.Run();
     }
 }

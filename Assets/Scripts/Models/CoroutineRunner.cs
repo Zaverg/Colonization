@@ -1,7 +1,7 @@
 ﻿using System.Collections;
 using UnityEngine;
 
-public class CoroutineRunner : MonoBehaviour, ICoroutineRuner
+public class CoroutineRunner : MonoBehaviour, ICoroutineRunner
 {
     public Coroutine StartChildCoroutine(IEnumerator coroutine)
     {

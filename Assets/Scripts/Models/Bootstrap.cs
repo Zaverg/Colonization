@@ -15,7 +15,7 @@ public class Bootstrap : MonoBehaviour
     [SerializeField] private MineralRegistry _mineralRegistry;
 
     [SerializeField] private InputReader _inputReader;
-    [SerializeField] private BaseStats _baseMenu;
+    [SerializeField] private BaseMenu _baseMenu;
     [SerializeField] private BaseMenuViwer _baseMenuViewer;
     [SerializeField] private FlagSpawner _flagSpawner;
 
