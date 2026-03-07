@@ -1,4 +1,6 @@
 ﻿using System;
+using System.Diagnostics;
+using Unity.Android.Types;
 
 public class FlagPlaceState : CollectorBaseState
 {
@@ -20,6 +22,8 @@ public class FlagPlaceState : CollectorBaseState
     }
     public override void Run()
     {
+        Debug.Print("FlagPlaceState");
+
         if (_collectorBase == null)
             return;
 
@@ -28,14 +32,14 @@ public class FlagPlaceState : CollectorBaseState
         if (collectorBot == null)
             return;
 
-        if (_collectorBase.ResurceCounter.CollectedResources >= _collectorBase.CountResurceToBuildBase)
+        if (_collectorBase.ResourceCounter.CollectedResources >= _collectorBase.CountResourceToBuildBase)
         {
-            _baseBuildTask.AssignTask(collectorBot);
+           collectorBot.AssignTasks(_baseBuildTask.CreateTask());
 
             return;
         }
 
-        _miningTask.AssignTask(collectorBot);
+        collectorBot.AssignTasks(_miningTask.CreateTask());
     }
 
     public override void Exit()

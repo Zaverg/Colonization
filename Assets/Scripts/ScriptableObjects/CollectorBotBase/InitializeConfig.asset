@@ -13,7 +13,7 @@ MonoBehaviour:
   m_Name: InitializeConfig
   m_EditorClassIdentifier: 
   _scanInterval: 5
-  _scanRadius: 1000
+  _scanRadius: 10000
   _scanLayer:
     serializedVersion: 2
     m_Bits: 512

@@ -17,7 +17,7 @@ public class MineralRegistry : MonoBehaviour
                 _availableMinerals.Add(collectable);
         }
     }
-
+   
     public IResource GetAvailableMineral()
     {
         IResource collectable = _availableMinerals.ElementAt(0);

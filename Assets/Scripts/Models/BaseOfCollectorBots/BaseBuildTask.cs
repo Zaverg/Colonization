@@ -1,7 +1,11 @@
-﻿public class BaseBuildTask : CollectorBaseTask
+﻿using System.Collections.Generic;
+
+public class BaseBuildTask : CollectorBaseTask
 {
-    public override void AssignTask(CollectorBot collector)
+    public override Queue<CollectorBotTask> CreateTask()
     {
-        throw new System.NotImplementedException();
+        Queue<CollectorBotTask> task = new Queue<CollectorBotTask>();
+
+        return task;
     }
 }

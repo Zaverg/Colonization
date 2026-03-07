@@ -1,12 +1,19 @@
-﻿public interface ICollectorBase
+﻿using System;
+
+public interface ICollectorBase
 {
-    public BaseMenu Stats { get; }
-    public int CountResurceToCreateBot { get; }
-    public int CountResurceToBuildBase { get; }
+    public int CountResourceToCreateBot { get; }
+    public int CountResourceToBuildBase { get; }
+
+    public event Action<CollectorBotBase> Click;
+
     public Timer Timer { get; }
-    public ResourceCounter ResurceCounter { get; }
+    public ResourceCounter ResourceCounter { get; }
 
     public CollectorBotDispatcher BotDispatcher { get; }
+    public Flag Flag { get; }
+    public MineralRegistry MineralRegistry { get; }
 
-    public void PlaceFlag(Flag flag);
+    public void PlaceFlag();
+    public void SetFlag(Flag flag);
 }

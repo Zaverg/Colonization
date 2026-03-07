@@ -7,12 +7,13 @@ public class MenuActivator
         if (stats == _current)
             return;
 
-        _current.Deactivate();
-        _current = stats;
+        if (_current != null)
+            _current.Deactivate();
 
         if (stats == null)
             return;
 
+        _current = stats;
         _current.Activate();
     }
 }

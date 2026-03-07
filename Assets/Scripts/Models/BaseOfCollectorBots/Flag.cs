@@ -6,7 +6,7 @@ public class Flag : MonoBehaviour, IClickable
 {
     private bool _isPut;
 
-    public event Action<Flag> Installed;
+    public event Action Installed;
 
     private void Update()
     {
@@ -21,6 +21,12 @@ public class Flag : MonoBehaviour, IClickable
         Put();
     }
 
+    public void Activate()
+    {
+        _isPut = false;
+        gameObject.SetActive(true);
+    }
+
     private void FollowCursor()
     {
         Vector3 mousePosition = Mouse.current.position.ReadValue();
@@ -33,6 +39,6 @@ public class Flag : MonoBehaviour, IClickable
     private void Put()
     {
         _isPut = true;
-        Installed?.Invoke(this);
+        Installed?.Invoke();
     }
 }

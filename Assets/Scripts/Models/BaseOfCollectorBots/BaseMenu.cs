@@ -3,39 +3,51 @@ using System;
 public class BaseMenu : IUiStats
 {
     private ICollectorBase _collectorBase;
-    private MenuActivator _menuActivator;
 
-    private ResourceCounterViewer _resurceCountViewer;
+    private ResourceCounterViewer _resourceCountViewer;
     private TimerViewer _timerViewer;
+    private BaseMenuViewer _baseMenuViewer;
+    private FlagButton _flagButton;
 
     public event Action<IUiStats> OnActiveChanged;
 
-    public BaseMenu(TimerViewer timerViewer, ResourceCounterViewer resurceCounterViewer, MenuActivator menuActivator)
+    public ICollectorBase CurrentBase => _collectorBase;
+
+    public BaseMenu(TimerViewer timerViewer, ResourceCounterViewer resourceCounterViewer, BaseMenuViewer baseMenuViewer, FlagButton flagButton)
     {
         _timerViewer = timerViewer;
-        _resurceCountViewer = resurceCounterViewer;
-        _menuActivator = menuActivator;
+        _resourceCountViewer = resourceCounterViewer;
+        _baseMenuViewer = baseMenuViewer;
+        _flagButton = flagButton;
     }
 
     public void Show(ICollectorBase collectorBase)
-    {
+    { 
         _collectorBase = collectorBase;
 
         OnActiveChanged?.Invoke(this);
+
+        collectorBase.Click -= Show;
     }
 
     public void Activate()
     {
-        _collectorBase.ResurceCounter.MineralCountChanged += _resurceCountViewer.UpdateView;
+        _collectorBase.ResourceCounter.MineralCountChanged += _resourceCountViewer.UpdateView;
         _collectorBase.Timer.Changed += _timerViewer.UpdateView;
+        _flagButton.Click += _collectorBase.Flag.Activate;
 
-        _resurceCountViewer.UpdateView(_collectorBase.ResurceCounter.CollectedResources);
+        _baseMenuViewer.gameObject.SetActive(true);
+
+        _resourceCountViewer.UpdateView(_collectorBase.ResourceCounter.CollectedResources);
         _timerViewer.UpdateView(_collectorBase.Timer.CurrentSeconds);
     }
 
     public void Deactivate()
     {
-        _collectorBase.ResurceCounter.MineralCountChanged -= _resurceCountViewer.UpdateView;
+        _collectorBase.ResourceCounter.MineralCountChanged -= _resourceCountViewer.UpdateView;
         _collectorBase.Timer.Changed -= _timerViewer.UpdateView;
+        _flagButton.Click -= _collectorBase.Flag.Activate;
+
+        _baseMenuViewer.gameObject.SetActive(false);
     }
 }

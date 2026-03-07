@@ -1,3 +1,4 @@
+using System;
 using UnityEngine;
 
 public class CollectorBotBaseFactory : MonoBehaviour
@@ -6,18 +7,26 @@ public class CollectorBotBaseFactory : MonoBehaviour
     [SerializeField] private CollectorBotBaseConfig _config;
 
     private CollectorBaseService _collectorBaseService;
-    private BaseMenuService _baseMenuService;
 
-    public void Initialize(CollectorBaseService service, BaseMenuService baseMenuService)
+    public event Action<ICollectorBase> Created;
+
+    public void Initialize(CollectorBaseService service)
     {
         _collectorBaseService = service;
-        _baseMenuService = baseMenuService;
     }
 
     public CollectorBotBase Create(Vector3 position)
     {
         CollectorBotBase collectorBotBase = Instantiate(_base, position, Quaternion.identity);
-        collectorBotBase.Initialize(_collectorBaseService, _baseMenuService);
+        collectorBotBase.gameObject.SetActive(false);
+
+        collectorBotBase.Click += _collectorBaseService.BaseMenu.Show;
+
+        collectorBotBase.Initialize(_collectorBaseService);
+
+        collectorBotBase.gameObject.SetActive(true);
+
+        Created?.Invoke(collectorBotBase);
 
         return collectorBotBase;
     }

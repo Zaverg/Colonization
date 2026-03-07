@@ -1,24 +1,14 @@
-using UnityEngine;
-using UnityEngine.InputSystem;
+﻿using UnityEngine;
 
-public class FlagSpawner : MonoBehaviour, IClickable
+public class FlagSpawner : MonoBehaviour
 {
-    [SerializeField] private Flag _flag;
+    [SerializeField] private Flag _prefab;
 
-    private ICollectorBase _base;
-
-    public void OnClick()
+    public void Spawn(ICollectorBase collectorBase)
     {
-        Spawn();
-    }
+        Flag flag = Instantiate(_prefab);
+        flag.gameObject.SetActive(false);
 
-    private void Spawn()
-    {
-        Vector2 mousePosition = Mouse.current.position.ReadValue();
-        Vector3 worldPosition = Camera.main.ScreenToWorldPoint(mousePosition);
-        Vector3 spawnPosition = new Vector3(worldPosition.x, 1, worldPosition.z);
-
-        Flag flag = Instantiate(_flag, spawnPosition, Quaternion.identity);
-        _flag.Installed += _base.PlaceFlag;
+        collectorBase.SetFlag(flag);
     }
 }

@@ -16,7 +16,7 @@ public class ResourceCounter
         MineralCountChanged?.Invoke(_collectedResources);
     }
 
-    public void UpdateCounter(int count)
+    public void SubtractCounter(int count)
     {
         if (count <= 0)
             return;
