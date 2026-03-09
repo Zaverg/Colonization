@@ -21,6 +21,11 @@ public class ExtractionState : CollectorBaseState
 
     public override void Run()
     {
+        CollectorBot newBot = _collectorBase.TryCreateCollectorBot();
+
+        if (newBot != null)
+            _collectorBase.BotDispatcher.EnqueueCollector(newBot);
+
         if (_collectorBase.BotDispatcher.AvailableCollectorsCount <= 0 || _collectorBase.MineralRegistry.AvailableMineralsCount == 0)
             return;
 

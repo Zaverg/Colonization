@@ -44,13 +44,13 @@ public class NavMeshMover : Mover
 
     public override bool HasReachedTarget()
     {
+        if (_agent.pathPending)
+            return false;
+
         bool isPlace = _agent.remainingDistance <= _agent.stoppingDistance; 
-        Debug.Log(_agent.remainingDistance + " " + _agent.stoppingDistance + " " + isPlace);
 
         if (isPlace)
-        {
             _agent.ResetPath();
-        }
 
         return isPlace;
     }

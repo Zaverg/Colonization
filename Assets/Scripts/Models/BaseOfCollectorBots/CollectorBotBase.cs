@@ -34,7 +34,7 @@ public class CollectorBotBase : MonoBehaviour, IClickable, ICollectorBase
     {
         _timer.Ended += ActivateScanner;
         _scanner.Detected += _mineralRegistry.Register;
-        _resourceCounter.MineralCountChanged += TryCreateCollectorBot;
+        //_resourceCounter.MineralCountChanged += TryCreateCollectorBot;
 
         if (_flag != null)
             _flag.Installed += PlaceFlag;
@@ -44,7 +44,7 @@ public class CollectorBotBase : MonoBehaviour, IClickable, ICollectorBase
     {
         _timer.Ended -= ActivateScanner;
         _scanner.Detected -= _mineralRegistry.Register;
-        _resourceCounter.MineralCountChanged -= TryCreateCollectorBot;
+        //_resourceCounter.MineralCountChanged -= TryCreateCollectorBot;
 
         if (_flag != null)
             _flag.Installed -= PlaceFlag;
@@ -58,12 +58,10 @@ public class CollectorBotBase : MonoBehaviour, IClickable, ICollectorBase
 
     private void Update()
     {
-        Debug.Log(_collectorBotDispatcher.AvailableCollectorsCount);
-
         if (_currentState == null)
             return;
 
-        Debug.Log(_collectorBotDispatcher);
+        Debug.Log(_currentState);
        _currentState.Run();
     }
 
@@ -92,8 +90,6 @@ public class CollectorBotBase : MonoBehaviour, IClickable, ICollectorBase
 
     public void OnClick()
     {
-        Debug.Log("OnClick");
-
         Click?.Invoke(this);
     }
 
@@ -122,20 +118,14 @@ public class CollectorBotBase : MonoBehaviour, IClickable, ICollectorBase
         _currentState.Entry(this);
     }
 
-    public void TryCreateCollectorBot(int countResource)
+    public CollectorBot TryCreateCollectorBot()
     {
-        if (countResource == 0)
-            return;
+        if (_resourceCounter.CollectedResources <= _countResourceToCreateBot)
+            return null;
 
-        if (countResource < _countResourceToCreateBot)
-            return;
+        _resourceCounter.SubtractCounter(_countResourceToCreateBot);
 
-        CollectorBot collectorBot = _fabricCollectorBot.Create();
-        _collectorBotDispatcher.EnqueueCollector(collectorBot);
-
-        _resourceCounter.SubtractCounter(countResource);
-
-        Debug.Log("Create bot");
+        return _fabricCollectorBot.Create();
     }
 
     private void ActivateScanner()

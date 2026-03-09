@@ -16,4 +16,5 @@ public interface ICollectorBase
 
     public void PlaceFlag();
     public void SetFlag(Flag flag);
+    public CollectorBot TryCreateCollectorBot();
 }

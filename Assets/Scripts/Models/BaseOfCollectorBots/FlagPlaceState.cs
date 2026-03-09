@@ -22,15 +22,10 @@ public class FlagPlaceState : CollectorBaseState
     }
     public override void Run()
     {
-        Debug.Print("FlagPlaceState");
-
-        if (_collectorBase == null)
+        if (_collectorBase.BotDispatcher.AvailableCollectorsCount == 0)
             return;
 
         CollectorBot collectorBot = _collectorBase.BotDispatcher.GetAvailableCollectorBot();
-
-        if (collectorBot == null)
-            return;
 
         if (_collectorBase.ResourceCounter.CollectedResources >= _collectorBase.CountResourceToBuildBase)
         {
@@ -39,7 +34,8 @@ public class FlagPlaceState : CollectorBaseState
             return;
         }
 
-        collectorBot.AssignTasks(_miningTask.CreateTask());
+        if (_collectorBase.MineralRegistry.AvailableMineralsCount > 0)
+            collectorBot.AssignTasks(_miningTask.CreateTask());
     }
 
     public override void Exit()
