@@ -10,6 +10,7 @@ public class CollectorBot : MonoBehaviour, IStateMachine
     [SerializeField] private Taker _taker;
     [SerializeField] private Miner _miner;
     [SerializeField] private Unloader _unloader;
+    [SerializeField] private Builder _builder;
 
     private Queue<CollectorBotTask> _tasks = new Queue<CollectorBotTask>();
     private Dictionary<StateType, CollectorBotState> _states = new Dictionary<StateType, CollectorBotState>();
@@ -26,6 +27,7 @@ public class CollectorBot : MonoBehaviour, IStateMachine
     public ITaker Taker => _taker;
     public IMiner Miner => _miner;
     public IUnloader Unloader => _unloader;
+    public IBuilder Builder => _builder;
     public Transform Transform => transform;
     public CollectorBotTask CurrentTask => _currentTask;
     public CollectorBotAnimator AnimationController => _animationController;
@@ -37,6 +39,7 @@ public class CollectorBot : MonoBehaviour, IStateMachine
         _states[StateType.Taking] = new TakingState();
         _states[StateType.Dropping] = new UnloaderState();
         _states[StateType.Mining] = new MiningState();
+        _states[StateType.Building] = new Buil
 
         _currentState = _states[StateType.Idle];
 

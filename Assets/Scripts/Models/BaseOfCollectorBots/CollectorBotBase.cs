@@ -80,7 +80,7 @@ public class CollectorBotBase : MonoBehaviour, IClickable, ICollectorBase
         _collectorBotDispatcher = new CollectorBotDispatcher(_resourceCounter);
 
         MiningTask miningTask = new MiningTask(_mineralRegistry, _collectorBotDispatcher, collectorBaseService.CoroutineRunner, transform.position);
-        BaseBuildTask baseBuildTask = new BaseBuildTask();
+        BaseBuildTask baseBuildTask = new BaseBuildTask(this);
 
         _extractionState = new ExtractionState(miningTask, _fabricCollectorBot);
         _flagPlaceState = new FlagPlaceState(miningTask, baseBuildTask);

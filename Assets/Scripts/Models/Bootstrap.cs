@@ -53,7 +53,7 @@ public class Bootstrap : MonoBehaviour
         _baseMenu = new BaseMenu(_timerViewer, _resourceCounterViewer, _baseMenuViewer, _flagButton);
         _baseMenu.OnActiveChanged += _menuActivator.SwitchActiveMenu;
 
-        _collectorBaseService = new CollectorBaseService(_coroutineRunner, _baseConfig, _mineralRegistry, _baseMenu, _fabricCollectorBot);
+        _collectorBaseService = new CollectorBaseService(_coroutineRunner, _baseConfig, _mineralRegistry, _baseMenu, _fabricCollectorBot, _collectorBotBaseFactory);
 
         _collectorBotBaseFactory.Initialize(_collectorBaseService);
 
@@ -80,7 +80,7 @@ public class Bootstrap : MonoBehaviour
 
     private void Start()
     {
-        CollectorBotBase collectorBase = _collectorBotBaseFactory.Create(new Vector3(0, 0, 0));
+        CollectorBotBase collectorBase = _collectorBotBaseFactory.Create(new Vector3(0, 0, 0), true);
 
         for (int i = 0; i < _countStartBot; i++)
         {

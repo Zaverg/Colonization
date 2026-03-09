@@ -15,7 +15,7 @@ public class CollectorBotBaseFactory : MonoBehaviour
         _collectorBaseService = service;
     }
 
-    public CollectorBotBase Create(Vector3 position)
+    public CollectorBotBase Create(Vector3 position, bool isVisible)
     {
         CollectorBotBase collectorBotBase = Instantiate(_base, position, Quaternion.identity);
         collectorBotBase.gameObject.SetActive(false);
@@ -24,7 +24,7 @@ public class CollectorBotBaseFactory : MonoBehaviour
 
         collectorBotBase.Initialize(_collectorBaseService);
 
-        collectorBotBase.gameObject.SetActive(true);
+        collectorBotBase.gameObject.SetActive(isVisible);
 
         Created?.Invoke(collectorBotBase);
 

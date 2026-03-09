@@ -10,6 +10,7 @@ public interface IStateMachine
     public ITaker Taker { get; }
     public IMiner Miner { get; }
     public IUnloader Unloader { get; }
+    public IBuilder Builder { get; }
 
     public CollectorBotAnimator AnimationController { get; }
 }

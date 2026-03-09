@@ -4,5 +4,6 @@
     Moving,
     Mining,
     Taking,
-    Dropping
+    Dropping,
+    Building
 }
