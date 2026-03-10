@@ -6,7 +6,7 @@ public class Flag : MonoBehaviour, IClickable
 {
     private bool _isPut;
 
-    public event Action Installed;
+    public event Action Installed; 
 
     private void Update()
     {
@@ -18,13 +18,20 @@ public class Flag : MonoBehaviour, IClickable
 
     public void OnClick()
     {
-        Put();
+        _isPut = true;
+        Installed?.Invoke();
     }
 
     public void Activate()
     {
         _isPut = false;
         gameObject.SetActive(true);
+    }
+
+    public void Deactivate(IBuild build)
+    {
+        gameObject.SetActive(false);
+        build.OnEndBuild -= Deactivate;
     }
 
     private void FollowCursor()
@@ -34,11 +41,5 @@ public class Flag : MonoBehaviour, IClickable
         Vector3 worldPosition = Camera.main.ScreenToWorldPoint(mousePosition);
 
         transform.position = new Vector3(worldPosition.x, 1, worldPosition.z);
-    }
-
-    private void Put()
-    {
-        _isPut = true;
-        Installed?.Invoke();
     }
 }

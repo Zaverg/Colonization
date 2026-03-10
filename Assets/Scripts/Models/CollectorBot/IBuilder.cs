@@ -2,5 +2,5 @@
 
 public interface IBuilder
 {
-    public void Build(Transform buildObject);
+    public void StartBuild(IBuild buildObject, IStateMachine stateMachine);
 }

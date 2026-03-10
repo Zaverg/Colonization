@@ -1,9 +1,7 @@
-﻿using UnityEngine;
-
-public class Builder : IBuilder
+﻿public class Builder : IBuilder
 {
-    public void Build(Transform buildObject)
+    public void StartBuild(IBuild buildObject, IStateMachine stateMachine)
     {
-        buildObject.gameObject.SetActive(true);
+        buildObject.StartBuild(stateMachine);
     }
 }

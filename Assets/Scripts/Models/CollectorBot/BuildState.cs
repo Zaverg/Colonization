@@ -8,7 +8,7 @@ public class BuildState : CollectorBotState
     public override void Entry(IStateMachine stateMachine)
     {
         _stateMachine = stateMachine;
-        _stateMachine.Builder.Build(stateMachine.CurrentTask.Base)
+        _stateMachine.Builder.StartBuild(_stateMachine.CurrentTask.BuildObject, _stateMachine);
     }
 
     public override void Run()
@@ -18,11 +18,6 @@ public class BuildState : CollectorBotState
 
     public override void Exit()
     {
-        
+        _stateMachine = null;
     }
-}
-
-public interface IBuild
-{
-    public void StartBuild();
 }

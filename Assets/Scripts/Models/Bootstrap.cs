@@ -85,7 +85,7 @@ public class Bootstrap : MonoBehaviour
         for (int i = 0; i < _countStartBot; i++)
         {
             CollectorBot bot = _fabricCollectorBot.Create();
-            collectorBase.BotDispatcher.EnqueueCollector(bot);
+            collectorBase.BotDispatcher.EnqueueBot(bot);
         }
     }
 }

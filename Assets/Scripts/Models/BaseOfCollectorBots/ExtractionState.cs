@@ -24,12 +24,12 @@ public class ExtractionState : CollectorBaseState
         CollectorBot newBot = _collectorBase.TryCreateCollectorBot();
 
         if (newBot != null)
-            _collectorBase.BotDispatcher.EnqueueCollector(newBot);
+            _collectorBase.BotDispatcher.EnqueueBot(newBot);
 
         if (_collectorBase.BotDispatcher.AvailableCollectorsCount <= 0 || _collectorBase.MineralRegistry.AvailableMineralsCount == 0)
             return;
 
-        CollectorBot collectorBot = _collectorBase.BotDispatcher.GetAvailableCollectorBot();
+        CollectorBot collectorBot = _collectorBase.BotDispatcher.GetAvailableBot();
         collectorBot.AssignTasks(_miningTask.CreateTask());
     }
 

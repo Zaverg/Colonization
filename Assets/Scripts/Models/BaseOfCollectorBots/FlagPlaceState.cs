@@ -25,11 +25,13 @@ public class FlagPlaceState : CollectorBaseState
         if (_collectorBase.BotDispatcher.AvailableCollectorsCount == 0)
             return;
 
-        CollectorBot collectorBot = _collectorBase.BotDispatcher.GetAvailableCollectorBot();
+        CollectorBot collectorBot = _collectorBase.BotDispatcher.GetAvailableBot();
 
         if (_collectorBase.ResourceCounter.CollectedResources >= _collectorBase.CountResourceToBuildBase)
         {
-           collectorBot.AssignTasks(_baseBuildTask.CreateTask());
+            _collectorBase.BotDispatcher.FreeBot(collectorBot);
+
+            collectorBot.AssignTasks(_baseBuildTask.CreateTask());
 
             return;
         }

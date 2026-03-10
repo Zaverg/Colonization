@@ -39,7 +39,7 @@ public class CollectorBot : MonoBehaviour, IStateMachine
         _states[StateType.Taking] = new TakingState();
         _states[StateType.Dropping] = new UnloaderState();
         _states[StateType.Mining] = new MiningState();
-        _states[StateType.Building] = new Buil
+        _states[StateType.Building] = new BuildState();
 
         _currentState = _states[StateType.Idle];
 

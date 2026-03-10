@@ -1,7 +1,7 @@
 using System;
 using UnityEngine;
 
-public class CollectorBotBaseFactory : MonoBehaviour
+public class CollectorBotBaseFactory : MonoBehaviour, IFactory
 {
     [SerializeField] private CollectorBotBase _base;
     [SerializeField] private CollectorBotBaseConfig _config;
@@ -15,7 +15,7 @@ public class CollectorBotBaseFactory : MonoBehaviour
         _collectorBaseService = service;
     }
 
-    public CollectorBotBase Create(Vector3 position, bool isVisible)
+    public IBuildable Create(Vector3 position, bool isVisible)
     {
         CollectorBotBase collectorBotBase = Instantiate(_base, position, Quaternion.identity);
         collectorBotBase.gameObject.SetActive(false);

@@ -13,7 +13,7 @@ public class CollectorBotDispatcher
         _resourceCounter = resourceCounter;
     }
 
-    public CollectorBot GetAvailableCollectorBot()
+    public CollectorBot GetAvailableBot()
     {
         CollectorBot collectorBot = _availableCollectors.Dequeue();
         SubscribeToBot(collectorBot);
@@ -21,22 +21,27 @@ public class CollectorBotDispatcher
         return collectorBot;
     }
 
-    public void EnqueueCollector(CollectorBot bot)
+    public void EnqueueBot(CollectorBot bot)
     {
         UnSubscribeToBot(bot);
         
         _availableCollectors.Enqueue(bot);
     }
 
+    public void FreeBot(CollectorBot bot)
+    {
+        UnSubscribeToBot(bot);
+    }
+
     private void SubscribeToBot(CollectorBot bot)
     {
-        bot.OnBotAvailable += EnqueueCollector;
+        bot.OnBotAvailable += EnqueueBot;
         bot.Unloader.Unloaded += _resourceCounter.UpdateCounter;
     }
 
     private void UnSubscribeToBot(CollectorBot bot)
     {
-        bot.OnBotAvailable -= EnqueueCollector;
+        bot.OnBotAvailable -= EnqueueBot;
         bot.Unloader.Unloaded -= _resourceCounter.UpdateCounter;
     }
 }

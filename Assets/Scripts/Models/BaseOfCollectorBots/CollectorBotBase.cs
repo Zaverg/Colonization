@@ -1,7 +1,7 @@
 ﻿using UnityEngine;
 using System;
 
-public class CollectorBotBase : MonoBehaviour, IClickable, ICollectorBase
+public class CollectorBotBase : MonoBehaviour, IClickable, ICollectorBase, IBuildable
 {
     [SerializeField] private int _countResourceToCreateBot = 3;
     [SerializeField] private int _countResourceToBuildBase = 5;
@@ -21,6 +21,7 @@ public class CollectorBotBase : MonoBehaviour, IClickable, ICollectorBase
     private Flag _flag;
 
     public event Action<CollectorBotBase> Click;
+    public event Action<IBuild> OnEndBuild;
 
     public Timer Timer => _timer;
     public ResourceCounter ResourceCounter => _resourceCounter;
@@ -80,7 +81,7 @@ public class CollectorBotBase : MonoBehaviour, IClickable, ICollectorBase
         _collectorBotDispatcher = new CollectorBotDispatcher(_resourceCounter);
 
         MiningTask miningTask = new MiningTask(_mineralRegistry, _collectorBotDispatcher, collectorBaseService.CoroutineRunner, transform.position);
-        BaseBuildTask baseBuildTask = new BaseBuildTask(this);
+        BaseBuildTask baseBuildTask = new BaseBuildTask(this, collectorBaseService.BaseFactory);
 
         _extractionState = new ExtractionState(miningTask, _fabricCollectorBot);
         _flagPlaceState = new FlagPlaceState(miningTask, baseBuildTask);
@@ -128,9 +129,23 @@ public class CollectorBotBase : MonoBehaviour, IClickable, ICollectorBase
         return _fabricCollectorBot.Create();
     }
 
+    //public void StartBuild(IStateMachine builder)
+    //{
+    //    gameObject.SetActive(true);
+    //    OnEndBuild?.Invoke(this);
+        
+    //    CollectorBot bot = builder as CollectorBot;
+    //    _collectorBotDispatcher.EnqueueBot(bot);
+    //}
+
     private void ActivateScanner()
     {
         _scanner.Scan();
         _timer.Run();
     }
+}
+
+public class Build : MonoBehaviour
+{
+
 }
