@@ -1,7 +1,10 @@
-﻿public class Builder : IBuilder
+﻿using UnityEngine;
+
+public class Builder : MonoBehaviour, IBuilder
 {
-    public void StartBuild(IBuild buildObject, IStateMachine stateMachine)
+    public void StartBuild(BuildProcess buildObject, IStateMachine stateMachine)
     {
+        buildObject.gameObject.SetActive(true);
         buildObject.StartBuild(stateMachine);
     }
 }

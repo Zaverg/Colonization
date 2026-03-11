@@ -1,4 +1,5 @@
 ﻿using System;
+using UnityEngine;
 
 public interface ICollectorBase
 {
@@ -13,6 +14,8 @@ public interface ICollectorBase
     public CollectorBotDispatcher BotDispatcher { get; }
     public Flag Flag { get; }
     public MineralRegistry MineralRegistry { get; }
+    public IFactory FactoryBot { get; }
+    public Transform SpawnBotPlace { get; }
 
     public void PlaceFlag();
     public void SetFlag(Flag flag);

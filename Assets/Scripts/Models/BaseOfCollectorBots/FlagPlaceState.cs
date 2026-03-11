@@ -1,12 +1,11 @@
 ﻿using System;
-using System.Diagnostics;
-using Unity.Android.Types;
 
 public class FlagPlaceState : CollectorBaseState
 {
     private ICollectorBase _collectorBase;
     private MiningTask _miningTask;
     private BaseBuildTask _baseBuildTask;
+    private bool _isGoing;
 
     public override event Action Completed;
 
@@ -20,6 +19,7 @@ public class FlagPlaceState : CollectorBaseState
     {
         _collectorBase = collectorBase;
     }
+
     public override void Run()
     {
         if (_collectorBase.BotDispatcher.AvailableCollectorsCount == 0)
@@ -27,11 +27,13 @@ public class FlagPlaceState : CollectorBaseState
 
         CollectorBot collectorBot = _collectorBase.BotDispatcher.GetAvailableBot();
 
-        if (_collectorBase.ResourceCounter.CollectedResources >= _collectorBase.CountResourceToBuildBase)
+        if (_isGoing == false && _collectorBase.ResourceCounter.CollectedResources >= _collectorBase.CountResourceToBuildBase)
         {
             _collectorBase.BotDispatcher.FreeBot(collectorBot);
 
             collectorBot.AssignTasks(_baseBuildTask.CreateTask());
+
+            _isGoing = true;
 
             return;
         }
@@ -43,5 +45,6 @@ public class FlagPlaceState : CollectorBaseState
     public override void Exit()
     {
         _collectorBase = null;
+        _isGoing = false;
     }
 }

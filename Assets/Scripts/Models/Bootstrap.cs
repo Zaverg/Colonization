@@ -24,6 +24,7 @@ public class Bootstrap : MonoBehaviour
     [SerializeField] private TimerViewer _timerViewer;
     [SerializeField] private MenuActivator _menuActivator;
     [SerializeField] private FlagSpawner _flagSpawner;
+    [SerializeField] private BuildProcessPool _buildProcessPool;
 
     private int _countStartBot = 3;
 
@@ -52,8 +53,10 @@ public class Bootstrap : MonoBehaviour
         _menuActivator = new MenuActivator();
         _baseMenu = new BaseMenu(_timerViewer, _resourceCounterViewer, _baseMenuViewer, _flagButton);
         _baseMenu.OnActiveChanged += _menuActivator.SwitchActiveMenu;
+        _buildProcessPool.Initialize();
 
-        _collectorBaseService = new CollectorBaseService(_coroutineRunner, _baseConfig, _mineralRegistry, _baseMenu, _fabricCollectorBot, _collectorBotBaseFactory);
+        _collectorBaseService = new CollectorBaseService(_coroutineRunner, _baseConfig, _mineralRegistry, _baseMenu, 
+            _fabricCollectorBot, _collectorBotBaseFactory, _buildProcessPool);
 
         _collectorBotBaseFactory.Initialize(_collectorBaseService);
 
@@ -80,11 +83,11 @@ public class Bootstrap : MonoBehaviour
 
     private void Start()
     {
-        CollectorBotBase collectorBase = _collectorBotBaseFactory.Create(new Vector3(0, 0, 0), true);
+        CollectorBotBase collectorBase = _collectorBotBaseFactory.Create(new Vector3(0, 0, 0), true) as CollectorBotBase;
 
         for (int i = 0; i < _countStartBot; i++)
         {
-            CollectorBot bot = _fabricCollectorBot.Create();
+            CollectorBot bot = _fabricCollectorBot.Create(collectorBase.SpawnBotPlace.position, true) as CollectorBot;
             collectorBase.BotDispatcher.EnqueueBot(bot);
         }
     }

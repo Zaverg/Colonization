@@ -1,5 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using UnityEngine;
 
 public class BaseBuildTask : CollectorBaseTask
@@ -7,12 +6,15 @@ public class BaseBuildTask : CollectorBaseTask
     private ICollectorBase _collectorBase;
     private CollectorBotBaseFactory _baseFactory;
     private BuildProcessPool _buildProcessPool;
+    private ICoroutineRunner _coroutineRunner;
 
-    public BaseBuildTask(ICollectorBase collectorBase, CollectorBotBaseFactory baseFactory, BuildProcessPool buildProcessPool)
+    public BaseBuildTask(ICollectorBase collectorBase, CollectorBotBaseFactory baseFactory, BuildProcessPool buildProcessPool, 
+        ICoroutineRunner coroutineRunner)
     {
         _collectorBase = collectorBase;
         _baseFactory = baseFactory;
         _buildProcessPool = buildProcessPool;
+        _coroutineRunner = coroutineRunner;
     }
 
     public override Queue<CollectorBotTask> CreateTask()
@@ -21,76 +23,22 @@ public class BaseBuildTask : CollectorBaseTask
 
         Vector3 flagPosition = _collectorBase.Flag.transform.position;
         BuildProcess buildProcess = _buildProcessPool.GetBuildProcess();
+        buildProcess.transform.position = _collectorBase.Flag.transform.position;
+        buildProcess.gameObject.SetActive(false);
 
-        buildProcess.Completed += (IBuildable buildable, IStateMachine builder) =>
-        {
+        buildProcess.SetParams(_baseFactory, 5f, flagPosition, CallBack, _coroutineRunner);
 
-        };
-       
         tasks.Enqueue(new CollectorBotTask(StateType.Moving, flagPosition));
-       // tasks.Enqueue(new CollectorBotTask(StateType.Building, buildObject: newCollectorBotBase));
+        tasks.Enqueue(new CollectorBotTask(StateType.Building, buildProcess: buildProcess));
 
         return tasks;
     }
-}
 
-
-public class BuildProcess : MonoBehaviour, IClickable, IReleasable<BuildProcess>
-{
-    private float _buildTime;
-    private IFactory _factory;
-    private Vector3 _buildPosition;
-    private IStateMachine _builder;
-
-    // private Animator _animator;
-
-    public event Action<IBuildable, IStateMachine> Completed;
-    public event Action<BuildProcess> Released;
-
-    public void SetParams(IFactory factory, float buildTime, Vector3 buildPosition, Action<IBuildable, IStateMachine> callBack)
+    private void CallBack(ICreatable buildable, IStateMachine builder)
     {
-        _buildTime = buildTime;
-        _factory = factory;
-        _buildPosition = buildPosition;
-        Completed = callBack;
-    }
+        CollectorBotBase collectorBotBase = buildable as CollectorBotBase;
+        CollectorBot collectorBot = builder as CollectorBot;
 
-    public void StartBuild(IStateMachine builder)
-    {
-        _builder = builder;
-        Debug.Log($"Начало анимации c временем: {_buildTime}");
-    }
-
-    private void FinishBuild()
-    {
-        IBuildable buildable = _factory.Create(_buildPosition, true);
-
-        Completed?.Invoke(buildable, _builder);
-
-        // Возврат в пул
-        Destroy(gameObject);
-    }
-
-    public void OnClick()
-    {
-
-    }
-}
-
-public interface IFactory
-{
-    public IBuildable Create(Vector3 position, bool visible);
-}
-
-public interface IBuildable
-{
-
-}
-
-public class BuildProcessPool : ObjectPool<BuildProcess> 
-{ 
-    public BuildProcess GetBuildProcess()
-    {
-        return GetObject();
+        collectorBotBase.BotDispatcher.EnqueueBot(collectorBot);
     }
 }

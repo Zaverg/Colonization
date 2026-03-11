@@ -1,6 +1,6 @@
 ﻿using UnityEngine;
 
-public class CollectorBotFactory : MonoBehaviour
+public class CollectorBotFactory : MonoBehaviour, IFactory
 {
     private CollectorBot _prefab;
     private CoroutineRunner _coroutineRunner;
@@ -11,10 +11,12 @@ public class CollectorBotFactory : MonoBehaviour
         _coroutineRunner = coroutineRunner;
     }
 
-    public CollectorBot Create()
+    public ICreatable Create(Vector3 position, bool visible)
     {
-        CollectorBot bot = Instantiate(_prefab, transform.position, Quaternion.identity);
+        CollectorBot bot = Instantiate(_prefab, position, Quaternion.identity);
         bot.GetComponent<CollectorBotMiner>().SetCorutineRunner(_coroutineRunner);
+
+        bot.gameObject.SetActive(visible);
 
         return bot;
     }

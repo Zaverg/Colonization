@@ -1,10 +1,12 @@
 ﻿using UnityEngine;
 using System;
 
-public class CollectorBotBase : MonoBehaviour, IClickable, ICollectorBase, IBuildable
+public class CollectorBotBase : MonoBehaviour, IClickable, ICollectorBase, ICreatable
 {
     [SerializeField] private int _countResourceToCreateBot = 3;
     [SerializeField] private int _countResourceToBuildBase = 5;
+    [SerializeField] private Transform _spawnBotPlace;
+
     private float _scanTime = 5;
 
     private CollectorBaseState _currentState;
@@ -15,7 +17,7 @@ public class CollectorBotBase : MonoBehaviour, IClickable, ICollectorBase, IBuil
     private CollectorBotBaseConfig _config;
     private MineralRegistry _mineralRegistry;
     private Scanner _scanner;
-    private CollectorBotFactory _fabricCollectorBot;
+    private CollectorBotFactory _factoryCollectorBot;
     private Timer _timer;
     private ResourceCounter _resourceCounter;
     private Flag _flag;
@@ -30,6 +32,8 @@ public class CollectorBotBase : MonoBehaviour, IClickable, ICollectorBase, IBuil
     public CollectorBotDispatcher BotDispatcher => _collectorBotDispatcher;
     public Flag Flag => _flag;
     public MineralRegistry MineralRegistry => _mineralRegistry;
+    public IFactory FactoryBot => _factoryCollectorBot;
+    public Transform SpawnBotPlace => _spawnBotPlace;
 
     private void OnEnable()
     {
@@ -77,13 +81,13 @@ public class CollectorBotBase : MonoBehaviour, IClickable, ICollectorBase, IBuil
         _timer = new Timer(collectorBaseService.CoroutineRunner);
         _timer.SetDuration(_scanTime);
 
-        _fabricCollectorBot = collectorBaseService.CollectorBotFactory;
+        _factoryCollectorBot = collectorBaseService.CollectorBotFactory;
         _collectorBotDispatcher = new CollectorBotDispatcher(_resourceCounter);
 
         MiningTask miningTask = new MiningTask(_mineralRegistry, _collectorBotDispatcher, collectorBaseService.CoroutineRunner, transform.position);
-        BaseBuildTask baseBuildTask = new BaseBuildTask(this, collectorBaseService.BaseFactory);
+        BaseBuildTask baseBuildTask = new BaseBuildTask(this, collectorBaseService.BaseFactory, collectorBaseService.BuildProcessPool, collectorBaseService.CoroutineRunner);
 
-        _extractionState = new ExtractionState(miningTask, _fabricCollectorBot);
+        _extractionState = new ExtractionState(miningTask, _factoryCollectorBot);
         _flagPlaceState = new FlagPlaceState(miningTask, baseBuildTask);
         
         _currentState = _extractionState;
@@ -126,7 +130,7 @@ public class CollectorBotBase : MonoBehaviour, IClickable, ICollectorBase, IBuil
 
         _resourceCounter.SubtractCounter(_countResourceToCreateBot);
 
-        return _fabricCollectorBot.Create();
+        return _factoryCollectorBot.Create(transform.position, true) as CollectorBot;
     }
 
     //public void StartBuild(IStateMachine builder)

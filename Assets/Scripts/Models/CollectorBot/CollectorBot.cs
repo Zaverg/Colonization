@@ -4,7 +4,7 @@ using System.Collections.Generic;
 using System;
 
 [RequireComponent(typeof(NavMeshAgent), typeof(CollectorBotAnimator))]
-public class CollectorBot : MonoBehaviour, IStateMachine
+public class CollectorBot : MonoBehaviour, IStateMachine, ICreatable
 {
     [SerializeField] private Mover _mover;
     [SerializeField] private Taker _taker;

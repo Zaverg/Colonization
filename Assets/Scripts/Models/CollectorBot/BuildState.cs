@@ -8,7 +8,7 @@ public class BuildState : CollectorBotState
     public override void Entry(IStateMachine stateMachine)
     {
         _stateMachine = stateMachine;
-        _stateMachine.Builder.StartBuild(_stateMachine.CurrentTask.BuildObject, _stateMachine);
+        _stateMachine.Builder.StartBuild(_stateMachine.CurrentTask.BuildProcess, _stateMachine);
     }
 
     public override void Run()

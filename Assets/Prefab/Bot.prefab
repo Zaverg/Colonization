@@ -7231,6 +7231,7 @@ GameObject:
   - component: {fileID: 7244903598691802745}
   - component: {fileID: 3920492388115706293}
   - component: {fileID: 2823275339999793626}
+  - component: {fileID: 3870487979814807241}
   m_Layer: 6
   m_Name: Bot
   m_TagString: Untagged
@@ -7294,6 +7295,7 @@ MonoBehaviour:
   _taker: {fileID: 7244903598691802745}
   _miner: {fileID: 3920492388115706293}
   _unloader: {fileID: 2823275339999793626}
+  _builder: {fileID: 3870487979814807241}
 --- !u!95 &4038402934735179093
 Animator:
   serializedVersion: 7
@@ -7390,7 +7392,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: b9f6dfa9303379a448d8d828762aa086, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  _runer: {fileID: 0}
+  _coroutineRunner: {fileID: 0}
 --- !u!114 &2823275339999793626
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -7404,6 +7406,18 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   _storage: {fileID: 7406442703880985939}
+--- !u!114 &3870487979814807241
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 7207967470877148910}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 965731c0088687f4991b154973e5a428, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
 --- !u!1 &7214919977219736641
 GameObject:
   m_ObjectHideFlags: 0
