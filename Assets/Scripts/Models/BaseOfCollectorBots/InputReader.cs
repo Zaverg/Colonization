@@ -45,11 +45,17 @@ public class InputReader : MonoBehaviour
         Transform result;
 
         if (uiHit != null)
+        {
             result = uiHit;
+        }
         else
+        {
             result = hit;
+            OnClick?.Invoke(result);
+        }
 
         if (result.TryGetComponent(out IClickable clickable))
             clickable.OnClick();
+
     }
 }

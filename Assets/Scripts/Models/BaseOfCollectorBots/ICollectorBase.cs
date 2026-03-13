@@ -6,7 +6,8 @@ public interface ICollectorBase
     public int CountResourceToCreateBot { get; }
     public int CountResourceToBuildBase { get; }
 
-    public event Action<CollectorBotBase> Click;
+    public event Action<ICollectorBase> Click;
+    public event Action<ICollectorBase> Disabled; 
 
     public Timer Timer { get; }
     public ResourceCounter ResourceCounter { get; }
@@ -16,8 +17,5 @@ public interface ICollectorBase
     public MineralRegistry MineralRegistry { get; }
     public IFactory FactoryBot { get; }
     public Transform SpawnBotPlace { get; }
-
-    public void PlaceFlag();
-    public void SetFlag(Flag flag);
-    public CollectorBot TryCreateCollectorBot();
+    public CollectorBaseTask MainTask { get; }
 }

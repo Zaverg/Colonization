@@ -18,15 +18,15 @@ public class Bootstrap : MonoBehaviour
     [SerializeField] private InputReader _inputReader;
     [SerializeField] private BaseMenu _baseMenu;
     [SerializeField] private BaseMenuViewer _baseMenuViewer;
-    [SerializeField] private FlagButton _flagButton;
+    [SerializeField] private BaseBuildButton _flagButton;
     [SerializeField] private CollectorBotBaseFactory _collectorBotBaseFactory;
     [SerializeField] private ResourceCounterViewer _resourceCounterViewer;
     [SerializeField] private TimerViewer _timerViewer;
     [SerializeField] private MenuActivator _menuActivator;
-    [SerializeField] private FlagSpawner _flagSpawner;
     [SerializeField] private BuildProcessPool _buildProcessPool;
+    [SerializeField] private FlagPlacer _flagPlacer;
 
-    private int _countStartBot = 3;
+    [SerializeField] private int _countStartBot = 3;
 
     private CollectorBaseService _collectorBaseService;
     private BaseMenuService _baseMenuService;
@@ -52,7 +52,7 @@ public class Bootstrap : MonoBehaviour
 
         _menuActivator = new MenuActivator();
         _baseMenu = new BaseMenu(_timerViewer, _resourceCounterViewer, _baseMenuViewer, _flagButton);
-        _baseMenu.OnActiveChanged += _menuActivator.SwitchActiveMenu;
+       // _baseMenu.OnActiveChanged += _menuActivator.SwitchActiveMenu;
         _buildProcessPool.Initialize();
 
         _collectorBaseService = new CollectorBaseService(_coroutineRunner, _baseConfig, _mineralRegistry, _baseMenu, 
@@ -68,8 +68,9 @@ public class Bootstrap : MonoBehaviour
         if (_isInitialize == false)
             return;
 
+        _collectorBotBaseFactory.Created += OnBaseCreated;
         _baseMenu.OnActiveChanged += _menuActivator.SwitchActiveMenu;
-        _collectorBotBaseFactory.Created += _flagSpawner.Spawn;
+        _inputReader.OnClick += _flagPlacer.TryInstalFlag;
     }
 
     private void OnDisable()
@@ -77,18 +78,31 @@ public class Bootstrap : MonoBehaviour
         if (_isInitialize == false)
             return;
 
+        _collectorBotBaseFactory.Created -= OnBaseCreated;
         _baseMenu.OnActiveChanged -= _menuActivator.SwitchActiveMenu;
-        _collectorBotBaseFactory.Created -= _flagSpawner.Spawn;
+        _inputReader.OnClick -= _flagPlacer.TryInstalFlag;
     }
 
     private void Start()
     {
         CollectorBotBase collectorBase = _collectorBotBaseFactory.Create(new Vector3(0, 0, 0), true) as CollectorBotBase;
-
+        
         for (int i = 0; i < _countStartBot; i++)
         {
             CollectorBot bot = _fabricCollectorBot.Create(collectorBase.SpawnBotPlace.position, true) as CollectorBot;
             collectorBase.BotDispatcher.EnqueueBot(bot);
         }
+    }
+
+    private void OnBaseCreated(ICollectorBase collectorBase)
+    {
+        collectorBase.Flag.Activated += _flagPlacer.SetFlag;
+        collectorBase.Disabled += OnBaseDisabled;
+    }
+
+    private void OnBaseDisabled(ICollectorBase collectorBase)
+    {
+        collectorBase.Flag.Activated -= _flagPlacer.SetFlag;
+        collectorBase.Disabled -= OnBaseDisabled;
     }
 }

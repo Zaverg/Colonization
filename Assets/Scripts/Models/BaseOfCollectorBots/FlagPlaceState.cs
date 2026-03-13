@@ -4,20 +4,22 @@ public class FlagPlaceState : CollectorBaseState
 {
     private ICollectorBase _collectorBase;
     private MiningTask _miningTask;
-    private BaseBuildTask _baseBuildTask;
+    private CollectorBaseTask _mainTask;
     private bool _isGoing;
+
+    private CollectorBot _assignedBot;
 
     public override event Action Completed;
 
-    public FlagPlaceState(MiningTask miningTask, BaseBuildTask baseBuildTask)
+    public FlagPlaceState(MiningTask miningTask)
     {
         _miningTask = miningTask;
-        _baseBuildTask = baseBuildTask;
     }
 
     public override void Entry(ICollectorBase collectorBase)
     {
         _collectorBase = collectorBase;
+        _mainTask = _collectorBase.MainTask;
     }
 
     public override void Run()
@@ -29,10 +31,11 @@ public class FlagPlaceState : CollectorBaseState
 
         if (_isGoing == false && _collectorBase.ResourceCounter.CollectedResources >= _collectorBase.CountResourceToBuildBase)
         {
-            _collectorBase.BotDispatcher.FreeBot(collectorBot);
+            _assignedBot = collectorBot;
 
-            collectorBot.AssignTasks(_baseBuildTask.CreateTask());
-
+            _collectorBase.Flag.Deactivated += _assignedBot.ResetTasks;
+            _assignedBot.AssignTasks(_mainTask.CreateTask());
+            
             _isGoing = true;
 
             return;
@@ -44,6 +47,12 @@ public class FlagPlaceState : CollectorBaseState
 
     public override void Exit()
     {
+        if (_assignedBot != null)
+        {
+            _collectorBase.Flag.Deactivated -= _assignedBot.ResetTasks;
+            _assignedBot = null;
+        }
+
         _collectorBase = null;
         _isGoing = false;
     }

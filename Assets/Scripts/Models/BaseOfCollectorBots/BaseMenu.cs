@@ -7,13 +7,13 @@ public class BaseMenu : IUiStats
     private ResourceCounterViewer _resourceCountViewer;
     private TimerViewer _timerViewer;
     private BaseMenuViewer _baseMenuViewer;
-    private FlagButton _flagButton;
+    private BaseBuildButton _flagButton;
 
     public event Action<IUiStats> OnActiveChanged;
 
     public ICollectorBase CurrentBase => _collectorBase;
 
-    public BaseMenu(TimerViewer timerViewer, ResourceCounterViewer resourceCounterViewer, BaseMenuViewer baseMenuViewer, FlagButton flagButton)
+    public BaseMenu(TimerViewer timerViewer, ResourceCounterViewer resourceCounterViewer, BaseMenuViewer baseMenuViewer, BaseBuildButton flagButton)
     {
         _timerViewer = timerViewer;
         _resourceCountViewer = resourceCounterViewer;
@@ -34,7 +34,7 @@ public class BaseMenu : IUiStats
     {
         _collectorBase.ResourceCounter.MineralCountChanged += _resourceCountViewer.UpdateView;
         _collectorBase.Timer.Changed += _timerViewer.UpdateView;
-        _flagButton.Click += _collectorBase.Flag.Activate;
+        _flagButton.FlagActivated += _collectorBase.Flag.OnButtonClick;
 
         _baseMenuViewer.gameObject.SetActive(true);
 
@@ -46,7 +46,7 @@ public class BaseMenu : IUiStats
     {
         _collectorBase.ResourceCounter.MineralCountChanged -= _resourceCountViewer.UpdateView;
         _collectorBase.Timer.Changed -= _timerViewer.UpdateView;
-        _flagButton.Click -= _collectorBase.Flag.Activate;
+        _flagButton.FlagActivated -= _collectorBase.Flag.OnButtonClick;
 
         _baseMenuViewer.gameObject.SetActive(false);
     }

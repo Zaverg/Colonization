@@ -3,7 +3,6 @@
 public interface IStateMachine
 {
     public Transform Transform { get; }
-    public bool HasTask { get; }
     public CollectorBotTask CurrentTask { get; }
 
     public IMover Mover { get; }

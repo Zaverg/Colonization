@@ -22,6 +22,7 @@ public class BaseBuildTask : CollectorBaseTask
         Queue<CollectorBotTask> tasks = new Queue<CollectorBotTask>();
 
         Vector3 flagPosition = _collectorBase.Flag.transform.position;
+
         BuildProcess buildProcess = _buildProcessPool.GetBuildProcess();
         buildProcess.transform.position = _collectorBase.Flag.transform.position;
         buildProcess.gameObject.SetActive(false);
@@ -39,6 +40,11 @@ public class BaseBuildTask : CollectorBaseTask
         CollectorBotBase collectorBotBase = buildable as CollectorBotBase;
         CollectorBot collectorBot = builder as CollectorBot;
 
+        _collectorBase.Flag.Deactivate();
+    
+        _collectorBase.BotDispatcher.FreeBot(collectorBot);
         collectorBotBase.BotDispatcher.EnqueueBot(collectorBot);
+
+        _collectorBase.ResourceCounter.SubtractCounter(_collectorBase.CountResourceToBuildBase);
     }
 }

@@ -2,36 +2,54 @@ using System;
 using UnityEngine;
 using UnityEngine.InputSystem;
 
-public class Flag : MonoBehaviour, IClickable
+public class Flag : MonoBehaviour
 {
-    private bool _isPut;
+    private bool _isFollower;
 
-    public event Action Installed; 
+    public event Action<Flag> Activated;
+    public event Action<CollectorBotTaskName> Installed;
+    public event Action Deactivated;
+
+    private CollectorBotTaskName _taskName;
 
     private void Update()
     {
-        if (_isPut)
+        if (_isFollower == false)
             return;
 
        FollowCursor();
     }
 
-    public void OnClick()
+    public void Instal()
     {
-        _isPut = true;
-        Installed?.Invoke();
+        _isFollower = false;
+        Installed?.Invoke(_taskName);
+    }
+
+    public void OnButtonClick(CollectorBotTaskName taskName)
+    {
+        _taskName = taskName;
+
+        if (gameObject.activeSelf)
+            Deactivate();
+        else
+            Activate();
     }
 
     public void Activate()
     {
-        _isPut = false;
+        _isFollower = true;
         gameObject.SetActive(true);
+        Activated?.Invoke(this);
     }
 
-    public void Deactivate(IBuild build)
+    public void Deactivate()
     {
+        _isFollower = false;
         gameObject.SetActive(false);
-        build.OnEndBuild -= Deactivate;
+        gameObject.transform.position = Vector3.zero;
+
+        Deactivated?.Invoke();
     }
 
     private void FollowCursor()

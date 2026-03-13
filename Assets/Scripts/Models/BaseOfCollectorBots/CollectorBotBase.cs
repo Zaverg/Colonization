@@ -1,10 +1,12 @@
 ﻿using UnityEngine;
 using System;
+using System.Collections.Generic;
 
 public class CollectorBotBase : MonoBehaviour, IClickable, ICollectorBase, ICreatable
 {
     [SerializeField] private int _countResourceToCreateBot = 3;
     [SerializeField] private int _countResourceToBuildBase = 5;
+    [SerializeField] private Flag _flag;
     [SerializeField] private Transform _spawnBotPlace;
 
     private float _scanTime = 5;
@@ -13,6 +15,9 @@ public class CollectorBotBase : MonoBehaviour, IClickable, ICollectorBase, ICrea
     private ExtractionState _extractionState;
     private FlagPlaceState _flagPlaceState;
 
+    private Dictionary<CollectorBotTaskName, CollectorBaseTask> _tasks = new Dictionary<CollectorBotTaskName, CollectorBaseTask>();
+    private CollectorBaseTask _mainTask;
+
     private CollectorBotDispatcher _collectorBotDispatcher;
     private CollectorBotBaseConfig _config;
     private MineralRegistry _mineralRegistry;
@@ -20,10 +25,10 @@ public class CollectorBotBase : MonoBehaviour, IClickable, ICollectorBase, ICrea
     private CollectorBotFactory _factoryCollectorBot;
     private Timer _timer;
     private ResourceCounter _resourceCounter;
-    private Flag _flag;
 
-    public event Action<CollectorBotBase> Click;
+    public event Action<ICollectorBase> Click;
     public event Action<IBuild> OnEndBuild;
+    public event Action<ICollectorBase> Disabled;
 
     public Timer Timer => _timer;
     public ResourceCounter ResourceCounter => _resourceCounter;
@@ -34,25 +39,32 @@ public class CollectorBotBase : MonoBehaviour, IClickable, ICollectorBase, ICrea
     public MineralRegistry MineralRegistry => _mineralRegistry;
     public IFactory FactoryBot => _factoryCollectorBot;
     public Transform SpawnBotPlace => _spawnBotPlace;
+    public CollectorBaseTask MainTask => _mainTask;
 
     private void OnEnable()
     {
         _timer.Ended += ActivateScanner;
         _scanner.Detected += _mineralRegistry.Register;
-        //_resourceCounter.MineralCountChanged += TryCreateCollectorBot;
 
-        if (_flag != null)
-            _flag.Installed += PlaceFlag;
+        if (_flag == null)
+            return;
+
+        _flag.Installed += PlaceFlag;
+        _flag.Deactivated += TakeFlag;
     }
 
     private void OnDisable()
     {
         _timer.Ended -= ActivateScanner;
         _scanner.Detected -= _mineralRegistry.Register;
-        //_resourceCounter.MineralCountChanged -= TryCreateCollectorBot;
 
-        if (_flag != null)
-            _flag.Installed -= PlaceFlag;
+        if (_flag == null)
+            return;
+
+        _flag.Installed -= PlaceFlag;
+        _flag.Deactivated -= TakeFlag;
+
+        Disabled?.Invoke(this);
     }
 
     private void Start()
@@ -66,7 +78,6 @@ public class CollectorBotBase : MonoBehaviour, IClickable, ICollectorBase, ICrea
         if (_currentState == null)
             return;
 
-        Debug.Log(_currentState);
        _currentState.Run();
     }
 
@@ -87,8 +98,11 @@ public class CollectorBotBase : MonoBehaviour, IClickable, ICollectorBase, ICrea
         MiningTask miningTask = new MiningTask(_mineralRegistry, _collectorBotDispatcher, collectorBaseService.CoroutineRunner, transform.position);
         BaseBuildTask baseBuildTask = new BaseBuildTask(this, collectorBaseService.BaseFactory, collectorBaseService.BuildProcessPool, collectorBaseService.CoroutineRunner);
 
-        _extractionState = new ExtractionState(miningTask, _factoryCollectorBot);
-        _flagPlaceState = new FlagPlaceState(miningTask, baseBuildTask);
+        _tasks[CollectorBotTaskName.MineralMining] = miningTask;
+        _tasks[CollectorBotTaskName.BaseBuild] = baseBuildTask;
+
+        _extractionState = new ExtractionState(miningTask);
+        _flagPlaceState = new FlagPlaceState(miningTask);
         
         _currentState = _extractionState;
     }
@@ -98,58 +112,39 @@ public class CollectorBotBase : MonoBehaviour, IClickable, ICollectorBase, ICrea
         Click?.Invoke(this);
     }
 
-    public void PlaceFlag()
+    private void PlaceFlag(CollectorBotTaskName name)
     {
+        Debug.Log(_collectorBotDispatcher.AllCollectorsCount);
+        if (_collectorBotDispatcher.AllCollectorsCount <= 1)
+        {
+            _flag.Deactivate();
+
+            return;
+        }
+
+        _mainTask = _tasks[name];
         SwitchState(_flagPlaceState);
     }
 
-    public void SetFlag(Flag flag)
+    private void TakeFlag()
     {
-        if (flag == null)
-            return;
-
-        _flag = flag;
-
-        _flag.Installed -= PlaceFlag;
-        _flag.Installed += PlaceFlag;
+        SwitchState(_extractionState);
     }
-
-    public void SwitchState(CollectorBaseState state)
+    
+    private void SwitchState(CollectorBaseState state)
     {
         Debug.Log("SwitchState");
 
         _currentState.Exit();
         _currentState = state;
         _currentState.Entry(this);
+
+        Debug.Log(_currentState);
     }
-
-    public CollectorBot TryCreateCollectorBot()
-    {
-        if (_resourceCounter.CollectedResources <= _countResourceToCreateBot)
-            return null;
-
-        _resourceCounter.SubtractCounter(_countResourceToCreateBot);
-
-        return _factoryCollectorBot.Create(transform.position, true) as CollectorBot;
-    }
-
-    //public void StartBuild(IStateMachine builder)
-    //{
-    //    gameObject.SetActive(true);
-    //    OnEndBuild?.Invoke(this);
-        
-    //    CollectorBot bot = builder as CollectorBot;
-    //    _collectorBotDispatcher.EnqueueBot(bot);
-    //}
 
     private void ActivateScanner()
     {
         _scanner.Scan();
         _timer.Run();
     }
-}
-
-public class Build : MonoBehaviour
-{
-
 }

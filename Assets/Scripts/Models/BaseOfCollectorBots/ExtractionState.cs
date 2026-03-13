@@ -4,14 +4,12 @@ public class ExtractionState : CollectorBaseState
 {
     private ICollectorBase _collectorBase;
     private MiningTask _miningTask;
-    private CollectorBotFactory _collectorBotFactory;
 
     public override event Action Completed;
 
-    public ExtractionState(MiningTask miningTask, CollectorBotFactory collectorBotFactory)
+    public ExtractionState(MiningTask miningTask)
     {
         _miningTask = miningTask;
-        _collectorBotFactory = collectorBotFactory;
     }
 
     public override void Entry(ICollectorBase collectorBase)

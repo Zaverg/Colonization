@@ -41,8 +41,7 @@ public class BuildProcess : MonoBehaviour, IClickable, IReleasable<BuildProcess>
 
         Completed?.Invoke(buildable, _builder);
 
-        // Возврат в пул
-        Destroy(gameObject);
+        Released?.Invoke(this);
     }
 
     public void OnClick()

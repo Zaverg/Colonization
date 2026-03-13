@@ -22,7 +22,6 @@ public class CollectorBot : MonoBehaviour, IStateMachine, ICreatable
 
     public event Action<CollectorBot> OnBotAvailable;
 
-    public bool HasTask => _tasks.Count > 0;
     public IMover Mover => _mover;
     public ITaker Taker => _taker;
     public IMiner Miner => _miner;
@@ -50,12 +49,6 @@ public class CollectorBot : MonoBehaviour, IStateMachine, ICreatable
 
     private void Update()
     {
-        if (HasTask == false && _currentState != _states[StateType.Idle])
-        {
-            _currentState = _states[StateType.Idle];
-            OnBotAvailable?.Invoke(this);
-        }
-
         _currentState.Run();       
     }
 
@@ -66,16 +59,34 @@ public class CollectorBot : MonoBehaviour, IStateMachine, ICreatable
         SwitchToState();
     }
 
+    public void ResetTasks()
+    {
+        _currentState.Exit();
+        _tasks.Clear();
+    }
+
     private void SwitchToState()
     {
-        _currentTask = _tasks.Dequeue();
-        CollectorBotState state = _states[_currentTask.StateType];
+        CollectorBotState state = GetState();
 
         _currentState.Completed -= SwitchToState;
         _currentState.Exit();
-
         _currentState = state;
         _currentState.Completed += SwitchToState;
         _currentState.Entry(this);
+    }
+
+    private CollectorBotState GetState() 
+    {
+        if (_tasks.Count > 0)
+        {
+            _currentTask = _tasks.Dequeue();
+
+            return _states[_currentTask.StateType];
+        }
+       
+        OnBotAvailable?.Invoke(this);
+
+        return _states[StateType.Idle];
     }
 }
