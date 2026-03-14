@@ -26,8 +26,6 @@ public class BaseMenu : IUiStats
         _collectorBase = collectorBase;
 
         OnActiveChanged?.Invoke(this);
-
-        collectorBase.Click -= Show;
     }
 
     public void Activate()

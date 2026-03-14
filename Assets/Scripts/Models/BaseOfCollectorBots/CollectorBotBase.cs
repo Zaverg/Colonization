@@ -27,7 +27,6 @@ public class CollectorBotBase : MonoBehaviour, IClickable, ICollectorBase, ICrea
     private ResourceCounter _resourceCounter;
 
     public event Action<ICollectorBase> Click;
-    public event Action<IBuild> OnEndBuild;
     public event Action<ICollectorBase> Disabled;
 
     public Timer Timer => _timer;

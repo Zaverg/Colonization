@@ -70,7 +70,7 @@ public class Bootstrap : MonoBehaviour
 
         _collectorBotBaseFactory.Created += OnBaseCreated;
         _baseMenu.OnActiveChanged += _menuActivator.SwitchActiveMenu;
-        _inputReader.OnClick += _flagPlacer.TryInstalFlag;
+        _inputReader.OnClick += OnSubscribeInputReader;
     }
 
     private void OnDisable()
@@ -80,7 +80,7 @@ public class Bootstrap : MonoBehaviour
 
         _collectorBotBaseFactory.Created -= OnBaseCreated;
         _baseMenu.OnActiveChanged -= _menuActivator.SwitchActiveMenu;
-        _inputReader.OnClick -= _flagPlacer.TryInstalFlag;
+        _inputReader.OnClick -= OnSubscribeInputReader;
     }
 
     private void Start()
@@ -98,11 +98,19 @@ public class Bootstrap : MonoBehaviour
     {
         collectorBase.Flag.Activated += _flagPlacer.SetFlag;
         collectorBase.Disabled += OnBaseDisabled;
+        collectorBase.Click += _baseMenu.Show;
     }
 
     private void OnBaseDisabled(ICollectorBase collectorBase)
     {
         collectorBase.Flag.Activated -= _flagPlacer.SetFlag;
         collectorBase.Disabled -= OnBaseDisabled;
+        collectorBase.Click -= _baseMenu.Show;
+    }
+
+    private void OnSubscribeInputReader(Transform transform)
+    {
+        _flagPlacer.TryInstalFlag(transform);
+        _menuActivator.OnClosedMenu(transform);
     }
 }
