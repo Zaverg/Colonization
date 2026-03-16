@@ -5,7 +5,7 @@ using System.Collections;
 public class MineralSpawner : MonoBehaviour
 {
     [SerializeField] private Map _map;
-    [SerializeField] private SpawnGrid _spawnGrid;
+    [SerializeField] private CellRegister _spawnGrid;
 
     [SerializeField, Range(0, 5)] private int _maxMinerals;
 

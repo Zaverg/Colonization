@@ -113,7 +113,6 @@ public class CollectorBotBase : MonoBehaviour, IClickable, ICollectorBase, ICrea
 
     private void PlaceFlag(CollectorBotTaskName name)
     {
-        Debug.Log(_collectorBotDispatcher.AllCollectorsCount);
         if (_collectorBotDispatcher.AllCollectorsCount <= 1)
         {
             _flag.Deactivate();

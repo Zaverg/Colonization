@@ -1,3 +1,4 @@
+using System.Collections.Generic;
 using UnityEngine;
 
 public class Bootstrap : MonoBehaviour
@@ -9,7 +10,7 @@ public class Bootstrap : MonoBehaviour
     [SerializeField] private CollectorBotFactory _fabricCollectorBot;
     [SerializeField] private CollectorBotBaseConfig _baseConfig;
 
-    [SerializeField] private SpawnGrid _cellRegister;
+    [SerializeField] private CellRegister _cellRegister;
     [SerializeField] private ObjectPoolMineral _objectPullMineral;
     [SerializeField] private Map _map;
 
@@ -30,6 +31,7 @@ public class Bootstrap : MonoBehaviour
 
     private CollectorBaseService _collectorBaseService;
     private BaseMenuService _baseMenuService;
+    private GridCreator _gridCreator;
 
     private bool _isInitialize = false;
 
@@ -44,7 +46,10 @@ public class Bootstrap : MonoBehaviour
 
         _map.Initialize();
         _objectPullMineral.Initialize();
-        _cellRegister.Initialize();
+
+        _gridCreator = new GridCreator();
+        Cell[,] grid = _gridCreator.Create(_map);
+        _cellRegister.Initialize(_gridCreator.AllCells);
 
         _mineralSpawner.Initialize(_coroutineRunner, _mineralRegistry);
 
@@ -52,7 +57,6 @@ public class Bootstrap : MonoBehaviour
 
         _menuActivator = new MenuActivator();
         _baseMenu = new BaseMenu(_timerViewer, _resourceCounterViewer, _baseMenuViewer, _flagButton);
-       // _baseMenu.OnActiveChanged += _menuActivator.SwitchActiveMenu;
         _buildProcessPool.Initialize();
 
         _collectorBaseService = new CollectorBaseService(_coroutineRunner, _baseConfig, _mineralRegistry, _baseMenu, 

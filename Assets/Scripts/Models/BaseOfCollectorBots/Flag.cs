@@ -1,16 +1,26 @@
 using System;
+using System.Collections.Generic;
+using System.Linq;
 using UnityEngine;
 using UnityEngine.InputSystem;
 
 public class Flag : MonoBehaviour
 {
     private bool _isFollower;
+    private CollectorBotTaskName _taskName;
+
+    private Camera _mainCamera;
+    private Mouse _mouse;
 
     public event Action<Flag> Activated;
     public event Action<CollectorBotTaskName> Installed;
     public event Action Deactivated;
 
-    private CollectorBotTaskName _taskName;
+    private void Awake()
+    {
+        _mainCamera = Camera.main;
+        _mouse = Mouse.current;
+    }
 
     private void Update()
     {
@@ -54,10 +64,45 @@ public class Flag : MonoBehaviour
 
     private void FollowCursor()
     {
-        Vector3 mousePosition = Mouse.current.position.ReadValue();
+        Vector3 mousePosition = _mouse.position.ReadValue();
         mousePosition.z = 56;
-        Vector3 worldPosition = Camera.main.ScreenToWorldPoint(mousePosition);
+        Vector3 worldPosition = _mainCamera.ScreenToWorldPoint(mousePosition);
 
         transform.position = new Vector3(worldPosition.x, 1, worldPosition.z);
+    }
+}
+
+public class GridMover : MonoBehaviour
+{
+    
+}
+
+public class GridPositionColculator
+{
+    private IReadOnlyList<Cell> _cells;
+    
+    public GridPositionColculator(IReadOnlyList<Cell> cells)
+    {
+        _cells = cells;
+    }
+
+    public Vector3 GetCenterCellWorldPosition(Vector3 position)
+    {
+        Vector3 cellPosition = new Vector3();
+
+        float minDistance = float.MaxValue;
+
+        foreach (Cell cell in _cells)
+        {
+            float currentDistance = Vector3.Distance(cell.WorldPosition, position);
+
+            if (currentDistance < minDistance)
+            {
+                minDistance = currentDistance;
+                cellPosition = cell.WorldPosition;
+            }
+        }
+
+        return cellPosition;
     }
 }

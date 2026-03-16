@@ -2,7 +2,7 @@
 using System.Collections.Generic;
 using System.Linq;
 
-public class SpawnGrid : MonoBehaviour
+public class CellRegister : MonoBehaviour
 {
     [SerializeField] private Map _map;
 
@@ -11,15 +11,14 @@ public class SpawnGrid : MonoBehaviour
 
     private Dictionary<IResource, Cell> _resourceToCells = new Dictionary<IResource, Cell>();
 
-
     private GridCreator _gridCreator;
 
-    public void Initialize()
+    public void Initialize(IReadOnlyList<Cell> cells)
     {
         _gridCreator = new GridCreator();
         _gridCreator.Create(_map);
 
-        _freeCells = new HashSet<Cell>(_gridCreator.AllCells);
+        _freeCells = new HashSet<Cell>(cells);
 
         gameObject.SetActive(true);
     }
@@ -68,4 +67,9 @@ public class GridOccupant : MonoBehaviour, IGridOccupant
     public Vector2Int GridPosition => throw new System.NotImplementedException();
 
     public Vector3 WorldPosition => throw new System.NotImplementedException();
+}
+
+public interface IGrid
+{
+
 }
