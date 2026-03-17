@@ -11,13 +11,8 @@ public class CellRegister : MonoBehaviour
 
     private Dictionary<IResource, Cell> _resourceToCells = new Dictionary<IResource, Cell>();
 
-    private GridCreator _gridCreator;
-
     public void Initialize(IReadOnlyList<Cell> cells)
     {
-        _gridCreator = new GridCreator();
-        _gridCreator.Create(_map);
-
         _freeCells = new HashSet<Cell>(cells);
 
         gameObject.SetActive(true);

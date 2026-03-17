@@ -17,13 +17,18 @@ public class Map : MonoBehaviour
 
     public void Initialize()
     {
-        if (_proBuilderMesh == null)
-            return;
+        if (_proBuilderMesh != null)
+        {
+            Mesh mesh = _proBuilderMesh.GetComponent<MeshFilter>().sharedMesh;
+            Vector3 scale = mesh.bounds.size;
 
-        Mesh mesh = _proBuilderMesh.GetComponent<MeshFilter>().sharedMesh;
-        Vector3 scale = mesh.bounds.size;
-
-        _halfScaleMapX = scale.x * BasePlaneScale / 2;
-        _halfScaleMapZ = scale.z * BasePlaneScale / 2;
+            _halfScaleMapX = scale.x * BasePlaneScale / 2;
+            _halfScaleMapZ = scale.z * BasePlaneScale / 2;
+        }
+        else
+        {
+            _halfScaleMapX = transform.localScale.x * BasePlaneScale / 2;
+            _halfScaleMapZ = transform.localScale.z * BasePlaneScale / 2;
+        }
     }
 }

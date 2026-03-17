@@ -47,8 +47,8 @@ public class Bootstrap : MonoBehaviour
         _map.Initialize();
         _objectPullMineral.Initialize();
 
-        _gridCreator = new GridCreator();
-        Cell[,] grid = _gridCreator.Create(_map);
+        _gridCreator = new GridCreator(_map);
+        _gridCreator.Create();
         _cellRegister.Initialize(_gridCreator.AllCells);
 
         _mineralSpawner.Initialize(_coroutineRunner, _mineralRegistry);
