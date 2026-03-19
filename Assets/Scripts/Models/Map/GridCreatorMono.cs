@@ -2,7 +2,7 @@
 using UnityEngine;
 using UnityEngine.AI;
 
-public class GridCreatorMono : MonoBehaviour
+public class GridCreatorMono : MonoBehaviour, IGrid
 {
     private const int CellSize = 1;
     private int s_areaIndex;
@@ -19,6 +19,7 @@ public class GridCreatorMono : MonoBehaviour
     private Vector2 _endGrid;
 
     public IReadOnlyList<Cell> AllCells => _allCells;
+    public int CellSizeGrid => CellSize;
 
     public void Awake()
     {
@@ -49,12 +50,12 @@ public class GridCreatorMono : MonoBehaviour
                 {
                     if (NavMesh.SamplePosition(hit.point, out NavMeshHit navHit, halfCell, _areaMask))
                     {
-                        Vector3 cellWorldPosition = new Vector3(navHit.position.x, navHit.position.y, navHit.position.z);
-                        Vector2Int cellGridPosition = new Vector2Int(i, j);
+                        Vector3 worldPosition = new Vector3(navHit.position.x, navHit.position.y, navHit.position.z);
+                        Vector2Int gridPosition = new Vector2Int(i, j);
 
-                        Instantiate(_point, cellWorldPosition, Quaternion.identity);
+                        Instantiate(_point, worldPosition, Quaternion.identity);
 
-                        Cell newCell = new Cell(cellWorldPosition, cellGridPosition);
+                        Cell newCell = new Cell(worldPosition, gridPosition);
 
                         _grid[i, j] = newCell;
                         _allCells.Add(newCell);
@@ -62,6 +63,11 @@ public class GridCreatorMono : MonoBehaviour
                 }
             }
         }
+    }
+
+    public Cell GetCell(int row, int column) 
+    { 
+        return _grid[row, column];
     }
 
     private void CalculateGridSize(Map map)
@@ -74,4 +80,11 @@ public class GridCreatorMono : MonoBehaviour
 
         _grid = new Cell[rows, columns];
     }
+}
+
+public interface IGrid
+{
+    public Cell GetCell(int row, int column);
+    public IReadOnlyList<Cell> AllCells { get; }
+    public int CellSizeGrid { get; }
 }
