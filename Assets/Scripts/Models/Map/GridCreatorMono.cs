@@ -1,4 +1,5 @@
 ﻿using System.Collections.Generic;
+using Unity.Android.Gradle.Manifest;
 using UnityEngine;
 using UnityEngine.AI;
 
@@ -21,9 +22,10 @@ public class GridCreatorMono : MonoBehaviour, IGrid
     public IReadOnlyList<Cell> AllCells => _allCells;
     public int CellSizeGrid => CellSize;
 
-    public void Awake()
+    private void Awake()
     {
         _map.Initialize();
+
         s_areaIndex = NavMesh.GetAreaFromName("Walkable");
         _areaMask = 1 << s_areaIndex;
         CalculateGridSize(_map);
@@ -34,9 +36,12 @@ public class GridCreatorMono : MonoBehaviour, IGrid
     {
         float raycastStartY = 100f;
 
-        for (int i = 0; i < _grid.GetLength(0); i++)
+        int row = 0;
+        int column = 0;
+
+        for (int i = 0; i < _grid.GetLength(0) - 1; i++)
         {
-            for (int j = 0; j < _grid.GetLength(1); j++)
+            for (int j = 0; j < _grid.GetLength(1) - 1; j++)
             {
                 float halfCell = CellSize / 2f;
                 float positionX = _startGrid.x + i + halfCell;
@@ -51,16 +56,24 @@ public class GridCreatorMono : MonoBehaviour, IGrid
                     if (NavMesh.SamplePosition(hit.point, out NavMeshHit navHit, halfCell, _areaMask))
                     {
                         Vector3 worldPosition = new Vector3(navHit.position.x, navHit.position.y, navHit.position.z);
-                        Vector2Int gridPosition = new Vector2Int(i, j);
+                        Vector2Int gridPosition = new Vector2Int(row, column);
 
-                        Instantiate(_point, worldPosition, Quaternion.identity);
+                        // Instantiate(_point, worldPosition, Quaternion.identity);
 
                         Cell newCell = new Cell(worldPosition, gridPosition);
 
-                        _grid[i, j] = newCell;
+                        _grid[row, column] = newCell;
                         _allCells.Add(newCell);
+
+                        column++;
                     }
                 }
+            }
+
+            if (column > 0)
+            {
+                column = 0;
+                row++;
             }
         }
     }
