@@ -1,5 +1,4 @@
 ﻿using System.Collections.Generic;
-using Unity.Android.Gradle.Manifest;
 using UnityEngine;
 using UnityEngine.AI;
 
@@ -47,7 +46,6 @@ public class GridCreatorMono : MonoBehaviour, IGrid
                 float positionX = _startGrid.x + i + halfCell;
                 float positionZ = _startGrid.y + j + halfCell;
 
-                Vector3 startArea = new Vector3(positionX, 0.5f, positionZ);
                 Vector3 rayStart = new Vector3(positionX, raycastStartY, positionZ);
                 Vector3 rayDirection = Vector3.down;
 
@@ -93,11 +91,4 @@ public class GridCreatorMono : MonoBehaviour, IGrid
 
         _grid = new Cell[rows, columns];
     }
-}
-
-public interface IGrid
-{
-    public Cell GetCell(int row, int column);
-    public IReadOnlyList<Cell> AllCells { get; }
-    public int CellSizeGrid { get; }
 }

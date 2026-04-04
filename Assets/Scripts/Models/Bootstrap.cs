@@ -9,6 +9,7 @@ public class Bootstrap : MonoBehaviour
     [SerializeField] private CoroutineRunner _coroutineRunner;
     [SerializeField] private CollectorBotFactory _fabricCollectorBot;
     [SerializeField] private CollectorBotBaseConfig _baseConfig;
+    [SerializeField] private BuildProcessFactory _buildProcessFactory;
 
     [SerializeField] private CellRegister _cellRegister;
     [SerializeField] private ObjectPoolMineral _objectPullMineral;
@@ -19,7 +20,7 @@ public class Bootstrap : MonoBehaviour
     [SerializeField] private InputReader _inputReader;
     [SerializeField] private BaseMenu _baseMenu;
     [SerializeField] private BaseMenuViewer _baseMenuViewer;
-    [SerializeField] private BaseBuildButton _flagButton;
+    [SerializeField] private BaseBuildButton _baseBuildButton;
     [SerializeField] private CollectorBotBaseFactory _collectorBotBaseFactory;
     [SerializeField] private ResourceCounterViewer _resourceCounterViewer;
     [SerializeField] private TimerViewer _timerViewer;
@@ -32,6 +33,7 @@ public class Bootstrap : MonoBehaviour
     private CollectorBaseService _collectorBaseService;
     private BaseMenuService _baseMenuService;
     private GridCreator _gridCreator;
+    private Grid _grid;
 
     private bool _isInitialize = false;
 
@@ -47,16 +49,16 @@ public class Bootstrap : MonoBehaviour
         _map.Initialize();
         _objectPullMineral.Initialize();
 
-        _gridCreator = new GridCreator(_map);
-        _gridCreator.Create();
-        _cellRegister.Initialize(_gridCreator.AllCells);
+        _gridCreator = new GridCreator();
+        _grid = _gridCreator.Create(_map);
+        _cellRegister.Initialize(_grid);
 
         _mineralSpawner.Initialize(_coroutineRunner, _mineralRegistry);
 
         _fabricCollectorBot.Initialize(_prefab, _coroutineRunner);
 
         _menuActivator = new MenuActivator();
-        _baseMenu = new BaseMenu(_timerViewer, _resourceCounterViewer, _baseMenuViewer, _flagButton);
+        _baseMenu = new BaseMenu(_timerViewer, _resourceCounterViewer, _baseMenuViewer, _baseBuildButton);
         _buildProcessPool.Initialize();
 
         _collectorBaseService = new CollectorBaseService(_coroutineRunner, _baseConfig, _mineralRegistry, _baseMenu, 
@@ -75,6 +77,7 @@ public class Bootstrap : MonoBehaviour
         _collectorBotBaseFactory.Created += OnBaseCreated;
         _baseMenu.OnActiveChanged += _menuActivator.SwitchActiveMenu;
         _inputReader.OnClick += OnSubscribeInputReader;
+        _baseBuildButton.OnBuild += _buildProcessFactory.Create;
     }
 
     private void OnDisable()
@@ -85,6 +88,7 @@ public class Bootstrap : MonoBehaviour
         _collectorBotBaseFactory.Created -= OnBaseCreated;
         _baseMenu.OnActiveChanged -= _menuActivator.SwitchActiveMenu;
         _inputReader.OnClick -= OnSubscribeInputReader;
+        _baseBuildButton.OnBuild -= _buildProcessFactory.Create;
     }
 
     private void Start()

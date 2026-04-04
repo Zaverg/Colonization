@@ -8,7 +8,7 @@ public class FlagPlacer : MonoBehaviour
     {
         if (_activeFlag != null && surface.TryGetComponent<Map>(out _))
         {
-            _activeFlag.Instal();
+            _activeFlag.Install();
             _activeFlag = null;
         }
         else if (_activeFlag != null)

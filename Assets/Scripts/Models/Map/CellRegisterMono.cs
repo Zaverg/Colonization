@@ -1,5 +1,6 @@
 ﻿using UnityEngine;
 using System.Collections.Generic;
+using System.Runtime.CompilerServices;
 
 public class CellRegisterMono : MonoBehaviour
 {
