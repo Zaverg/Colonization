@@ -17,7 +17,7 @@ public class FollowMouseTest : MonoBehaviour
     private void Update()
     {
         Vector3 mousePosition = _mouse.position.ReadValue();
-        mousePosition.z = 56;
+        
         Vector3 worldPosition = _camera.ScreenToWorldPoint(mousePosition);
 
         transform.position = new Vector3(worldPosition.x, 1, worldPosition.z);

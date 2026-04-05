@@ -6,16 +6,24 @@ using System.Linq;
 public class CellRegister : MonoBehaviour
 {
     [SerializeField] private Map _map;
+    [SerializeField] private Grid _grid;
 
     private HashSet<Cell> _freeCells = new HashSet<Cell>();
     private HashSet<Cell> _occupiedCells = new HashSet<Cell>();
-    private Grid _grid;
     private Dictionary<IResource, Cell> _resourceToCells = new Dictionary<IResource, Cell>();
 
-    public void Initialize(Grid grid)
+    public void Initialize()
     {
-        _grid = grid;
-        _freeCells = new HashSet<Cell>(_grid.AllCells);
+        if (_grid == null)
+            return;
+
+        for (int row = 0; row < _grid.RowsGrid; row++)
+        {
+            for (int column = 0; column < _grid.ColumnsGrid; column++)
+            {
+                _freeCells.Add(_grid.GetCell(row, column));
+            }
+        }
 
         gameObject.SetActive(true);
     }
@@ -57,20 +65,10 @@ public class CellRegister : MonoBehaviour
         }
     }
 
-    private Vector2Int ConvertWorldToGridPosition(Vector3 worldPosition)
-    {
-        Vector3 startPosition = _grid.GetCell(0, 0).WorldPosition;
-
-        int x = Mathf.RoundToInt((worldPosition - startPosition).x / _grid.CellSizeGrid);
-        int y = Mathf.RoundToInt((worldPosition - startPosition).z / _grid.CellSizeGrid);
-
-        return new Vector2Int(x, y);
-    }
-
     private List<Vector2Int> GetOccupyArea(List<BuildingShapeUnit> buildingShapeUnits)
     {
-        Vector2Int rightDownGrid = ConvertWorldToGridPosition(buildingShapeUnits[0].transform.position);
-        Vector2Int leftUpGrid = ConvertWorldToGridPosition(buildingShapeUnits[1].transform.position);
+        Vector2Int rightDownGrid = _grid.ConvertWorldToGridPosition(buildingShapeUnits[0].transform.position);
+        Vector2Int leftUpGrid = _grid.ConvertWorldToGridPosition(buildingShapeUnits[1].transform.position);
 
         Debug.Log(leftUpGrid + " " + rightDownGrid);
         Debug.Log(_grid.GetCell(leftUpGrid.x, leftUpGrid.y).WorldPosition + " " + _grid.GetCell(rightDownGrid.x, rightDownGrid.y).WorldPosition);

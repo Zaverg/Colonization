@@ -2,7 +2,7 @@
 using UnityEngine;
 using UnityEngine.AI;
 
-public class GridCreatorMono : MonoBehaviour, IGrid
+public class GridCreatorMono : MonoBehaviour
 {
     private const int CellSize = 1;
     private int s_areaIndex;

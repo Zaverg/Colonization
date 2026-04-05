@@ -14,6 +14,7 @@ public class Bootstrap : MonoBehaviour
     [SerializeField] private CellRegister _cellRegister;
     [SerializeField] private ObjectPoolMineral _objectPullMineral;
     [SerializeField] private Map _map;
+    [SerializeField] private Grid _grid;
 
     [SerializeField] private MineralRegistry _mineralRegistry;
 
@@ -33,7 +34,6 @@ public class Bootstrap : MonoBehaviour
     private CollectorBaseService _collectorBaseService;
     private BaseMenuService _baseMenuService;
     private GridCreator _gridCreator;
-    private Grid _grid;
 
     private bool _isInitialize = false;
 
@@ -50,8 +50,10 @@ public class Bootstrap : MonoBehaviour
         _objectPullMineral.Initialize();
 
         _gridCreator = new GridCreator();
-        _grid = _gridCreator.Create(_map);
-        _cellRegister.Initialize(_grid);
+        Cell[,] grid = _gridCreator.Create(_map, _grid.CellSizeGrid);
+
+        _grid.Inicialize(grid);
+        _cellRegister.Initialize();
 
         _mineralSpawner.Initialize(_coroutineRunner, _mineralRegistry);
 

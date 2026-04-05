@@ -9,7 +9,7 @@ public class GridCreator
 
     private int _areaMask = 1 << s_areaIndex;
 
-    public Grid Create(Map map)
+    public Cell[,] Create(Map map, int cellSize)
     {
         Vector2 startGrid = new Vector2(map.transform.position.x - map.HalfScaleMapX, map.transform.position.z - map.HalfScaleMapZ);
         Vector2 endGrid = new Vector2(map.transform.position.x + map.HalfScaleMapX, map.transform.position.z + map.HalfScaleMapZ);
@@ -21,12 +21,11 @@ public class GridCreator
         int row = 0;
         int column = 0;
 
-        List<Cell> allCells = new List<Cell>();
-        Cell[,] positions = new Cell[sizeGrid.x, sizeGrid.y];
+        Cell[,] grid = new Cell[sizeGrid.x, sizeGrid.y];
 
-        for (int i = 0; i < positions.GetLength(0) - 1; i++)
+        for (int i = 0; i < grid.GetLength(0) - 1; i++)
         {
-            for (int j = 0; j < positions.GetLength(1) - 1; j++)
+            for (int j = 0; j < grid.GetLength(1) - 1; j++)
             {
                 float halfCell = CellSize / 2f;
                 float positionX = startGrid.x + i + halfCell;
@@ -44,8 +43,7 @@ public class GridCreator
 
                         Cell newCell = new Cell(worldPosition, gridPosition);
 
-                        positions[row, column] = newCell;
-                        allCells.Add(newCell);
+                        grid[row, column] = newCell;
 
                         column++;
                     }
@@ -59,7 +57,7 @@ public class GridCreator
             }
         }
 
-        return new Grid(allCells, positions, CellSize);
+        return grid;
     }
 
     private Vector2Int CalculateGridSize(Vector2 start, Vector2 end)

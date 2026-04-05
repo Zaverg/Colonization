@@ -1,26 +1,39 @@
-﻿using System.Collections.Generic;
+﻿using UnityEngine;
 
-public class Grid : IGrid
+public class Grid : MonoBehaviour, IGrid
 {
-    private int _cellSize;
+    [SerializeField] private int _cellSize;
 
-    private List<Cell> _allCells = new List<Cell>();
-    private Cell[,] _position;
+    private Cell[,] _grid;
 
-    public IReadOnlyList<Cell> AllCells => _allCells;
+    private int _rows;
+    private int _columns;
 
     public int CellSizeGrid => _cellSize;
 
-    public Grid(List<Cell> allCells, Cell[,] positions, int cellSize)
-    {
-        _allCells = allCells;
-        _position = positions;
-        _cellSize = cellSize;
-    }
+    public int RowsGrid => _rows;
+    public int ColumnsGrid => _columns;
 
+    public void Inicialize(Cell[,] grid)
+    {
+        _grid = grid;
+
+        _rows = _grid.GetLength(0);
+        _columns = _grid.GetLength(1);
+    }
 
     public Cell GetCell(int row, int column)
     {
-        return _position[row, column];
+        return _grid[row, column];
+    }
+
+    public Vector2Int ConvertWorldToGridPosition(Vector3 worldPosition)
+    {
+        Vector3 startPosition = _grid[0, 0].WorldPosition;
+
+        int x = Mathf.RoundToInt((worldPosition - startPosition).x / _cellSize);
+        int y = Mathf.RoundToInt((worldPosition - startPosition).z / _cellSize);
+
+        return new Vector2Int(x, y);
     }
 }

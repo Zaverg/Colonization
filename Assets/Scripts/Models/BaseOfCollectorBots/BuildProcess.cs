@@ -11,16 +11,22 @@ public class BuildProcess : MonoBehaviour, IClickable, IReleasable<BuildProcess>
     private Vector3 _buildPosition;
     private IStateMachine _builder;
 
-    private List<BuildingShapeUnit> _shapes;
+    private List<BuildingShapeUnit> _shapes = new List<BuildingShapeUnit>();
     private Timer _timer;
     // private Animator _animator;
 
     public event Action<ICreatable, IStateMachine> Completed;
     public event Action<BuildProcess> Released;
 
-    public void Awake()
+    public void Inicialize(Grid grid)
     {
+        if (_shapes.Count != 0) 
+            return;
+        
         _shapes = GetComponentsInChildren<BuildingShapeUnit>().ToList();
+
+        GetComponent<CursorFollower>().SetGrid(grid);
+        
     }
 
     public void SetParams(IFactory factory, float buildTime, Vector3 buildPosition, Action<ICreatable, IStateMachine> callBack,

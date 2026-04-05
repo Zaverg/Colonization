@@ -1,26 +1,31 @@
-﻿using System.Collections.Generic;
-using System.Linq;
-using UnityEngine;
+﻿using UnityEngine;
 using UnityEngine.InputSystem;
 
 public class CursorFollower : MonoBehaviour
 {
+    [SerializeField] private Grid _grid;
+
     private Camera _mainCamera;
     private Mouse _mouse;
 
-    private List<BuildingShapeUnit> _buildingShapes;
-
-    private void Awake()
+    public void Awake()
     {
         _mainCamera = Camera.main;
         _mouse = Mouse.current;
-
-        _buildingShapes = GetComponentsInChildren<BuildingShapeUnit>().ToList();
     }
 
     private void Update()
     {
+        if (_grid == null) return;
+
         Follow();
+    }
+
+    public void SetGrid(Grid grid)
+    {
+        if (grid == null) return;
+
+        _grid = grid;
     }
 
     private void Follow()
@@ -30,22 +35,7 @@ public class CursorFollower : MonoBehaviour
         Vector3 worldPosition = _mainCamera.ScreenToWorldPoint(mousePosition);
 
         transform.position = new Vector3(worldPosition.x, 1, worldPosition.z);
-        
-        if (_buildingShapes.Count > 0)
-        {
-            List<Vector3> positions = _buildingShapes.Select(shape => shape.transform.position).ToList();
-            transform.position = GetSnappedCenterPosition(positions);
-        }
-    }
-
-    private Vector3 GetSnappedCenterPosition(List<Vector3> allBuildingPosition)
-    {
-        List<int> xs = allBuildingPosition.Select(position => Mathf.FloorToInt(position.x)).ToList();
-        List<int> zs = allBuildingPosition.Select(position => Mathf.FloorToInt(position.z)).ToList();
-
-        float centerX = (xs.Min() + xs.Max()) / 2f + 1 / 2f;
-        float centerZ = (zs.Min() + zs.Max()) / 2f + 1 / 2f;
-
-        return new Vector3(centerX, 0, centerZ);
+        Vector2Int girdPosition = _grid.ConvertWorldToGridPosition(worldPosition);
+        transform.position = _grid.GetCell(girdPosition.x, girdPosition.y).WorldPosition;
     }
 }
