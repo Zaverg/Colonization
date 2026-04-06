@@ -3750,6 +3750,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   _activeFlag: {fileID: 0}
+  _buildProcess: {fileID: 0}
 --- !u!4 &801397126
 Transform:
   m_ObjectHideFlags: 0
@@ -6445,7 +6446,7 @@ GameObject:
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 1
+  m_IsActive: 0
 --- !u!114 &1828765267
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -6522,7 +6523,7 @@ MonoBehaviour:
   _resourceCounterViewer: {fileID: 737876285}
   _timerViewer: {fileID: 1515056502}
   _buildProcessPool: {fileID: 86390875}
-  _flagPlacer: {fileID: 801397125}
+  _buildProcessPlacer: {fileID: 801397125}
   _countStartBot: 3
 --- !u!4 &1862389873
 Transform:

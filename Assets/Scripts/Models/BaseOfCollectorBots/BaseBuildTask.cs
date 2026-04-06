@@ -20,14 +20,12 @@ public class BaseBuildTask : CollectorBaseTask
     public override Queue<CollectorBotTask> CreateTask()
     {
         Queue<CollectorBotTask> tasks = new Queue<CollectorBotTask>();
+        Flag flag = _collectorBase.Flag;
+        BuildProcess buildProcess = flag.BuildProcess;
 
         Vector3 flagPosition = _collectorBase.Flag.transform.position;
-
-        BuildProcess buildProcess = _buildProcessPool.GetBuildProcess();
-        buildProcess.transform.position = _collectorBase.Flag.transform.position;
-        buildProcess.gameObject.SetActive(false);
-
-        buildProcess.SetParams(_baseFactory, 5f, flagPosition, CallBack, _coroutineRunner);
+        
+        _collectorBase.Flag.BuildProcess.SetParams(_baseFactory, 5f, flagPosition, CallBack, _coroutineRunner);
 
         tasks.Enqueue(new CollectorBotTask(StateType.Moving, flagPosition));
         tasks.Enqueue(new CollectorBotTask(StateType.Building, buildProcess: buildProcess));

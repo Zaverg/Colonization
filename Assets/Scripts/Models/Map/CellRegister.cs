@@ -1,6 +1,5 @@
 ﻿using UnityEngine;
 using System.Collections.Generic;
-using System;
 using System.Linq;
 
 public class CellRegister : MonoBehaviour
@@ -10,7 +9,7 @@ public class CellRegister : MonoBehaviour
 
     private HashSet<Cell> _freeCells = new HashSet<Cell>();
     private HashSet<Cell> _occupiedCells = new HashSet<Cell>();
-    private Dictionary<IResource, Cell> _resourceToCells = new Dictionary<IResource, Cell>();
+    private Dictionary<IResource, List<Cell>> _resourceToCells = new Dictionary<IResource, List<Cell>>();
 
     public void Initialize()
     {

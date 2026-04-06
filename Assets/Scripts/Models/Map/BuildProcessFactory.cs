@@ -1,6 +1,7 @@
 ﻿using UnityEngine;
 using System.Collections.Generic;
 using System.Linq;
+using System;
 
 public class BuildProcessFactory : MonoBehaviour
 {
@@ -8,6 +9,8 @@ public class BuildProcessFactory : MonoBehaviour
     [SerializeField] private List<BuildProcessConfig> _configs;
 
     private Dictionary<BuildType, BuildProcessConfig> _builderConfig;
+
+    public event Action<BuildProcess> Created;
 
     public void Initialize()
     {
@@ -20,5 +23,7 @@ public class BuildProcessFactory : MonoBehaviour
 
         BuildProcess buildProcess = _pool.GetBuildProcess();
         buildProcess.SetParams(config);
+
+        Created?.Invoke(buildProcess);
     }
 }

@@ -12,7 +12,7 @@ public class BuildProcessPool : ObjectPool<BuildProcess>
     public BuildProcess GetBuildProcess()
     {
         BuildProcess buildProcess = GetObject();
-        buildProcess.Inicialize(_grid);
+        buildProcess.Initialize(_grid);
 
         return buildProcess;
     }

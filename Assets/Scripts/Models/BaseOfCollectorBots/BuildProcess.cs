@@ -1,6 +1,4 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Linq;
 using UnityEngine;
 
 [RequireComponent(typeof(CursorFollower))]
@@ -11,22 +9,22 @@ public class BuildProcess : MonoBehaviour, IClickable, IReleasable<BuildProcess>
     private Vector3 _buildPosition;
     private IStateMachine _builder;
 
-    private List<BuildingShapeUnit> _shapes = new List<BuildingShapeUnit>();
     private Timer _timer;
+    private CursorFollower _cursorFollower;
+
+    private BoxCollider _previewColliderBuildObject;
+    private Transform _previewBuildObject;
+
     // private Animator _animator;
 
     public event Action<ICreatable, IStateMachine> Completed;
     public event Action<BuildProcess> Released;
 
-    public void Inicialize(Grid grid)
+    public void Initialize(Grid grid)
     {
-        if (_shapes.Count != 0) 
-            return;
-        
-        _shapes = GetComponentsInChildren<BuildingShapeUnit>().ToList();
-
-        GetComponent<CursorFollower>().SetGrid(grid);
-        
+        _cursorFollower = GetComponent<CursorFollower>();
+        _cursorFollower.SetGrid(grid);
+        _cursorFollower.enabled = true;
     }
 
     public void SetParams(IFactory factory, float buildTime, Vector3 buildPosition, Action<ICreatable, IStateMachine> callBack,
@@ -41,20 +39,27 @@ public class BuildProcess : MonoBehaviour, IClickable, IReleasable<BuildProcess>
 
     public void SetParams(BuildProcessConfig config)
     {
-        int count = config.ShapeLocalPosition.Count;
+        _previewBuildObject = Instantiate(config.Prefab);
+        _previewColliderBuildObject = _previewBuildObject.GetComponent<BoxCollider>();
+        _previewColliderBuildObject.enabled = false;
 
-        for (int i = 0; i < count; i++)
-        {
-            if (i < _shapes.Count)
-                _shapes[i].transform.localPosition = config.ShapeLocalPosition[i];
-        }
+        _previewBuildObject.SetParent(transform);
+        _previewBuildObject.transform.position = Vector3.zero;
+    }
 
-        transform.localScale = config.Scale;
-        transform.rotation = Quaternion.Euler(config.Rotation);
+    public Vector3 Install()
+    {
+        _cursorFollower.enabled = false;
+        _previewColliderBuildObject.enabled = true;
+        _previewBuildObject.gameObject.SetActive(false);
+
+        return transform.position;
     }
 
     public void StartBuild(IStateMachine builder)
     {
+        _previewBuildObject.gameObject.SetActive(true);
+        _previewColliderBuildObject.enabled = true;
         _builder = builder;
 
         _timer.Ended += FinishBuild;
@@ -76,5 +81,14 @@ public class BuildProcess : MonoBehaviour, IClickable, IReleasable<BuildProcess>
     public void OnClick()
     {
 
+    }
+
+    public void Update()
+    {
+        if (_previewBuildObject == null)
+        {
+            Debug.LogError($"_previewBuildObject is NULL on {name}!", this);
+            return;
+        }
     }
 }

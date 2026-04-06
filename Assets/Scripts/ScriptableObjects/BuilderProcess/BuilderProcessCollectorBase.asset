@@ -13,7 +13,4 @@ MonoBehaviour:
   m_Name: BuilderProcessCollectorBase
   m_EditorClassIdentifier: 
   _buildType: 0
-  _prefab: {fileID: 8316347357302870942, guid: 7bfa8504c29cea3438b432a9a64a424b, type: 3}
-  _shapeLocalPosition:
-  - {x: -8, y: 0, z: -8}
-  - {x: 6, y: 0, z: 10}
+  _prefab: {fileID: 6908003320671566080, guid: 61fe690cfb0747d4a9be32b800737673, type: 3}

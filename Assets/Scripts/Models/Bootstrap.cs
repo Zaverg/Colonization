@@ -27,7 +27,7 @@ public class Bootstrap : MonoBehaviour
     [SerializeField] private TimerViewer _timerViewer;
     [SerializeField] private MenuActivator _menuActivator;
     [SerializeField] private BuildProcessPool _buildProcessPool;
-    [SerializeField] private FlagPlacer _flagPlacer;
+    [SerializeField] private BuildProcessPlacer _buildProcessPlacer;
 
     [SerializeField] private int _countStartBot = 3;
 
@@ -80,6 +80,7 @@ public class Bootstrap : MonoBehaviour
         _baseMenu.OnActiveChanged += _menuActivator.SwitchActiveMenu;
         _inputReader.OnClick += OnSubscribeInputReader;
         _baseBuildButton.OnBuild += _buildProcessFactory.Create;
+        _buildProcessFactory.Created += _buildProcessPlacer.SetBuilder;
     }
 
     private void OnDisable()
@@ -91,6 +92,8 @@ public class Bootstrap : MonoBehaviour
         _baseMenu.OnActiveChanged -= _menuActivator.SwitchActiveMenu;
         _inputReader.OnClick -= OnSubscribeInputReader;
         _baseBuildButton.OnBuild -= _buildProcessFactory.Create;
+        _buildProcessFactory.Created -= _buildProcessPlacer.SetBuilder;
+
     }
 
     private void Start()
@@ -106,21 +109,21 @@ public class Bootstrap : MonoBehaviour
 
     private void OnBaseCreated(ICollectorBase collectorBase)
     {
-        collectorBase.Flag.Activated += _flagPlacer.SetFlag;
+        collectorBase.Flag.Activated += _buildProcessPlacer.SetFlag;
         collectorBase.Disabled += OnBaseDisabled;
         collectorBase.Click += _baseMenu.Show;
     }
 
     private void OnBaseDisabled(ICollectorBase collectorBase)
     {
-        collectorBase.Flag.Activated -= _flagPlacer.SetFlag;
+        collectorBase.Flag.Activated -= _buildProcessPlacer.SetFlag;
         collectorBase.Disabled -= OnBaseDisabled;
         collectorBase.Click -= _baseMenu.Show;
     }
 
     private void OnSubscribeInputReader(Transform transform)
     {
-        _flagPlacer.TryInstalFlag(transform);
+        _buildProcessPlacer.TryInstallFlag(transform);
         _menuActivator.OnClosedMenu(transform);
     }
 }

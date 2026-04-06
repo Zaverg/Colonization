@@ -35,7 +35,11 @@ public class CursorFollower : MonoBehaviour
         Vector3 worldPosition = _mainCamera.ScreenToWorldPoint(mousePosition);
 
         transform.position = new Vector3(worldPosition.x, 1, worldPosition.z);
-        Vector2Int girdPosition = _grid.ConvertWorldToGridPosition(worldPosition);
-        transform.position = _grid.GetCell(girdPosition.x, girdPosition.y).WorldPosition;
+        Vector2Int gridPosition = _grid.ConvertWorldToGridPosition(worldPosition);
+
+        Debug.Log(gridPosition);
+
+        if ((gridPosition.x >= 0 && gridPosition.y >= 0) && (gridPosition.x < _grid.RowsGrid && gridPosition.y < _grid.ColumnsGrid))
+            transform.position = _grid.GetCell(gridPosition.x, gridPosition.y).WorldPosition;
     }
 }

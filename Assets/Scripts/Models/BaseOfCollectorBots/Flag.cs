@@ -1,33 +1,28 @@
 using System;
 using UnityEngine;
-using UnityEngine.InputSystem;
 
-[RequireComponent(typeof(CursorFollower))]
 public class Flag : MonoBehaviour
 {
-    private bool _isFollower;
     private CollectorBotTaskName _taskName;
-
-    private CursorFollower _cursorFollower;
+    private BuildProcess _buildProcess;
 
     public event Action<Flag> Activated;
     public event Action<CollectorBotTaskName> Installed;
     public event Action Deactivated;
 
-    private void Awake()
-    {
-        _cursorFollower = GetComponent<CursorFollower>();
-    }
+    public BuildProcess BuildProcess => _buildProcess;
 
-    private void Update()
+    public void Install(Vector3 position)
     {
-        _cursorFollower.enabled = _isFollower;
-    }
-
-    public void Install()
-    {
-        _isFollower = false;
+        gameObject.SetActive(true);
+        transform.position = position;
         Installed?.Invoke(_taskName);
+    }
+
+    public void SetBuildProcess(BuildProcess process)
+    {
+        if (process != null)
+            _buildProcess = process;
     }
      
     public void OnButtonClick(CollectorBotTaskName taskName)
@@ -42,22 +37,15 @@ public class Flag : MonoBehaviour
 
     public void Activate()
     {
-        _isFollower = true;
-        gameObject.SetActive(true);
         Activated?.Invoke(this);
     }
 
     public void Deactivate()
     {
-        _isFollower = false;
         gameObject.SetActive(false);
         gameObject.transform.position = Vector3.zero;
+        _buildProcess = null;
 
         Deactivated?.Invoke();
     }
-}
-
-public class GridMover : MonoBehaviour
-{
-    
 }
