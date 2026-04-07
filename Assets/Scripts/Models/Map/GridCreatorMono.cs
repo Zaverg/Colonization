@@ -9,16 +9,14 @@ public class GridCreatorMono : MonoBehaviour
 
     [SerializeField] private GameObject _point;
     [SerializeField] private Map _map;
+    [SerializeField] private Grid _grid;
 
     private int _areaMask;
 
-    private List<Cell> _allCells = new List<Cell>();
-    private Cell[,] _grid;
+    private List<List<Cell>> _allCells = new List<List<Cell>>();
 
     private Vector2 _startGrid;
     private Vector2 _endGrid;
-
-    public IReadOnlyList<Cell> AllCells => _allCells;
     public int CellSizeGrid => CellSize;
 
     private void Awake()
@@ -27,68 +25,55 @@ public class GridCreatorMono : MonoBehaviour
 
         s_areaIndex = NavMesh.GetAreaFromName("Walkable");
         _areaMask = 1 << s_areaIndex;
-        CalculateGridSize(_map);
-        Create();
+        _grid.Initialize(Create(_map, CellSize));
     }
 
-    public void Create()
+    public List<List<Cell>> Create(Map map, int cellSize)
     {
-        float raycastStartY = 100f;
+        Vector2 startMap = new Vector2(map.transform.position.x - map.HalfScaleMapX, map.transform.position.z - map.HalfScaleMapZ);
+        Vector2 endMap = new Vector2(map.transform.position.x + map.HalfScaleMapX, map.transform.position.z + map.HalfScaleMapZ);
 
-        int row = 0;
-        int column = 0;
+        List<List<Cell>> grid = new List<List<Cell>>();
 
-        for (int i = 0; i < _grid.GetLength(0) - 1; i++)
+        (int, int) sizeMap = (Mathf.CeilToInt(endMap.x - startMap.x) / cellSize, Mathf.CeilToInt(endMap.y - startMap.y) / cellSize);
+
+        Debug.Log(sizeMap);
+
+        for (int i = 0; i < sizeMap.Item1; i += cellSize)
         {
-            for (int j = 0; j < _grid.GetLength(1) - 1; j++)
+            for (int j = 0; j < sizeMap.Item2; j += cellSize)
             {
-                float halfCell = CellSize / 2f;
-                float positionX = _startGrid.x + i + halfCell;
-                float positionZ = _startGrid.y + j + halfCell;
+                List<Cell> columns = new List<Cell>();
 
-                Vector3 rayStart = new Vector3(positionX, raycastStartY, positionZ);
-                Vector3 rayDirection = Vector3.down;
+                Vector2 surfacePosition = new Vector2(startMap.x + i + cellSize / 2, startMap.y + j + cellSize / 2);
+                Cell cell = TryCreateCell(surfacePosition, grid.Count, columns.Count);
 
-                if (Physics.Raycast(rayStart, rayDirection, out RaycastHit hit, raycastStartY * 2))
-                {
-                    if (NavMesh.SamplePosition(hit.point, out NavMeshHit navHit, halfCell, _areaMask))
-                    {
-                        Vector3 worldPosition = new Vector3(navHit.position.x, navHit.position.y, navHit.position.z);
-                        Vector2Int gridPosition = new Vector2Int(row, column);
-
-                        // Instantiate(_point, worldPosition, Quaternion.identity);
-
-                        Cell newCell = new Cell(worldPosition, gridPosition);
-
-                        _grid[row, column] = newCell;
-                        _allCells.Add(newCell);
-
-                        column++;
-                    }
-                }
-            }
-
-            if (column > 0)
-            {
-                column = 0;
-                row++;
+                if (cell != null)
+                    columns.Add(cell);
             }
         }
+
+        return grid;
     }
 
-    public Cell GetCell(int row, int column) 
-    { 
-        return _grid[row, column];
-    }
-
-    private void CalculateGridSize(Map map)
+    private Cell TryCreateCell(Vector2 position, int row, int column)
     {
-        _startGrid = new Vector2(map.transform.position.x - map.HalfScaleMapX, map.transform.position.z - map.HalfScaleMapZ);
-        _endGrid = new Vector2(map.transform.position.x + map.HalfScaleMapX, map.transform.position.z + map.HalfScaleMapZ);
+        float raycastStartY = 100f;
+        float distance = CellSize / 2f;
 
-        int rows = Mathf.CeilToInt(_endGrid.x - _startGrid.x);
-        int columns = Mathf.CeilToInt(_endGrid.y - _startGrid.y);
+        Vector3 rayStart = new Vector3(position.x, raycastStartY, position.y);
 
-        _grid = new Cell[rows, columns];
+        if (Physics.Raycast(rayStart, Vector3.down, out RaycastHit hit, raycastStartY * 2))
+        {
+            if (NavMesh.SamplePosition(hit.point, out NavMeshHit navHit, distance, _areaMask))
+            {
+                Vector3 worldPosition = new Vector3(navHit.position.x, navHit.position.y, navHit.position.z);
+                Vector2Int gridPosition = new Vector2Int(row, column);
+
+                return new Cell(worldPosition, gridPosition);
+            }
+        }
+
+        return null;
     }
 }

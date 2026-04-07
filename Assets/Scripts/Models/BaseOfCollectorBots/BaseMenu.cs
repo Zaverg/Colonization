@@ -1,26 +1,25 @@
 using System;
 using UnityEngine;
 
-public class BaseMenu : IUiStats
+public class BaseMenu : MonoBehaviour, IMenu
 {
+    [SerializeField] private InputReader _inputReader;
+    [SerializeField] private BuildProcessPlacer _buildProcessPlacer;
+    [SerializeField] private BuildProcessFactory _buildProcessFactory;
+
+    [Header("Viwers")]
+    [SerializeField] private TimerViewer _timerViewer;
+    [SerializeField] private BaseMenuViewer _baseMenuViewer;
+    [SerializeField] private ResourceCounterViewer _resourceCountViewer;
+
+    [Header("Buttons")]
+    [SerializeField] private BaseBuildButton _baseBuildButton;
+
     private ICollectorBase _collectorBase;
 
-    private ResourceCounterViewer _resourceCountViewer;
-    private TimerViewer _timerViewer;
-    private BaseMenuViewer _baseMenuViewer;
-    private BaseBuildButton _flagButton;
-
-    public event Action<IUiStats> OnActiveChanged;
+    public event Action<IMenu> OnActiveChanged;
 
     public ICollectorBase CurrentBase => _collectorBase;
-
-    public BaseMenu(TimerViewer timerViewer, ResourceCounterViewer resourceCounterViewer, BaseMenuViewer baseMenuViewer, BaseBuildButton flagButton)
-    {
-        _timerViewer = timerViewer;
-        _resourceCountViewer = resourceCounterViewer;
-        _baseMenuViewer = baseMenuViewer;
-        _flagButton = flagButton;
-    }
 
     public void Show(ICollectorBase collectorBase)
     { 
@@ -33,7 +32,9 @@ public class BaseMenu : IUiStats
     {
         _collectorBase.ResourceCounter.MineralCountChanged += _resourceCountViewer.UpdateView;
         _collectorBase.Timer.Changed += _timerViewer.UpdateView;
-        _flagButton.FlagActivated += _collectorBase.Flag.OnButtonClick;
+        _baseBuildButton.FlagActivated += _collectorBase.Flag.OnButtonClick;
+        _baseBuildButton.OnBuild += _buildProcessFactory.Create;
+        _baseBuildButton.OnPressButton += WaitClick;
 
         _baseMenuViewer.gameObject.SetActive(true);
 
@@ -45,8 +46,21 @@ public class BaseMenu : IUiStats
     {
         _collectorBase.ResourceCounter.MineralCountChanged -= _resourceCountViewer.UpdateView;
         _collectorBase.Timer.Changed -= _timerViewer.UpdateView;
-        _flagButton.FlagActivated -= _collectorBase.Flag.OnButtonClick;
+        _baseBuildButton.FlagActivated -= _collectorBase.Flag.OnButtonClick;
+        _baseBuildButton.OnBuild -= _buildProcessFactory.Create;
+        _baseBuildButton.OnPressButton -= WaitClick;
 
         _baseMenuViewer.gameObject.SetActive(false);
+    } 
+
+    private void WaitClick()
+    {   
+        _inputReader.OnClick += OnClick;
+    }
+
+    private void OnClick(Transform surface)
+    {
+        _buildProcessPlacer.TryInstallFlag(surface);
+        _inputReader.OnClick -= OnClick;
     }
 }

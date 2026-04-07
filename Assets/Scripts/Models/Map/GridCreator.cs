@@ -4,67 +4,58 @@ using UnityEngine.AI;
 
 public class GridCreator
 {
-    private const int CellSize = 1;
     private readonly static int s_areaIndex = NavMesh.GetAreaFromName("Walkable");
 
     private int _areaMask = 1 << s_areaIndex;
 
-    public Cell[,] Create(Map map, int cellSize)
+    public List<List<Cell>> Create(Map map, int cellSize)
     {
-        Vector2 startGrid = new Vector2(map.transform.position.x - map.HalfScaleMapX, map.transform.position.z - map.HalfScaleMapZ);
-        Vector2 endGrid = new Vector2(map.transform.position.x + map.HalfScaleMapX, map.transform.position.z + map.HalfScaleMapZ);
+        Vector2 startMap = new Vector2(map.transform.position.x - map.HalfScaleMapX, map.transform.position.z - map.HalfScaleMapZ);
+        Vector2 endMap = new Vector2(map.transform.position.x + map.HalfScaleMapX, map.transform.position.z + map.HalfScaleMapZ);
 
-        Vector2Int sizeGrid = CalculateGridSize(startGrid, endGrid);
+        List<List<Cell>> grid = new List<List<Cell>>();
 
-        float raycastStartY = 100f;
+        (int, int) sizeMap = (Mathf.CeilToInt(endMap.x - startMap.x) / cellSize, Mathf.CeilToInt(endMap.y - startMap.y) / cellSize);
 
-        int row = 0;
-        int column = 0;
-
-        Cell[,] grid = new Cell[sizeGrid.x, sizeGrid.y];
-
-        for (int i = 0; i < grid.GetLength(0) - 1; i++)
+        for (int i = 0; i < sizeMap.Item1; i += cellSize)
         {
-            for (int j = 0; j < grid.GetLength(1) - 1; j++)
+            List<Cell> columns = new List<Cell>();
+
+            for (int j = 0; j < sizeMap.Item2; j += cellSize)
             {
-                float halfCell = CellSize / 2f;
-                float positionX = startGrid.x + i + halfCell;
-                float positionZ = startGrid.y + j + halfCell;
+                float halfCell = cellSize / 2f;
 
-                Vector3 rayStart = new Vector3(positionX, raycastStartY, positionZ);
-                Vector3 rayDirection = Vector3.down;
+                Vector2 surfacePosition = new Vector2(startMap.x + i + halfCell, startMap.y + j + halfCell);
+                Cell cell = TryCreateCell(surfacePosition, grid.Count, columns.Count, halfCell);
 
-                if (Physics.Raycast(rayStart, rayDirection, out RaycastHit hit, raycastStartY * 2))
-                {
-                    if (NavMesh.SamplePosition(hit.point, out NavMeshHit navHit, halfCell, _areaMask))
-                    {
-                        Vector3 worldPosition = new Vector3(navHit.position.x, navHit.position.y, navHit.position.z);
-                        Vector2Int gridPosition = new Vector2Int(row, column);
-
-                        Cell newCell = new Cell(worldPosition, gridPosition);
-
-                        grid[row, column] = newCell;
-
-                        column++;
-                    }
-                }
+                if (cell != null)
+                    columns.Add(cell);                
             }
 
-            if (column > 0)
-            {
-                column = 0;
-                row++;
-            }
+            if (columns.Count > 0)
+                grid.Add(columns);
         }
 
         return grid;
     }
 
-    private Vector2Int CalculateGridSize(Vector2 start, Vector2 end)
+    private Cell TryCreateCell(Vector2 position, int row, int column, float halfCell)
     {
-        int rows = Mathf.CeilToInt(end.x - start.x);
-        int columns = Mathf.CeilToInt(end.y - start.y);
+        float raycastStartY = 100f;
 
-        return new Vector2Int(rows, columns);
+        Vector3 rayStart = new Vector3(position.x, raycastStartY, position.y);
+
+        if (Physics.Raycast(rayStart, Vector3.down, out RaycastHit hit, raycastStartY * 2))
+        {
+            if (NavMesh.SamplePosition(hit.point, out NavMeshHit navHit, halfCell, _areaMask))
+            {
+                Vector3 worldPosition = new Vector3(navHit.position.x, navHit.position.y, navHit.position.z);
+                Vector2Int gridPosition = new Vector2Int(row, column);
+
+                return new Cell(worldPosition, gridPosition);
+            }
+        }
+
+        return null;
     }
 }

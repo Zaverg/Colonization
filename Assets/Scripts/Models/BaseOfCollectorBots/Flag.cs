@@ -28,15 +28,6 @@ public class Flag : MonoBehaviour
     public void OnButtonClick(CollectorBotTaskName taskName)
     {
         _taskName = taskName;
-
-        if (gameObject.activeSelf)
-            Deactivate();
-        else
-            Activate();
-    }
-
-    public void Activate()
-    {
         Activated?.Invoke(this);
     }
 

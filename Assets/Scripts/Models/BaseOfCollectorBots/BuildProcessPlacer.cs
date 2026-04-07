@@ -7,17 +7,15 @@ public class BuildProcessPlacer : MonoBehaviour
 
     public void TryInstallFlag(Transform surface)
     {
-        if (_activeFlag != null && surface.TryGetComponent<Map>(out _))
+        if (surface != null && surface.TryGetComponent<Map>(out _) && _activeFlag != null)
         {
             Vector3 installPosition = _buildProcess.Install();
             _activeFlag.Install(installPosition);
             _activeFlag.SetBuildProcess(_buildProcess);
-            _activeFlag = null;
         }
         else if (_activeFlag != null)
         {
-            _activeFlag.Deactivate();
-            _activeFlag = null;
+            ResetData();
         }
     }
 
@@ -34,6 +32,20 @@ public class BuildProcessPlacer : MonoBehaviour
         if (buildProcess == null)
             return;
 
+        if (_buildProcess != null)
+        {
+            _buildProcess.Release();
+        }
+
         _buildProcess = buildProcess;
+    }
+
+    private void ResetData()
+    {
+        _buildProcess.Release();
+        _buildProcess = null;
+
+        _activeFlag.Deactivate();
+        _activeFlag = null;
     }
 }

@@ -9,9 +9,7 @@ MonoBehaviour:
   m_GameObject: {fileID: 0}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 1013dcb173e3ae4408b616ab4a801390, type: 3}
-  m_Name: BuilderProcessCollectorBase
+  m_Script: {fileID: 11500000, guid: 3f1ca63a91b17724bbd99c8fa67e0180, type: 3}
+  m_Name: Material Palette
   m_EditorClassIdentifier: 
-  _buildType: 0
-  _prefab: {fileID: 6908003320671566080, guid: 61fe690cfb0747d4a9be32b800737673, type: 3}
-  _buildTime: 5
+  array: []

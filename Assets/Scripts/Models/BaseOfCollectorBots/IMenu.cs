@@ -1,4 +1,4 @@
-public interface IUiStats
+public interface IMenu
 {
     public void Activate();
     public void Deactivate();

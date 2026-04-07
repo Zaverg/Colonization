@@ -5,7 +5,8 @@ public class BuildProcessConfig : ScriptableObject
 {
     [SerializeField] private BuildType _buildType;
     [SerializeField] private Transform _prefab;
-
+    [SerializeField] private float _buildTime;
     public BuildType BuildType => _buildType;
     public Transform Prefab => _prefab;
+    public float BuildTime => _buildTime;
 }

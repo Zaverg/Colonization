@@ -24,8 +24,8 @@ public class BaseBuildTask : CollectorBaseTask
         BuildProcess buildProcess = flag.BuildProcess;
 
         Vector3 flagPosition = _collectorBase.Flag.transform.position;
-        
-        _collectorBase.Flag.BuildProcess.SetParams(_baseFactory, 5f, flagPosition, CallBack, _coroutineRunner);
+
+        buildProcess.SetParams(_baseFactory, CallBack, _coroutineRunner);
 
         tasks.Enqueue(new CollectorBotTask(StateType.Moving, flagPosition));
         tasks.Enqueue(new CollectorBotTask(StateType.Building, buildProcess: buildProcess));

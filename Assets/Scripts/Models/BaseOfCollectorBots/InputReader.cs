@@ -54,6 +54,8 @@ public class InputReader : MonoBehaviour
             OnClick?.Invoke(result);
         }
 
+        if (result == null) return;
+
         if (result.TryGetComponent(out IClickable clickable))
             clickable.OnClick();
     }

@@ -15,10 +15,12 @@ public class CellRegister : MonoBehaviour
     {
         if (_grid == null)
             return;
-
-        for (int row = 0; row < _grid.RowsGrid; row++)
+        Debug.Log(_grid.Rows);
+        for (int row = 0; row < _grid.Rows; row++)
         {
-            for (int column = 0; column < _grid.ColumnsGrid; column++)
+            int columns = _grid.GetCountColumns(row);
+
+            for (int column = 0; column < columns; column++)
             {
                 _freeCells.Add(_grid.GetCell(row, column));
             }

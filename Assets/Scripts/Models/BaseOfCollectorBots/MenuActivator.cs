@@ -2,9 +2,9 @@ using UnityEngine;
 
 public class MenuActivator
 {
-    public IUiStats _current;
+    public IMenu _current;
 
-    public void SwitchActiveMenu(IUiStats stats)
+    public void SwitchActiveMenu(IMenu stats)
     {
         if (_current != null)
             _current.Deactivate();
@@ -20,7 +20,7 @@ public class MenuActivator
 
     public void OnClosedMenu(Transform transform)
     {
-        if (transform.TryGetComponent<Map>(out _))
+        if (transform == null || transform.TryGetComponent<Map>(out _))
         {
             SwitchActiveMenu(null);
         }

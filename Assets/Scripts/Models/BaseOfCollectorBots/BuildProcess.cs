@@ -6,7 +6,6 @@ public class BuildProcess : MonoBehaviour, IClickable, IReleasable<BuildProcess>
 {
     private float _buildTime;
     private IFactory _factory;
-    private Vector3 _buildPosition;
     private IStateMachine _builder;
 
     private Timer _timer;
@@ -27,12 +26,9 @@ public class BuildProcess : MonoBehaviour, IClickable, IReleasable<BuildProcess>
         _cursorFollower.enabled = true;
     }
 
-    public void SetParams(IFactory factory, float buildTime, Vector3 buildPosition, Action<ICreatable, IStateMachine> callBack,
-        ICoroutineRunner coroutineRunner)
+    public void SetParams(IFactory factory, Action<ICreatable, IStateMachine> callBack, ICoroutineRunner coroutineRunner)
     {
-        _buildTime = buildTime;
         _factory = factory;
-        _buildPosition = buildPosition;
         Completed = callBack;
         _timer = new Timer(coroutineRunner);
     }
@@ -42,9 +38,10 @@ public class BuildProcess : MonoBehaviour, IClickable, IReleasable<BuildProcess>
         _previewBuildObject = Instantiate(config.Prefab);
         _previewColliderBuildObject = _previewBuildObject.GetComponent<BoxCollider>();
         _previewColliderBuildObject.enabled = false;
+        _buildTime = config.BuildTime;
 
         _previewBuildObject.SetParent(transform);
-        _previewBuildObject.transform.position = Vector3.zero;
+        _previewBuildObject.transform.position = transform.position;
     }
 
     public Vector3 Install()
@@ -69,26 +66,23 @@ public class BuildProcess : MonoBehaviour, IClickable, IReleasable<BuildProcess>
         Debug.Log($"Начало анимации c временем: {_buildTime}");
     }
 
+    public void Release()
+    {
+        Destroy(_previewBuildObject.gameObject);
+        Released?.Invoke(this);
+    }
+
     private void FinishBuild()
     {
-        ICreatable buildable = _factory.Create(_buildPosition, true);
+        ICreatable buildable = _factory.Create(transform.position, true);
 
         Completed?.Invoke(buildable, _builder);
 
-        Released?.Invoke(this);
+        Release();
     }
 
     public void OnClick()
     {
 
-    }
-
-    public void Update()
-    {
-        if (_previewBuildObject == null)
-        {
-            Debug.LogError($"_previewBuildObject is NULL on {name}!", this);
-            return;
-        }
     }
 }

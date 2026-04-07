@@ -1,39 +1,53 @@
-﻿using UnityEngine;
-using System.Collections.Generic;
-using System.Runtime.CompilerServices;
+﻿using System.Collections.Generic;
+using System.Linq;
+using UnityEngine;
 
 public class CellRegisterMono : MonoBehaviour
 {
-    [SerializeField] private List<BuildingShapeUnit> _shapes = new List<BuildingShapeUnit>();
-    [SerializeField] private GridCreatorMono _grid;
+    [SerializeField] private Map _map;
+    [SerializeField] private Grid _grid;
 
     private HashSet<Cell> _freeCells = new HashSet<Cell>();
     private HashSet<Cell> _occupiedCells = new HashSet<Cell>();
+    private Dictionary<IResource, List<Cell>> _resourceToCells = new Dictionary<IResource, List<Cell>>();
 
-    private Dictionary<IResource, Cell> _resourceToCells = new Dictionary<IResource, Cell>();
-
-    private void Awake()
+    public void Awake()
     {
-        _freeCells = new HashSet<Cell>(_grid.AllCells);
+        if (_grid == null)
+            return;
+        Debug.Log(_grid.Rows);
+        for (int row = 0; row < _grid.Rows; row++)
+        {
+            int columns = _grid.GetCountColumns(row);
 
-        OccupyCells(_shapes);
+            for (int column = 0; column < columns; column++)
+            {
+                _freeCells.Add(_grid.GetCell(row, column));
+            }
+        }
+
+        gameObject.SetActive(true);
+    }
+
+    public void OccupyCell(IResource occupant)
+    {
+        int index = UnityEngine.Random.Range(0, _freeCells.Count);
+
+        Cell cell = _freeCells.ElementAt(index);
+
+        Debug.Log(cell.GridPosition + " " + cell.WorldPosition + "occupy");
+        _freeCells.Remove(cell);
+        _occupiedCells.Add(cell);
+
+        // подписка на OnResourceTake
+
+        occupant.Transform.position = cell.WorldPosition;
     }
 
     public void OccupyCells(List<BuildingShapeUnit> buildingShapeUnits)
     {
         if (buildingShapeUnits == null || buildingShapeUnits.Count == 0)
             return;
-
-        if (buildingShapeUnits.Count == 1)
-        {
-            Vector2Int cellGridPosition = ConvertWorldToGridPosition(buildingShapeUnits[0].transform.position);
-            Cell cell = _grid.GetCell(cellGridPosition.x, cellGridPosition.y);
-
-            _freeCells.Remove(cell);
-            _occupiedCells.Add(cell);
-
-            // подписка на событие для возврата в freeCells
-        }
 
         List<Vector2Int> occupyArea = GetOccupyArea(buildingShapeUnits);
 
@@ -52,24 +66,13 @@ public class CellRegisterMono : MonoBehaviour
         }
     }
 
-    private Vector2Int ConvertWorldToGridPosition(Vector3 worldPosition)
-    {
-        Vector3 startPosition = _grid.GetCell(0, 0).WorldPosition;
-
-        int x = Mathf.RoundToInt((worldPosition - startPosition).x / _grid.CellSizeGrid);
-        int y = Mathf.RoundToInt((worldPosition - startPosition).z / _grid.CellSizeGrid);
-        
-        return new Vector2Int(x, y);
-    }
-
     private List<Vector2Int> GetOccupyArea(List<BuildingShapeUnit> buildingShapeUnits)
     {
-        Vector2Int rightDownGrid = ConvertWorldToGridPosition(buildingShapeUnits[0].transform.position);
-        Vector2Int leftUpGrid = ConvertWorldToGridPosition(buildingShapeUnits[1].transform.position);
+        Vector2Int rightDownGrid = _grid.ConvertWorldToGridPosition(buildingShapeUnits[0].transform.position);
+        Vector2Int leftUpGrid = _grid.ConvertWorldToGridPosition(buildingShapeUnits[1].transform.position);
 
         Debug.Log(leftUpGrid + " " + rightDownGrid);
         Debug.Log(_grid.GetCell(leftUpGrid.x, leftUpGrid.y).WorldPosition + " " + _grid.GetCell(rightDownGrid.x, rightDownGrid.y).WorldPosition);
-
         List<Vector2Int> area = new List<Vector2Int>();
 
         for (int x = leftUpGrid.x; x < rightDownGrid.x + 1; x++)
@@ -85,6 +88,6 @@ public class CellRegisterMono : MonoBehaviour
 
     private void OnResourceTake(IResource collectable)
     {
-        
+
     }
 }

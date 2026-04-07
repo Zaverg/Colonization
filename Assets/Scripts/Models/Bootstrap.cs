@@ -21,7 +21,6 @@ public class Bootstrap : MonoBehaviour
     [SerializeField] private InputReader _inputReader;
     [SerializeField] private BaseMenu _baseMenu;
     [SerializeField] private BaseMenuViewer _baseMenuViewer;
-    [SerializeField] private BaseBuildButton _baseBuildButton;
     [SerializeField] private CollectorBotBaseFactory _collectorBotBaseFactory;
     [SerializeField] private ResourceCounterViewer _resourceCounterViewer;
     [SerializeField] private TimerViewer _timerViewer;
@@ -50,9 +49,9 @@ public class Bootstrap : MonoBehaviour
         _objectPullMineral.Initialize();
 
         _gridCreator = new GridCreator();
-        Cell[,] grid = _gridCreator.Create(_map, _grid.CellSizeGrid);
+        List<List<Cell>> grid = _gridCreator.Create(_map, _grid.CellSizeGrid);
 
-        _grid.Inicialize(grid);
+        _grid.Initialize(grid);
         _cellRegister.Initialize();
 
         _mineralSpawner.Initialize(_coroutineRunner, _mineralRegistry);
@@ -60,7 +59,6 @@ public class Bootstrap : MonoBehaviour
         _fabricCollectorBot.Initialize(_prefab, _coroutineRunner);
 
         _menuActivator = new MenuActivator();
-        _baseMenu = new BaseMenu(_timerViewer, _resourceCounterViewer, _baseMenuViewer, _baseBuildButton);
         _buildProcessPool.Initialize();
 
         _collectorBaseService = new CollectorBaseService(_coroutineRunner, _baseConfig, _mineralRegistry, _baseMenu, 
@@ -79,7 +77,6 @@ public class Bootstrap : MonoBehaviour
         _collectorBotBaseFactory.Created += OnBaseCreated;
         _baseMenu.OnActiveChanged += _menuActivator.SwitchActiveMenu;
         _inputReader.OnClick += OnSubscribeInputReader;
-        _baseBuildButton.OnBuild += _buildProcessFactory.Create;
         _buildProcessFactory.Created += _buildProcessPlacer.SetBuilder;
     }
 
@@ -91,9 +88,7 @@ public class Bootstrap : MonoBehaviour
         _collectorBotBaseFactory.Created -= OnBaseCreated;
         _baseMenu.OnActiveChanged -= _menuActivator.SwitchActiveMenu;
         _inputReader.OnClick -= OnSubscribeInputReader;
-        _baseBuildButton.OnBuild -= _buildProcessFactory.Create;
         _buildProcessFactory.Created -= _buildProcessPlacer.SetBuilder;
-
     }
 
     private void Start()
@@ -123,7 +118,6 @@ public class Bootstrap : MonoBehaviour
 
     private void OnSubscribeInputReader(Transform transform)
     {
-        _buildProcessPlacer.TryInstallFlag(transform);
         _menuActivator.OnClosedMenu(transform);
     }
 }
