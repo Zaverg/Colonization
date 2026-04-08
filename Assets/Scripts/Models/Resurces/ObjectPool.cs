@@ -48,7 +48,7 @@ public abstract class ObjectPool<T> : MonoBehaviour where T : Component, IReleas
         return newObject;
     }
      
-    private void PutObject(T obj)
+    protected void PutObject(T obj)
     {
         _availableObjects.Enqueue(obj);
         obj.transform.position = transform.position;

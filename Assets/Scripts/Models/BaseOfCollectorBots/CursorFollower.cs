@@ -1,4 +1,5 @@
-﻿using UnityEngine;
+﻿using System;
+using UnityEngine;
 using UnityEngine.InputSystem;
 
 public class CursorFollower : MonoBehaviour
@@ -38,6 +39,8 @@ public class CursorFollower : MonoBehaviour
         Vector2Int gridPosition = _grid.ConvertWorldToGridPosition(worldPosition);
 
         if ((gridPosition.x >= 0 && gridPosition.y >= 0) && (gridPosition.x < _grid.Rows && gridPosition.y < _grid.GetCountColumns(gridPosition.x)))
-            transform.position = _grid.GetCell(gridPosition.x, gridPosition.y).WorldPosition;
+        {
+            transform.position = _grid.GetCell(gridPosition.x, gridPosition.y).WorldPosition; 
+        }  
     }
 }

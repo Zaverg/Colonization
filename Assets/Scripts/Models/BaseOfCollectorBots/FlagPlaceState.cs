@@ -1,4 +1,5 @@
 ﻿using System;
+using UnityEngine;
 
 public class FlagPlaceState : CollectorBaseState
 {
@@ -24,8 +25,12 @@ public class FlagPlaceState : CollectorBaseState
 
     public override void Run()
     {
+        Debug.Log(_collectorBase.BotDispatcher.AvailableCollectorsCount);
+
         if (_collectorBase.BotDispatcher.AvailableCollectorsCount == 0)
             return;
+
+        Debug.Log("Here");
 
         CollectorBot collectorBot = _collectorBase.BotDispatcher.GetAvailableBot();
 
@@ -38,11 +43,15 @@ public class FlagPlaceState : CollectorBaseState
             
             _isGoing = true;
 
+            Debug.Log(_assignedBot);
+
             return;
         }
 
         if (_collectorBase.MineralRegistry.AvailableMineralsCount > 0)
             collectorBot.AssignTasks(_miningTask.CreateTask());
+        else
+            _collectorBase.BotDispatcher.EnqueueBot(collectorBot);
     }
 
     public override void Exit()

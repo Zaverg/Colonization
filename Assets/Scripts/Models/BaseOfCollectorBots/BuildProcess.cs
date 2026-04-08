@@ -19,6 +19,20 @@ public class BuildProcess : MonoBehaviour, IClickable, IReleasable<BuildProcess>
     public event Action<ICreatable, IStateMachine> Completed;
     public event Action<BuildProcess> Released;
 
+    public bool CanBuild { get; private set; } = true;
+
+    public void OnCollisionEnter(Collision collision)
+    {
+        Debug.Log("Color red");
+        CanBuild = false;
+    }
+
+    public void OnCollisionExit(Collision collision)
+    {
+        Debug.Log("Color green");
+        CanBuild = true;
+    }
+
     public void Initialize(Grid grid)
     {
         _cursorFollower = GetComponent<CursorFollower>();
@@ -64,6 +78,12 @@ public class BuildProcess : MonoBehaviour, IClickable, IReleasable<BuildProcess>
 
         _timer.Run();
         Debug.Log($"Начало анимации c временем: {_buildTime}");
+    }
+
+    public bool CanBuildd()
+    {
+       
+        return true;
     }
 
     public void Release()
