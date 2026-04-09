@@ -8,7 +8,7 @@ public class Grid : MonoBehaviour, IGrid
     private List<List<Cell>> _grid;
 
     public int CellSizeGrid => _cellSize;
-    public int Rows => _grid.Count;
+    public int Rows => _grid.Count - 1;
 
     public void Initialize(List<List<Cell>> grid)
     {
@@ -22,7 +22,12 @@ public class Grid : MonoBehaviour, IGrid
 
     public int GetCountColumns(int row)
     {
-        return _grid[row].Count;
+        return _grid[row].Count - 1;
+    }
+
+    public bool IsInGrid(Vector2Int position)
+    {
+        return (position.x >= 0 && position.y >= 0) && (position.x <= Rows && position.y <= GetCountColumns(position.x));
     }
 
     public Vector2Int ConvertWorldToGridPosition(Vector3 worldPosition)

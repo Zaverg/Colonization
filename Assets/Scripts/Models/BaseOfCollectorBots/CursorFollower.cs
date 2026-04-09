@@ -38,7 +38,7 @@ public class CursorFollower : MonoBehaviour
         transform.position = new Vector3(worldPosition.x, 1, worldPosition.z);
         Vector2Int gridPosition = _grid.ConvertWorldToGridPosition(worldPosition);
 
-        if ((gridPosition.x >= 0 && gridPosition.y >= 0) && (gridPosition.x < _grid.Rows && gridPosition.y < _grid.GetCountColumns(gridPosition.x)))
+        if (_grid.IsInGrid(gridPosition))
         {
             transform.position = _grid.GetCell(gridPosition.x, gridPosition.y).WorldPosition; 
         }  

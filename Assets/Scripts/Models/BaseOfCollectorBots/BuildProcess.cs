@@ -1,4 +1,6 @@
 ﻿using System;
+using System.Collections.Generic;
+using System.Linq;
 using UnityEngine;
 
 [RequireComponent(typeof(CursorFollower))]
@@ -7,70 +9,75 @@ public class BuildProcess : MonoBehaviour, IClickable, IReleasable<BuildProcess>
     private float _buildTime;
     private IFactory _factory;
     private IStateMachine _builder;
+    private List<BuildingShapeUnit> _shapes;
 
     private Timer _timer;
     private CursorFollower _cursorFollower;
 
-    private BoxCollider _previewColliderBuildObject;
-    private Transform _previewBuildObject;
+    private BoxCollider _previewCollider;
+    private Transform _preview;
+
+    private Grid _grid;
+    private Vector2Int _lastGridPosition;
 
     // private Animator _animator;
 
+    public event Action PositionChanged;
+    public event Action<BuildProcess> Installed;
     public event Action<ICreatable, IStateMachine> Completed;
     public event Action<BuildProcess> Released;
 
-    public bool CanBuild { get; private set; } = true;
+    public IReadOnlyList<BuildingShapeUnit> Shapes => _shapes;
 
-    public void OnCollisionEnter(Collision collision)
+    public void Update()
     {
-        Debug.Log("Color red");
-        CanBuild = false;
+        Vector2Int currentGridPosition = _grid.ConvertWorldToGridPosition(transform.position);
+
+        if (_lastGridPosition != currentGridPosition)
+        {
+            _lastGridPosition = currentGridPosition;
+            PositionChanged?.Invoke();
+        }
     }
 
-    public void OnCollisionExit(Collision collision)
+    public void Initialize(BuildProcessConfig config, Grid grid, ICoroutineRunner coroutineRunner)
     {
-        Debug.Log("Color green");
-        CanBuild = true;
-    }
-
-    public void Initialize(Grid grid)
-    {
+        _grid = grid;
         _cursorFollower = GetComponent<CursorFollower>();
         _cursorFollower.SetGrid(grid);
-        _cursorFollower.enabled = true;
-    }
 
-    public void SetParams(IFactory factory, Action<ICreatable, IStateMachine> callBack, ICoroutineRunner coroutineRunner)
-    {
-        _factory = factory;
-        Completed = callBack;
         _timer = new Timer(coroutineRunner);
-    }
 
-    public void SetParams(BuildProcessConfig config)
-    {
-        _previewBuildObject = Instantiate(config.Prefab);
-        _previewColliderBuildObject = _previewBuildObject.GetComponent<BoxCollider>();
-        _previewColliderBuildObject.enabled = false;
+        _preview = Instantiate(config.Prefab);
+        _previewCollider = _preview.GetComponent<BoxCollider>();
+        _previewCollider.enabled = false;
         _buildTime = config.BuildTime;
 
-        _previewBuildObject.SetParent(transform);
-        _previewBuildObject.transform.position = transform.position;
+        _preview.SetParent(transform);
+        _preview.transform.position = transform.position;
+
+        _shapes = GetComponentsInChildren<BuildingShapeUnit>().ToList();
+    }
+
+    public void SetParams(Action<ICreatable, IStateMachine> callBack, IFactory factory)
+    {
+        Completed = callBack;
+        _factory = factory;
     }
 
     public Vector3 Install()
     {
         _cursorFollower.enabled = false;
-        _previewColliderBuildObject.enabled = true;
-        _previewBuildObject.gameObject.SetActive(false);
+        _previewCollider.enabled = true;
+        _preview.gameObject.SetActive(false);
 
         return transform.position;
     }
 
     public void StartBuild(IStateMachine builder)
     {
-        _previewBuildObject.gameObject.SetActive(true);
-        _previewColliderBuildObject.enabled = true;
+        _preview.gameObject.SetActive(true);
+        _previewCollider.enabled = true;
         _builder = builder;
 
         _timer.Ended += FinishBuild;
@@ -80,15 +87,10 @@ public class BuildProcess : MonoBehaviour, IClickable, IReleasable<BuildProcess>
         Debug.Log($"Начало анимации c временем: {_buildTime}");
     }
 
-    public bool CanBuildd()
-    {
-       
-        return true;
-    }
-
     public void Release()
     {
-        Destroy(_previewBuildObject.gameObject);
+        _cursorFollower.enabled = true;
+        Destroy(_preview.gameObject);
         Released?.Invoke(this);
     }
 

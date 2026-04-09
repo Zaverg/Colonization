@@ -25,12 +25,8 @@ public class FlagPlaceState : CollectorBaseState
 
     public override void Run()
     {
-        Debug.Log(_collectorBase.BotDispatcher.AvailableCollectorsCount);
-
         if (_collectorBase.BotDispatcher.AvailableCollectorsCount == 0)
             return;
-
-        Debug.Log("Here");
 
         CollectorBot collectorBot = _collectorBase.BotDispatcher.GetAvailableBot();
 
@@ -42,8 +38,6 @@ public class FlagPlaceState : CollectorBaseState
             _assignedBot.AssignTasks(_mainTask.CreateTask());
             
             _isGoing = true;
-
-            Debug.Log(_assignedBot);
 
             return;
         }

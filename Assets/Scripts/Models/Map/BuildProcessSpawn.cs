@@ -3,27 +3,29 @@ using System.Collections.Generic;
 using System.Linq;
 using System;
 
-public class BuildProcessFactory : MonoBehaviour
+public class BuildProcessSpawn : MonoBehaviour
 {
     [SerializeField] private BuildProcessPool _pool;
     [SerializeField] private List<BuildProcessConfig> _configs;
+    [SerializeField] private Grid _grid;
+    [SerializeField] private CoroutineRunner _coroutineRunner;
 
     private Dictionary<BuildType, BuildProcessConfig> _builderConfig;
 
-    public event Action<BuildProcess> Created;
+    public event Action<BuildProcess> Spawned;
 
     public void Initialize()
     {
 
     }
 
-    public void Create(BuildType buildType)
+    public void Spawn(BuildType buildType)
     {
         BuildProcessConfig config = _configs.Where(config =>  config.BuildType == buildType).FirstOrDefault();
 
         BuildProcess buildProcess = _pool.GetBuildProcess();
-        buildProcess.SetParams(config);
+        buildProcess.Initialize(config, _grid, _coroutineRunner);
 
-        Created?.Invoke(buildProcess);
+        Spawned?.Invoke(buildProcess);
     }
 }

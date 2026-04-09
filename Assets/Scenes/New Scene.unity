@@ -1486,6 +1486,8 @@ MonoBehaviour:
   _pool: {fileID: 86390875}
   _configs:
   - {fileID: 11400000, guid: 4ada8d46bfe89844384735c748652f90, type: 2}
+  _grid: {fileID: 1134475035}
+  _coroutineRunner: {fileID: 2014956048}
 --- !u!4 &79042768
 Transform:
   m_ObjectHideFlags: 0
@@ -1531,7 +1533,6 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   _prefab: {fileID: 3579173542208567363, guid: 1026a121df5387145b03ad26a0b99e30, type: 3}
-  _grid: {fileID: 1134475035}
 --- !u!4 &86390876
 Transform:
   m_ObjectHideFlags: 0
@@ -3769,6 +3770,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 2991afadda04bd3409c52eef618b4d88, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  _cellRegister: {fileID: 1035324133}
   _activeFlag: {fileID: 0}
   _buildProcess: {fileID: 0}
 --- !u!4 &801397126
@@ -6530,7 +6532,7 @@ MonoBehaviour:
   _coroutineRunner: {fileID: 2014956048}
   _fabricCollectorBot: {fileID: 1783512907}
   _baseConfig: {fileID: 11400000, guid: e1434c0631ee72b47b587715f06fd3e0, type: 2}
-  _buildProcessFactory: {fileID: 79042767}
+  _buildProcessSpawn: {fileID: 79042767}
   _cellRegister: {fileID: 1035324133}
   _objectPullMineral: {fileID: 2082182112}
   _map: {fileID: 1521665639}

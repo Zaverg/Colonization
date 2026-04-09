@@ -39,7 +39,7 @@ public class CellRegisterMono : MonoBehaviour
         _freeCells.Remove(cell);
         _occupiedCells.Add(cell);
 
-        // подписка на OnResourceTake
+        // подписка на OnRealese
 
         occupant.Transform.position = cell.WorldPosition;
     }

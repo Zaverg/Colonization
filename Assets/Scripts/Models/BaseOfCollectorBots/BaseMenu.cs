@@ -5,7 +5,7 @@ public class BaseMenu : MonoBehaviour, IMenu
 {
     [SerializeField] private InputReader _inputReader;
     [SerializeField] private BuildProcessPlacer _buildProcessPlacer;
-    [SerializeField] private BuildProcessFactory _buildProcessFactory;
+    [SerializeField] private BuildProcessSpawn _buildProcessFactory;
 
     [Header("Viwers")]
     [SerializeField] private TimerViewer _timerViewer;
@@ -33,7 +33,7 @@ public class BaseMenu : MonoBehaviour, IMenu
         _collectorBase.ResourceCounter.MineralCountChanged += _resourceCountViewer.UpdateView;
         _collectorBase.Timer.Changed += _timerViewer.UpdateView;
         _baseBuildButton.FlagActivated += _collectorBase.Flag.OnButtonClick;
-        _baseBuildButton.OnBuild += _buildProcessFactory.Create;
+        _baseBuildButton.OnBuild += _buildProcessFactory.Spawn;
         _baseBuildButton.OnPressButton += WaitClick;
 
         _baseMenuViewer.gameObject.SetActive(true);
@@ -47,7 +47,7 @@ public class BaseMenu : MonoBehaviour, IMenu
         _collectorBase.ResourceCounter.MineralCountChanged -= _resourceCountViewer.UpdateView;
         _collectorBase.Timer.Changed -= _timerViewer.UpdateView;
         _baseBuildButton.FlagActivated -= _collectorBase.Flag.OnButtonClick;
-        _baseBuildButton.OnBuild -= _buildProcessFactory.Create;
+        _baseBuildButton.OnBuild -= _buildProcessFactory.Spawn;
         _baseBuildButton.OnPressButton -= WaitClick;
 
         _baseMenuViewer.gameObject.SetActive(false);
