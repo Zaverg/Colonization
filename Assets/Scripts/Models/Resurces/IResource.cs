@@ -6,7 +6,7 @@ public interface IResource
     public Transform Transform { get; }
     public MineralConfig Config { get; }
 
-    public event Action<IResource> Taked;
+    public event Action<IResource> Took;
     public event Action<IResource> Unlodered;
 
     public void Take();

@@ -36,13 +36,11 @@ public class CursorFollower : MonoBehaviour
     {
         Vector3 mousePosition = Mouse.current.position.ReadValue();
 
-        Debug.Log("Hit 1" + mousePosition);
-
         Ray ray = _mainCamera.ScreenPointToRay(mousePosition);
+
         if (Physics.Raycast(ray, out RaycastHit hit, 1000f))
         {
             Vector3 worldPosition = hit.point;
-
 
             transform.position = new Vector3(worldPosition.x, worldPosition.y, worldPosition.z);
             Vector2Int gridPosition = _grid.ConvertWorldToGridPosition(worldPosition);

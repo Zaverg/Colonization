@@ -2,5 +2,5 @@
 
 public interface IFactory
 {
-    public ICreatable Create(Vector3 position, bool visible);
+    public Building Create(Vector3 position, bool visible);
 }

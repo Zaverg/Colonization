@@ -1,11 +1,11 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Reflection.Emit;
 using UnityEngine;
+using UnityEngine.AI;
 
 [RequireComponent(typeof(CursorFollower))]
-public class BuildProcess : MonoBehaviour, IClickable, IReleasable<BuildProcess>, IGridOccupant
+public class BuildProcess : MonoBehaviour, IClickable, IReleasable<BuildProcess>
 {
     private BuildType _buildType;
     private float _buildTime;
@@ -21,15 +21,16 @@ public class BuildProcess : MonoBehaviour, IClickable, IReleasable<BuildProcess>
 
     private Grid _grid;
     private Vector2Int _lastGridPosition;
+    private List<Vector2Int> _occupyArea = new List<Vector2Int>();
 
     // private Animator _animator;
 
-    public event Action PositionChanged;
+    public event Action<List<Vector2Int>> PositionChanged;
     public event Action<BuildProcess> Installed;
     public event Action<BuildProcess> Started;
-    public event Action<ICreatable, IStateMachine> Completed;
+    public event Action<Building, IStateMachine> Completed;
     public event Action<BuildProcess> Released;
-    public event Action<IGridOccupant> OnGridOut;
+    public event Action OnGridOut;
 
     public IReadOnlyList<BuildingShapeUnit> Shapes => _shapes;
     public Transform Transform => transform;
@@ -42,7 +43,7 @@ public class BuildProcess : MonoBehaviour, IClickable, IReleasable<BuildProcess>
         if (_lastGridPosition != currentGridPosition)
         {
             _lastGridPosition = currentGridPosition;
-            PositionChanged?.Invoke();
+            PositionChanged?.Invoke(_occupyArea);
         }
     }
 
@@ -66,7 +67,7 @@ public class BuildProcess : MonoBehaviour, IClickable, IReleasable<BuildProcess>
         _shapes = GetComponentsInChildren<BuildingShapeUnit>().ToList();
     }
 
-    public void SetParams(Action<ICreatable, IStateMachine> callBack, IFactory factory)
+    public void SetParams(Action<Building, IStateMachine> callBack, IFactory factory)
     {
         Completed = callBack;
         _factory = factory;
@@ -95,9 +96,9 @@ public class BuildProcess : MonoBehaviour, IClickable, IReleasable<BuildProcess>
 
     public void Interrupt()
     {
-        OnGridOut?.Invoke(this);
-
         _cursorFollower.enabled = true;
+        OnGridOut?.Invoke();
+
         _preview.gameObject.SetActive(true);
     }
 
@@ -110,11 +111,13 @@ public class BuildProcess : MonoBehaviour, IClickable, IReleasable<BuildProcess>
 
     private void FinishBuild()
     {
-        ICreatable buildable = _factory.Create(transform.position, true);
+        Building buildable = _factory.Create(transform.position, true);
 
         Completed?.Invoke(buildable, _builder);
 
         Release();
+
+        NavMesh.CreateSettings();
     }
 
     public void OnClick()

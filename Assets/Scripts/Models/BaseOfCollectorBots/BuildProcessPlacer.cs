@@ -17,13 +17,17 @@ public class BuildProcessPlacer : MonoBehaviour
     {
         if (_occupyArea.Count == 0 || surface.TryGetComponent<Map>(out _) == false)
         {
+            _buildProcess.Release();
+            _buildProcess = null;
 
             return;
         }
 
-        _flag = _baseMenu.CurrentBase.Flag;
         _buildProcess.Started += Reseat;
         Vector3 position = _buildProcess.Install();
+        _cellRegister.ReserveCells(_occupyArea);
+
+        _flag = _baseMenu.CurrentBase.Flag;
         _flag.Install(position);
         _flag.SetBuildProcess(_buildProcess);
 
@@ -38,7 +42,7 @@ public class BuildProcessPlacer : MonoBehaviour
             if (_buildProcess.TypeBuilder == type && _flag == null)
                 return;
 
-            // Если строитель установлен, но стройка еше не начелась и нужен тотже строитель
+            // Если строитель установлен, но стройка еше не начелась и нужен тот же строитель
             if (_buildProcess.TypeBuilder == type && _flag != null)
             {
                 _buildProcess.Interrupt();
@@ -56,7 +60,7 @@ public class BuildProcessPlacer : MonoBehaviour
         _buildProcess.PositionChanged += CheckPosition;
     }
 
-    private void CheckPosition()
+    private void CheckPosition(List<Vector2Int> occupyArea)
     {
         _occupyArea = _cellRegister.TryGetOccupyArea(new List<BuildingShapeUnit>(_buildProcess.Shapes));
     }

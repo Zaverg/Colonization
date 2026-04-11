@@ -1,41 +1,27 @@
 using System;
 using UnityEngine;
 
-public class Mineral : MonoBehaviour, IReleasable<Mineral>, IResource, IGridOccupant
+public class Mineral : Resource, IReleasable<Mineral>
 {
     [SerializeField] private MineralConfig _mineralConfig;
 
     public event Action<Mineral> Released;
-    public event Action<IResource> Taked;
-    public event Action<IResource> Unlodered;
-    public event Action<IGridOccupant> OnGridOut;
+    public override event Action<IResource> Took;
+    public override event Action<IResource> Unlodered;
+    public override event Action<IGridOccupant> OnGridOut;
 
-    public Transform Transform => transform;
-    public MineralConfig Config => _mineralConfig;
-
-    public void SetConfig(MineralConfig config)
+    public override void Take()
     {
-        if (config == null)
-            return;
-
-        _mineralConfig = config;
-
-        GetComponent<MeshFilter>().mesh = _mineralConfig.Mesh;
-        GetComponent<MeshRenderer>().material = _mineralConfig.Material;
-    }
-
-    public void Take()
-    {
-        Taked?.Invoke(this);
+        Took?.Invoke(this);
         OnGridOut?.Invoke(this);
     }
 
-    public void Drop()
+    public override void Drop()
     {
         Unlodered?.Invoke(this);
     }
 
-    public void ReturnToPool()
+    public override void ReturnToPool()
     {
         Released?.Invoke(this);
     }

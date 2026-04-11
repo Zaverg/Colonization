@@ -48,9 +48,8 @@ public class CellRegister : MonoBehaviour
         occupant.Transform.position = cell.WorldPosition;
     }
 
-    public void OccupyCells(List<Vector2Int> occupyArea, IGridOccupant gridOccupant)
+    public void ReserveCells(List<Vector2Int> occupyArea)
     {
-        gridOccupant.OnGridOut += OnFreeCells;
         List<Cell> cells = new List<Cell>();
 
         for (int i = 0; i < occupyArea.Count; i++)
@@ -64,8 +63,6 @@ public class CellRegister : MonoBehaviour
 
             cells.Add(cell);
         }
-
-        _objectToCells[gridOccupant] = cells;
     }
 
     public List<Vector2Int> TryGetOccupyArea(List<BuildingShapeUnit> buildingShapeUnits)

@@ -7,7 +7,7 @@ public class Bootstrap : MonoBehaviour
     [SerializeField] private CollectorBotBase _base;
     [SerializeField] private MineralSpawner _mineralSpawner;
     [SerializeField] private CoroutineRunner _coroutineRunner;
-    [SerializeField] private CollectorBotFactory _fabricCollectorBot;
+    [SerializeField] private CollectorBotSpawner _fabricCollectorBot;
     [SerializeField] private CollectorBotBaseConfig _baseConfig;
     [SerializeField] private BuildProcessSpawner _buildProcessSpawn;
 
@@ -95,7 +95,7 @@ public class Bootstrap : MonoBehaviour
         
         for (int i = 0; i < _countStartBot; i++)
         {
-            CollectorBot bot = _fabricCollectorBot.Create(collectorBase.SpawnBotPlace.position, true) as CollectorBot;
+            CollectorBot bot = _fabricCollectorBot.Spawn(collectorBase.SpawnBotPlace.position, true) as CollectorBot;
             collectorBase.BotDispatcher.EnqueueBot(bot);
         }
     }

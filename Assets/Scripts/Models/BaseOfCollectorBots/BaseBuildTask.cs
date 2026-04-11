@@ -33,7 +33,7 @@ public class BaseBuildTask : CollectorBaseTask
         return tasks;
     }
 
-    private void CallBack(ICreatable buildable, IStateMachine builder)
+    private void CallBack(Building buildable, IStateMachine builder)
     {
         CollectorBotBase collectorBotBase = buildable as CollectorBotBase;
         CollectorBot collectorBot = builder as CollectorBot;

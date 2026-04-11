@@ -1,4 +1,6 @@
-﻿public interface ICreatable
-{
+﻿using System.Collections.Generic;
 
+public interface ICreatable
+{
+   
 }

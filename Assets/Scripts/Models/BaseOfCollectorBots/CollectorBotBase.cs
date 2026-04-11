@@ -2,7 +2,7 @@
 using System;
 using System.Collections.Generic;
 
-public class CollectorBotBase : MonoBehaviour, IClickable, ICollectorBase, ICreatable
+public class CollectorBotBase : Building, IClickable, ICollectorBase
 {
     [SerializeField] private int _countResourceToCreateBot = 3;
     [SerializeField] private int _countResourceToBuildBase = 5;
@@ -22,7 +22,7 @@ public class CollectorBotBase : MonoBehaviour, IClickable, ICollectorBase, ICrea
     private CollectorBotBaseConfig _config;
     private MineralRegistry _mineralRegistry;
     private Scanner _scanner;
-    private CollectorBotFactory _factoryCollectorBot;
+    private CollectorBotSpawner _collectorBotSpawner;
     private Timer _timer;
     private ResourceCounter _resourceCounter;
 
@@ -36,7 +36,7 @@ public class CollectorBotBase : MonoBehaviour, IClickable, ICollectorBase, ICrea
     public CollectorBotDispatcher BotDispatcher => _collectorBotDispatcher;
     public Flag Flag => _flag;
     public MineralRegistry MineralRegistry => _mineralRegistry;
-    public IFactory FactoryBot => _factoryCollectorBot;
+    public CollectorBotSpawner CollectorBotSpawner => _collectorBotSpawner;
     public Transform SpawnBotPlace => _spawnBotPlace;
     public CollectorBaseTask MainTask => _mainTask;
 
@@ -91,7 +91,7 @@ public class CollectorBotBase : MonoBehaviour, IClickable, ICollectorBase, ICrea
         _timer = new Timer(collectorBaseService.CoroutineRunner);
         _timer.SetDuration(_scanTime);
 
-        _factoryCollectorBot = collectorBaseService.CollectorBotFactory;
+        _collectorBotSpawner = collectorBaseService.CollectorBotFactory;
         _collectorBotDispatcher = new CollectorBotDispatcher(_resourceCounter);
 
         MiningTask miningTask = new MiningTask(_mineralRegistry, _collectorBotDispatcher, collectorBaseService.CoroutineRunner, transform.position);

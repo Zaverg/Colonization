@@ -21,7 +21,7 @@ public class ExtractionState : CollectorBaseState
     {
         if (_collectorBase.ResourceCounter.CollectedResources >= _collectorBase.CountResourceToCreateBot)
         {
-            CollectorBot newBot = _collectorBase.FactoryBot.Create(_collectorBase.SpawnBotPlace.position, true) as CollectorBot;
+            CollectorBot newBot = _collectorBase.CollectorBotSpawner.Spawn(_collectorBase.SpawnBotPlace.position, true);
             _collectorBase.ResourceCounter.SubtractCounter(_collectorBase.CountResourceToCreateBot);
             _collectorBase.BotDispatcher.EnqueueBot(newBot);
         }

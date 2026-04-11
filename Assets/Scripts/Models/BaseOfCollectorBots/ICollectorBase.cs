@@ -15,7 +15,7 @@ public interface ICollectorBase
     public CollectorBotDispatcher BotDispatcher { get; }
     public Flag Flag { get; }
     public MineralRegistry MineralRegistry { get; }
-    public IFactory FactoryBot { get; }
+    public CollectorBotSpawner CollectorBotSpawner { get; }
     public Transform SpawnBotPlace { get; }
     public CollectorBaseTask MainTask { get; }
 }
