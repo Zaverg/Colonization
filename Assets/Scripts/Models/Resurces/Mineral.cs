@@ -1,13 +1,14 @@
 using System;
 using UnityEngine;
 
-public class Mineral : MonoBehaviour, IReleasable<Mineral>, IResource
+public class Mineral : MonoBehaviour, IReleasable<Mineral>, IResource, IGridOccupant
 {
     [SerializeField] private MineralConfig _mineralConfig;
 
     public event Action<Mineral> Released;
     public event Action<IResource> Taked;
     public event Action<IResource> Unlodered;
+    public event Action<IGridOccupant> OnGridOut;
 
     public Transform Transform => transform;
     public MineralConfig Config => _mineralConfig;
@@ -26,6 +27,7 @@ public class Mineral : MonoBehaviour, IReleasable<Mineral>, IResource
     public void Take()
     {
         Taked?.Invoke(this);
+        OnGridOut?.Invoke(this);
     }
 
     public void Drop()

@@ -10,7 +10,7 @@ public class CellRegister : MonoBehaviour
 
     private HashSet<Cell> _freeCells = new HashSet<Cell>();
     private HashSet<Cell> _occupiedCells = new HashSet<Cell>();
-    private Dictionary<IResource, List<Cell>> _objectToCells = new Dictionary<IResource, List<Cell>>();
+    private Dictionary<IGridOccupant, List<Cell>> _objectToCells = new Dictionary<IGridOccupant, List<Cell>>();
 
     public void Initialize()
     {
@@ -30,7 +30,7 @@ public class CellRegister : MonoBehaviour
         gameObject.SetActive(true);
     }
 
-    public void OccupyCell(IResource occupant)
+    public void OccupyCell(IGridOccupant occupant)
     {
         int index = UnityEngine.Random.Range(0, _freeCells.Count);
 
@@ -43,24 +43,29 @@ public class CellRegister : MonoBehaviour
         _objectToCells[occupant] = new List<Cell>();
         _objectToCells[occupant].Add(cell);
 
-        occupant.Taked += OnRelease;
+        occupant.OnGridOut += OnFreeCells;
 
         occupant.Transform.position = cell.WorldPosition;
     }
 
-    public void OccupyCells(List<Vector2Int> occupyArea)
+    public void OccupyCells(List<Vector2Int> occupyArea, IGridOccupant gridOccupant)
     {
+        gridOccupant.OnGridOut += OnFreeCells;
+        List<Cell> cells = new List<Cell>();
+
         for (int i = 0; i < occupyArea.Count; i++)
         {
             Cell cell = _grid.GetCell(occupyArea[i].x, occupyArea[i].y);
 
             Debug.Log(cell.GridPosition + " " + cell.WorldPosition + "occupy");
-            GameObject cube = GameObject.CreatePrimitive(PrimitiveType.Cube);
-            cube.transform.position = cell.WorldPosition;
 
             _freeCells.Remove(cell);
             _occupiedCells.Add(cell);
+
+            cells.Add(cell);
         }
+
+        _objectToCells[gridOccupant] = cells;
     }
 
     public List<Vector2Int> TryGetOccupyArea(List<BuildingShapeUnit> buildingShapeUnits)
@@ -99,9 +104,9 @@ public class CellRegister : MonoBehaviour
         return area;
     }
 
-    private void OnRelease(IResource occupant)
+    private void OnFreeCells(IGridOccupant occupant)
     {
-        occupant.Taked -= OnRelease;
+        occupant.OnGridOut -= OnFreeCells;
         Debug.Log("Free");
 
         if (_objectToCells.ContainsKey(occupant))
@@ -109,12 +114,14 @@ public class CellRegister : MonoBehaviour
             List<Cell> cells = _objectToCells[occupant];
 
             _freeCells.AddRange(cells);
-
+         
             foreach (Cell cell in cells)
             {
                 Debug.Log(cell.GridPosition + " " + cell.WorldPosition + "free");
                 _occupiedCells.Remove(cell);
             }
+
+            _objectToCells.Remove(occupant);
         }
     }
 }

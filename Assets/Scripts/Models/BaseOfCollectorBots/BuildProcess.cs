@@ -1,11 +1,13 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Reflection.Emit;
 using UnityEngine;
 
 [RequireComponent(typeof(CursorFollower))]
-public class BuildProcess : MonoBehaviour, IClickable, IReleasable<BuildProcess>
+public class BuildProcess : MonoBehaviour, IClickable, IReleasable<BuildProcess>, IGridOccupant
 {
+    private BuildType _buildType;
     private float _buildTime;
     private IFactory _factory;
     private IStateMachine _builder;
@@ -24,10 +26,14 @@ public class BuildProcess : MonoBehaviour, IClickable, IReleasable<BuildProcess>
 
     public event Action PositionChanged;
     public event Action<BuildProcess> Installed;
+    public event Action<BuildProcess> Started;
     public event Action<ICreatable, IStateMachine> Completed;
     public event Action<BuildProcess> Released;
+    public event Action<IGridOccupant> OnGridOut;
 
     public IReadOnlyList<BuildingShapeUnit> Shapes => _shapes;
+    public Transform Transform => transform;
+    public BuildType TypeBuilder => _buildType;
 
     public void Update()
     {
@@ -42,6 +48,7 @@ public class BuildProcess : MonoBehaviour, IClickable, IReleasable<BuildProcess>
 
     public void Initialize(BuildProcessConfig config, Grid grid, ICoroutineRunner coroutineRunner)
     {
+        _buildType = config.BuildType;
         _grid = grid;
         _cursorFollower = GetComponent<CursorFollower>();
         _cursorFollower.SetGrid(grid);
@@ -68,7 +75,6 @@ public class BuildProcess : MonoBehaviour, IClickable, IReleasable<BuildProcess>
     public Vector3 Install()
     {
         _cursorFollower.enabled = false;
-        _previewCollider.enabled = true;
         _preview.gameObject.SetActive(false);
 
         return transform.position;
@@ -85,6 +91,14 @@ public class BuildProcess : MonoBehaviour, IClickable, IReleasable<BuildProcess>
 
         _timer.Run();
         Debug.Log($"Начало анимации c временем: {_buildTime}");
+    }
+
+    public void Interrupt()
+    {
+        OnGridOut?.Invoke(this);
+
+        _cursorFollower.enabled = true;
+        _preview.gameObject.SetActive(true);
     }
 
     public void Release()

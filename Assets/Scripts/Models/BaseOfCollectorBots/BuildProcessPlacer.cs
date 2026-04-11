@@ -1,3 +1,4 @@
+using System;
 using System.Collections.Generic;
 using UnityEngine;
 
@@ -5,8 +6,10 @@ public class BuildProcessPlacer : MonoBehaviour
 {
     [SerializeField] private CellRegister _cellRegister;
 
-    [SerializeField] private Flag _activeFlag;
+    [SerializeField] private Flag _flag;
     [SerializeField] private BuildProcess _buildProcess;
+    [SerializeField] private BuildProcessSpawner _buildProcessSpawner;
+    [SerializeField] private BaseMenu _baseMenu;
 
     private List<Vector2Int> _occupyArea = new List<Vector2Int>();
 
@@ -14,54 +17,53 @@ public class BuildProcessPlacer : MonoBehaviour
     {
         if (_occupyArea.Count == 0 || surface.TryGetComponent<Map>(out _) == false)
         {
-            _buildProcess.PositionChanged -= CheckPosition;
-            _buildProcess.Release();
-
-            _activeFlag = null;
-            _buildProcess = null;
 
             return;
         }
 
-        Vector3 installPosition = _buildProcess.Install();
-        _activeFlag.Install(installPosition);
-        _activeFlag.SetBuildProcess(_buildProcess);
+        _flag = _baseMenu.CurrentBase.Flag;
+        _buildProcess.Started += Reseat;
+        Vector3 position = _buildProcess.Install();
+        _flag.Install(position);
+        _flag.SetBuildProcess(_buildProcess);
 
-        _activeFlag = null;
-        _buildProcess = null;
+        _buildProcess.PositionChanged -= CheckPosition;
     }
 
-    public void SetFlag(Flag flag)
+    public void SetBuilder(BuildType type)
     {
-        if (flag == null)
-            return;
-
-        if (_activeFlag != null)
-            _activeFlag.Deactivate();
-
-        _activeFlag = flag;
-    }
-
-    public void SetBuilder(BuildProcess buildProcess)
-    {
-        if (buildProcess == null)
-            return;
-
         if (_buildProcess != null)
         {
-            Debug.Log("null");
+            // Если строитель еше не установлен и нужен такой же строитель
+            if (_buildProcess.TypeBuilder == type && _flag == null)
+                return;
+
+            // Если строитель установлен, но стройка еше не начелась и нужен тотже строитель
+            if (_buildProcess.TypeBuilder == type && _flag != null)
+            {
+                _buildProcess.Interrupt();
+                _flag.Deactivate();
+
+                return;
+            }
+
+            // Если нужен другой строитель
             _buildProcess.PositionChanged -= CheckPosition;
             _buildProcess.Release();
         }
-
-        _buildProcess = buildProcess;
-
+        
+        _buildProcess = _buildProcessSpawner.Spawn(type);
         _buildProcess.PositionChanged += CheckPosition;
     }
 
     private void CheckPosition()
     {
         _occupyArea = _cellRegister.TryGetOccupyArea(new List<BuildingShapeUnit>(_buildProcess.Shapes));
-        Debug.Log(_occupyArea.Count > 0);
+    }
+
+    public void Reseat(BuildProcess buildProcess)
+    {
+        buildProcess.Started -= Reseat;
+        _buildProcess = null;
     }
 }

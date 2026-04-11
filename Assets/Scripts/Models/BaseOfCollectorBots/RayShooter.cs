@@ -12,7 +12,7 @@ public class RayShooter
         _main = Camera.main;
     }
 
-    public Transform CameraShoot()
+    public Transform ShootToWorld()
     {
         Ray ray = _main.ScreenPointToRay(Mouse.current.position.ReadValue());
 
@@ -21,7 +21,7 @@ public class RayShooter
         return hit.transform;
     }
 
-    public Transform CameraShootToUI()
+    public Transform ShootToUI()
     {
         PointerEventData pointerEventData = new PointerEventData(EventSystem.current);
         pointerEventData.position = Mouse.current.position.ReadValue();

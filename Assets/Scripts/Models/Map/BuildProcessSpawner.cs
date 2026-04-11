@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System;
 
-public class BuildProcessSpawn : MonoBehaviour
+public class BuildProcessSpawner : MonoBehaviour
 {
     [SerializeField] private BuildProcessPool _pool;
     [SerializeField] private List<BuildProcessConfig> _configs;
@@ -19,7 +19,7 @@ public class BuildProcessSpawn : MonoBehaviour
 
     }
 
-    public void Spawn(BuildType buildType)
+    public BuildProcess Spawn(BuildType buildType)
     {
         BuildProcessConfig config = _configs.Where(config =>  config.BuildType == buildType).FirstOrDefault();
 
@@ -27,5 +27,7 @@ public class BuildProcessSpawn : MonoBehaviour
         buildProcess.Initialize(config, _grid, _coroutineRunner);
 
         Spawned?.Invoke(buildProcess);
+
+        return buildProcess;
     }
 }

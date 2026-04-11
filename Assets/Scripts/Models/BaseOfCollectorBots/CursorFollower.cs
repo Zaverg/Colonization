@@ -1,4 +1,5 @@
 ﻿using System;
+using Unity.VisualScripting;
 using UnityEngine;
 using UnityEngine.InputSystem;
 
@@ -8,11 +9,13 @@ public class CursorFollower : MonoBehaviour
 
     private Camera _mainCamera;
     private Mouse _mouse;
+    private RayShooter _rayShooter;
 
     public void Awake()
     {
         _mainCamera = Camera.main;
         _mouse = Mouse.current;
+        _rayShooter = new RayShooter();
     }
 
     private void Update()
@@ -31,16 +34,23 @@ public class CursorFollower : MonoBehaviour
 
     private void Follow()
     {
-        Vector3 mousePosition = _mouse.position.ReadValue();
-        mousePosition.z = 56;
-        Vector3 worldPosition = _mainCamera.ScreenToWorldPoint(mousePosition);
+        Vector3 mousePosition = Mouse.current.position.ReadValue();
 
-        transform.position = new Vector3(worldPosition.x, 1, worldPosition.z);
-        Vector2Int gridPosition = _grid.ConvertWorldToGridPosition(worldPosition);
+        Debug.Log("Hit 1" + mousePosition);
 
-        if (_grid.IsInGrid(gridPosition))
+        Ray ray = _mainCamera.ScreenPointToRay(mousePosition);
+        if (Physics.Raycast(ray, out RaycastHit hit, 1000f))
         {
-            transform.position = _grid.GetCell(gridPosition.x, gridPosition.y).WorldPosition; 
-        }  
+            Vector3 worldPosition = hit.point;
+
+
+            transform.position = new Vector3(worldPosition.x, worldPosition.y, worldPosition.z);
+            Vector2Int gridPosition = _grid.ConvertWorldToGridPosition(worldPosition);
+
+            if (_grid.IsInGrid(gridPosition))
+            {
+                transform.position = _grid.GetCell(gridPosition.x, gridPosition.y).WorldPosition;
+            }
+        }
     }
 }

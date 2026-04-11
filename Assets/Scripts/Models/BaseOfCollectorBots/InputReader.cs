@@ -39,8 +39,8 @@ public class InputReader : MonoBehaviour
 
     private void OnLeftButtonDown(InputAction.CallbackContext context)
     {
-        Transform uiHit = _rayShooter.CameraShootToUI();
-        Transform hit = _rayShooter.CameraShoot();
+        Transform uiHit = _rayShooter.ShootToUI();
+        Transform hit = _rayShooter.ShootToWorld();
 
         Transform result;
 
