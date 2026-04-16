@@ -21,20 +21,21 @@ public class BuildProcess : MonoBehaviour, IClickable, IReleasable<BuildProcess>
 
     private Grid _grid;
     private Vector2Int _lastGridPosition;
-    private List<Vector2Int> _occupyArea = new List<Vector2Int>();
+    [SerializeField] private List<Vector2Int> _occupyArea;
 
     // private Animator _animator;
 
-    public event Action<List<Vector2Int>> PositionChanged;
+    public event Func<List<Vector2Int>> PositionChanged;
     public event Action<BuildProcess> Installed;
-    public event Action<BuildProcess> Started;
     public event Action<Building, IStateMachine> Completed;
     public event Action<BuildProcess> Released;
-    public event Action OnGridOut;
 
     public IReadOnlyList<BuildingShapeUnit> Shapes => _shapes;
     public Transform Transform => transform;
     public BuildType TypeBuilder => _buildType;
+
+    public IReadOnlyList<Vector2Int> OccupyArea => _occupyArea;
+
 
     public void Update()
     {
@@ -43,7 +44,7 @@ public class BuildProcess : MonoBehaviour, IClickable, IReleasable<BuildProcess>
         if (_lastGridPosition != currentGridPosition)
         {
             _lastGridPosition = currentGridPosition;
-            PositionChanged?.Invoke(_occupyArea);
+            _occupyArea = PositionChanged?.Invoke();
         }
     }
 
@@ -97,7 +98,6 @@ public class BuildProcess : MonoBehaviour, IClickable, IReleasable<BuildProcess>
     public void Interrupt()
     {
         _cursorFollower.enabled = true;
-        OnGridOut?.Invoke();
 
         _preview.gameObject.SetActive(true);
     }
@@ -111,13 +111,12 @@ public class BuildProcess : MonoBehaviour, IClickable, IReleasable<BuildProcess>
 
     private void FinishBuild()
     {
-        Building buildable = _factory.Create(transform.position, true);
+        Building building = _factory.Create(transform.position, true);
+        building.SetGridArea(_occupyArea);
 
-        Completed?.Invoke(buildable, _builder);
+        Completed?.Invoke(building, _builder);
 
         Release();
-
-        NavMesh.CreateSettings();
     }
 
     public void OnClick()

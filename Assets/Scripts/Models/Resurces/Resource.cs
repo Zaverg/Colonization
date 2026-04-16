@@ -6,16 +6,16 @@ public abstract class Resource : MonoBehaviour, IGridOccupant, IResource
 {
     [SerializeField] private MineralConfig _mineralConfig;
 
-    public List<Cell> _occupyCells = new List<Cell>();
+    public List<Vector2Int> _occupyArea = new List<Vector2Int>();
     public Transform Transform => transform;
 
     public abstract event Action<IResource> Took;
     public abstract event Action<IResource> Unlodered;
-    public abstract event Action<IGridOccupant> OnGridOut;
+    public abstract event Action<IGridOccupant> OnFreeCells;
 
     public MineralConfig Config => _mineralConfig;
 
-    public IReadOnlyList<Cell> OccupyCells => _occupyCells;
+    public IReadOnlyList<Vector2Int> OccupyCells => _occupyArea;
 
     public void SetConfig(MineralConfig config)
     {
@@ -28,17 +28,28 @@ public abstract class Resource : MonoBehaviour, IGridOccupant, IResource
         GetComponent<MeshRenderer>().material = _mineralConfig.Material;
     }
 
-    public void SetGridPosition(List<Cell> cells)
+    public void SetOccupyArea(List<Vector2Int> area)
     {
-        if (cells == null || cells.Count == 0)
+        if (area == null || area.Count == 0)
             return;
 
-        _occupyCells = cells;
+        _occupyArea = area;
     }
+
+    public void SetOccupyCell(Vector2Int position)
+    {
+        _occupyArea.Add(position);
+    }
+
+    public abstract void SetGridArea(List<Vector2Int> area);
+
+
+    public abstract void SetGridPosition(Vector2Int gridPositon);
 
     public abstract void Take();
 
     public abstract void Drop();
 
     public abstract void ReturnToPool();
+
 }

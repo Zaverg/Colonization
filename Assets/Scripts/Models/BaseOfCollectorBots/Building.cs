@@ -4,18 +4,24 @@ using UnityEngine;
 
 public class Building : MonoBehaviour, IGridOccupant
 {
-    public List<Cell> _occupyCells = new List<Cell>();
+    public List<Vector2Int> _occupyCells = new List<Vector2Int>();
     public Transform Transform => transform;
 
-    public IReadOnlyList<Cell> OccupyCells => _occupyCells;
+    public IReadOnlyList<Vector2Int> OccupyCells => _occupyCells;
 
-    public event Action<IGridOccupant> OnGridOut;
+    public event Action<IGridOccupant> OnFreeCells;
 
-    public void SetGridPosition(List<Cell> cells)
+    public void SetGridArea(List<Vector2Int> area)
     {
-        if (cells == null || cells.Count == 0)
+        if (area == null || area.Count == 0)
             return;
 
-        _occupyCells = cells;
+        _occupyCells = area;
+    }
+
+    public void SetGridPosition(Vector2Int gridPosition)
+    {
+        _occupyCells.Clear();   
+        _occupyCells.Add(gridPosition);
     }
 }

@@ -10,7 +10,6 @@ public class CellRegister : MonoBehaviour
 
     private HashSet<Cell> _freeCells = new HashSet<Cell>();
     private HashSet<Cell> _occupiedCells = new HashSet<Cell>();
-    private Dictionary<IGridOccupant, List<Cell>> _objectToCells = new Dictionary<IGridOccupant, List<Cell>>();
 
     public void Initialize()
     {
@@ -30,38 +29,47 @@ public class CellRegister : MonoBehaviour
         gameObject.SetActive(true);
     }
 
-    public void OccupyCell(IGridOccupant occupant)
+    public void OccupyRandomCell(IGridOccupant occupant)
     {
         int index = UnityEngine.Random.Range(0, _freeCells.Count);
 
         Cell cell = _freeCells.ElementAt(index);
 
-        Debug.Log(cell.GridPosition + " " + cell.WorldPosition + "occupy");
         _freeCells.Remove(cell);
         _occupiedCells.Add(cell);
-
-        _objectToCells[occupant] = new List<Cell>();
-        _objectToCells[occupant].Add(cell);
-
-        occupant.OnGridOut += OnFreeCells;
+       
+        occupant.SetGridPosition(cell.GridPosition);
+        occupant.OnFreeCells += OnFreeCells;
 
         occupant.Transform.position = cell.WorldPosition;
     }
 
-    public void ReserveCells(List<Vector2Int> occupyArea)
+    public void ReserveArea(List<Vector2Int> occupyArea)
     {
-        List<Cell> cells = new List<Cell>();
-
-        for (int i = 0; i < occupyArea.Count; i++)
+        foreach (Vector2Int position in occupyArea)
         {
-            Cell cell = _grid.GetCell(occupyArea[i].x, occupyArea[i].y);
-
-            Debug.Log(cell.GridPosition + " " + cell.WorldPosition + "occupy");
+            Cell cell = _grid.GetCell(position.x, position.y);
 
             _freeCells.Remove(cell);
+
+            Debug.Log("Reserve cell - " + cell.GridPosition);
+        }
+    }
+
+    public void OccupyArea(IGridOccupant occupant)
+    {
+        occupant.OnFreeCells += OnFreeCells;
+
+        foreach (Vector2Int position in occupant.OccupyCells)
+        {
+            Cell cell = _grid.GetCell(position.x, position.y);
+
+            if (_freeCells.Contains(cell))
+                _freeCells.Remove(cell);
+
             _occupiedCells.Add(cell);
 
-            cells.Add(cell);
+            Debug.Log("Occupy cell - " + cell.GridPosition);
         }
     }
 
@@ -75,19 +83,16 @@ public class CellRegister : MonoBehaviour
         Vector2Int rightDownGrid = _grid.ConvertWorldToGridPosition(buildingShapeUnits[0].transform.position);
         Vector2Int leftUpGrid = _grid.ConvertWorldToGridPosition(buildingShapeUnits[1].transform.position);
 
-        Debug.Log(rightDownGrid);
-        Debug.Log(leftUpGrid);
-
         if (_grid.IsInGrid(rightDownGrid) == false || _grid.IsInGrid(leftUpGrid) == false)
             return area;
 
         for (int x = leftUpGrid.x; x < rightDownGrid.x + 1; x++)
         {
-
             for (int y = rightDownGrid.y; y < leftUpGrid.y + 1; y++)
             {
-                Debug.Log(_freeCells.Contains(_grid.GetCell(x, y)));
-                if (_freeCells.Contains(_grid.GetCell(x, y)) == false)
+                Cell cell = _grid.GetCell(x, y);
+
+                if (_freeCells.Contains(cell) == false)
                 {
                     area.Clear();
 
@@ -101,24 +106,25 @@ public class CellRegister : MonoBehaviour
         return area;
     }
 
+    public void FreeCells(List<Vector2Int> area)
+    {
+        foreach (Vector2Int position in area)
+        {
+            Cell cell = _grid.GetCell(position.x, position.y);
+
+            if (cell != null && _freeCells.Contains(cell) == false)
+            {
+                _occupiedCells.Remove(cell);
+                _freeCells.Add(cell);
+
+                Debug.Log("Free cell - " + cell.GridPosition);
+            }
+        }
+    }
+
     private void OnFreeCells(IGridOccupant occupant)
     {
-        occupant.OnGridOut -= OnFreeCells;
-        Debug.Log("Free");
-
-        if (_objectToCells.ContainsKey(occupant))
-        {
-            List<Cell> cells = _objectToCells[occupant];
-
-            _freeCells.AddRange(cells);
-         
-            foreach (Cell cell in cells)
-            {
-                Debug.Log(cell.GridPosition + " " + cell.WorldPosition + "free");
-                _occupiedCells.Remove(cell);
-            }
-
-            _objectToCells.Remove(occupant);
-        }
+        occupant.OnFreeCells -= OnFreeCells;
+        FreeCells(occupant.OccupyCells.ToList());
     }
 }

@@ -34,7 +34,7 @@ public class BaseMenu : MonoBehaviour, IMenu
         _collectorBase.Timer.Changed += _timerViewer.UpdateView;
         _baseBuildButton.FlagActivated += _collectorBase.Flag.OnButtonClick;
         //_baseBuildButton.OnBuild += _buildProcessFactory.Spawn;
-        _baseBuildButton.OnBuild += _buildProcessPlacer.SetBuilder;
+        _baseBuildButton.OnBuild += _buildProcessPlacer.SpawnBuilder;
         _baseBuildButton.OnPressButton += WaitClick;
 
         _baseMenuViewer.gameObject.SetActive(true);
@@ -49,7 +49,7 @@ public class BaseMenu : MonoBehaviour, IMenu
         _collectorBase.Timer.Changed -= _timerViewer.UpdateView;
         _baseBuildButton.FlagActivated -= _collectorBase.Flag.OnButtonClick;
         //_baseBuildButton.OnBuild -= _buildProcessFactory.Spawn;
-        _baseBuildButton.OnBuild -= _buildProcessPlacer.SetBuilder;
+        _baseBuildButton.OnBuild -= _buildProcessPlacer.SpawnBuilder;
         _baseBuildButton.OnPressButton -= WaitClick;
 
         _baseMenuViewer.gameObject.SetActive(false);

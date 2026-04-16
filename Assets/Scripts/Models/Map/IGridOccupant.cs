@@ -4,10 +4,11 @@ using System.Collections.Generic;
 
 public interface IGridOccupant
 {
-    public event Action<IGridOccupant> OnGridOut;
+    public event Action<IGridOccupant> OnFreeCells;
 
     public Transform Transform { get; }
-    public IReadOnlyList<Cell> OccupyCells { get; }
+    public IReadOnlyList<Vector2Int> OccupyCells { get; }
 
-    public void SetGridPosition(List<Cell> cells);
+    public void SetGridArea(List<Vector2Int> area);
+    public void SetGridPosition(Vector2Int gridPositon);
 }

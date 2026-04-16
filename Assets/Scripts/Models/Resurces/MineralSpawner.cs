@@ -73,7 +73,7 @@ public class MineralSpawner : MonoBehaviour
 
             Mineral mineral = _mineralPool.GetMineral(type);
 
-            _spawnGrid.OccupyCell(mineral);
+            _spawnGrid.OccupyRandomCell(mineral);
 
             _currentCount++;
             
