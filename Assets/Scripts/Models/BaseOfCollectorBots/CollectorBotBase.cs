@@ -95,7 +95,7 @@ public class CollectorBotBase : Building, IClickable, ICollectorBase
         _collectorBotDispatcher = new CollectorBotDispatcher(_resourceCounter);
 
         MiningTask miningTask = new MiningTask(_mineralRegistry, _collectorBotDispatcher, collectorBaseService.CoroutineRunner, transform.position);
-        BaseBuildTask baseBuildTask = new BaseBuildTask(this, collectorBaseService.BaseFactory, collectorBaseService.BuildProcessPool, collectorBaseService.CoroutineRunner);
+        BaseBuildTask baseBuildTask = new BaseBuildTask(this);
 
         _tasks[CollectorBotTaskName.MineralMining] = miningTask;
         _tasks[CollectorBotTaskName.BaseBuild] = baseBuildTask;

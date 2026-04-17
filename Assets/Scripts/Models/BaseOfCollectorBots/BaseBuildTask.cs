@@ -4,17 +4,10 @@ using UnityEngine;
 public class BaseBuildTask : CollectorBaseTask
 {
     private ICollectorBase _collectorBase;
-    private CollectorBotBaseFactory _baseFactory;
-    private BuildProcessPool _buildProcessPool;
-    private ICoroutineRunner _coroutineRunner;
 
-    public BaseBuildTask(ICollectorBase collectorBase, CollectorBotBaseFactory baseFactory, BuildProcessPool buildProcessPool, 
-        ICoroutineRunner coroutineRunner)
+    public BaseBuildTask(ICollectorBase collectorBase)
     {
         _collectorBase = collectorBase;
-        _baseFactory = baseFactory;
-        _buildProcessPool = buildProcessPool;
-        _coroutineRunner = coroutineRunner;
     }
 
     public override Queue<CollectorBotTask> CreateTask()
@@ -25,7 +18,7 @@ public class BaseBuildTask : CollectorBaseTask
 
         Vector3 flagPosition = _collectorBase.Flag.transform.position;
 
-        buildProcess.SetParams(CallBack, _baseFactory);
+        buildProcess.SetFinishCallBack(CallBack);
 
         tasks.Enqueue(new CollectorBotTask(StateType.Moving, flagPosition));
         tasks.Enqueue(new CollectorBotTask(StateType.Building, buildProcess: buildProcess));

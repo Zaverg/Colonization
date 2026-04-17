@@ -16,8 +16,8 @@ public class BuildProcess : MonoBehaviour, IClickable, IReleasable<BuildProcess>
     private Timer _timer;
     private CursorFollower _cursorFollower;
 
-    private BoxCollider _previewCollider;
-    private Transform _preview;
+    [SerializeField] private BoxCollider _previewCollider;
+    [SerializeField] private Transform _preview;
 
     private Grid _grid;
     private Vector2Int _lastGridPosition;
@@ -32,7 +32,7 @@ public class BuildProcess : MonoBehaviour, IClickable, IReleasable<BuildProcess>
 
     public IReadOnlyList<BuildingShapeUnit> Shapes => _shapes;
     public Transform Transform => transform;
-    public BuildType TypeBuilder => _buildType;
+    public BuildType BuilderType => _buildType;
 
     public IReadOnlyList<Vector2Int> OccupyArea => _occupyArea;
 
@@ -48,30 +48,33 @@ public class BuildProcess : MonoBehaviour, IClickable, IReleasable<BuildProcess>
         }
     }
 
-    public void Initialize(BuildProcessConfig config, Grid grid, ICoroutineRunner coroutineRunner)
+    public void Initialize(Grid grid, ICoroutineRunner coroutineRunner)
     {
-        _buildType = config.BuildType;
         _grid = grid;
+
         _cursorFollower = GetComponent<CursorFollower>();
         _cursorFollower.SetGrid(grid);
-
         _timer = new Timer(coroutineRunner);
+    }
 
+    public void SetConfig(BuildProcessConfig config, IFactory factory)
+    {
+        Debug.Log(config);
+        _buildType = config.BuildType;
         _preview = Instantiate(config.Prefab);
+        _buildTime = config.BuildTime;
+
         _previewCollider = _preview.GetComponent<BoxCollider>();
         _previewCollider.enabled = false;
-        _buildTime = config.BuildTime;
 
         _preview.SetParent(transform);
         _preview.transform.position = transform.position;
-
         _shapes = GetComponentsInChildren<BuildingShapeUnit>().ToList();
     }
 
-    public void SetParams(Action<Building, IStateMachine> callBack, IFactory factory)
+    public void SetFinishCallBack(Action<Building, IStateMachine> callBack)
     {
         Completed = callBack;
-        _factory = factory;
     }
 
     public Vector3 Install()
@@ -99,13 +102,14 @@ public class BuildProcess : MonoBehaviour, IClickable, IReleasable<BuildProcess>
     {
         _cursorFollower.enabled = true;
 
-        _preview.gameObject.SetActive(true);
+        if (_preview != null)
+            _preview.gameObject.SetActive(true);
     }
 
     public void Release()
     {
         _cursorFollower.enabled = true;
-        Destroy(_preview.gameObject);
+        _preview.gameObject.SetActive(true);
         Released?.Invoke(this);
     }
 

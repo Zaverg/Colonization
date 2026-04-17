@@ -42,7 +42,7 @@ public class BuildProcessPlacer : MonoBehaviour
             _flag = null;
             _cellRegister.FreeCells(_buildProcess.OccupyArea.ToList());
 
-            if (_buildProcess.TypeBuilder == type)
+            if (_buildProcess.BuilderType == type)
             {
                 _buildProcess.Interrupt();
                 _buildProcess.PositionChanged += CheckPosition;
@@ -50,9 +50,6 @@ public class BuildProcessPlacer : MonoBehaviour
                 return;
             }
         }
-
-        if (_buildProcess != null && _buildProcess.TypeBuilder == type)
-            return;
 
         if (_buildProcess != null)
             _buildProcess.PositionChanged -= CheckPosition;

@@ -12,6 +12,6 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 1013dcb173e3ae4408b616ab4a801390, type: 3}
   m_Name: BuilderProcessCollectorBase
   m_EditorClassIdentifier: 
-  _buildType: 0
+  _buildType: 1
   _prefab: {fileID: 6908003320671566080, guid: 61fe690cfb0747d4a9be32b800737673, type: 3}
   _buildTime: 5
