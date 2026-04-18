@@ -1490,7 +1490,7 @@ MonoBehaviour:
   _coroutineRunner: {fileID: 2014956048}
   _typeFactories:
   - _buildType: 1
-    _factory: {fileID: 1865541604}
+    _factory: {fileID: 0}
 --- !u!4 &79042768
 Transform:
   m_ObjectHideFlags: 0
@@ -5626,7 +5626,6 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 859c0d2936b86474d822a51b0d0d5ce9, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  _proBuilderMesh: {fileID: 0}
 --- !u!114 &1521665640
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -6578,7 +6577,7 @@ GameObject:
   - component: {fileID: 1865541605}
   - component: {fileID: 1865541604}
   m_Layer: 0
-  m_Name: CollectorBotBaseFactory
+  m_Name: BotHubFactory
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -6593,7 +6592,7 @@ MonoBehaviour:
   m_GameObject: {fileID: 1865541603}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: a67a21acd254837459cca7a6de0add45, type: 3}
+  m_Script: {fileID: 11500000, guid: 339ac1310bddc1b439ea73040e53cdce, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
   _base: {fileID: 3594492689337000716, guid: 7bfa8504c29cea3438b432a9a64a424b, type: 3}
