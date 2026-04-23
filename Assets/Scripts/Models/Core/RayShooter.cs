@@ -23,6 +23,8 @@ public class RayShooter
 
     public bool RaycastUI(out Transform result)
     {
+        result = null;
+
         PointerEventData pointerEventData = new PointerEventData(EventSystem.current);
         pointerEventData.position = _mouse.position.ReadValue();
 
@@ -30,8 +32,9 @@ public class RayShooter
 
         EventSystem.current.RaycastAll(pointerEventData, results);
 
-        result = results[0].gameObject.transform;
+        if (results.Count > 0)
+            result = results[0].gameObject.transform;
 
-        return results.Count > 0;
+        return result != null;
     }
 }
