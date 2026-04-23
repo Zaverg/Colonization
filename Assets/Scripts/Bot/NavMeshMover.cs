@@ -47,11 +47,11 @@ public class NavMeshMover : Mover
         if (_agent.pathPending)
             return false;
 
-        bool isPlace = _agent.remainingDistance <= _agent.stoppingDistance; 
+        bool hasReachedTarget = _agent.remainingDistance <= _agent.stoppingDistance; 
 
-        if (isPlace)
+        if (hasReachedTarget)
             _agent.ResetPath();
 
-        return isPlace;
+        return hasReachedTarget;
     }
 }

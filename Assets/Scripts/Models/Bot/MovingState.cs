@@ -1,24 +1,24 @@
 ﻿using System;
 
-public class MovingState : CollectorBotState
+public class MovingState : BotState
 {
-    private IStateMachine _stateMachine;
+    private IBot _bot;
 
     public override event Action Completed;
 
-    public override void Entry(IStateMachine stateMachine)
+    public override void Entry(IBot stateMachine)
     {
-        _stateMachine = stateMachine;
+        _bot = stateMachine;
 
-        _stateMachine.Mover.SetTarget(stateMachine.CurrentTask.TargetPosition);
-        _stateMachine.AnimationController.SetMoveAnimation(true);
+        _bot.Mover.SetTarget(stateMachine.CurrentTask.TargetPosition);
+        _bot.Animator.SetMoveAnimation(true);
     }
 
     public override void Run()
     {
-        _stateMachine.Mover.Move();
+        _bot.Mover.Move();
 
-        if (_stateMachine.Mover.HasReachedTarget())
+        if (_bot.Mover.HasReachedTarget())
         {
             Completed?.Invoke();
         }
@@ -26,7 +26,7 @@ public class MovingState : CollectorBotState
 
     public override void Exit()
     {
-        _stateMachine.AnimationController.SetMoveAnimation(false);
-        _stateMachine = null;
+        _bot.Animator.SetMoveAnimation(false);
+        _bot = null;
     }
 }

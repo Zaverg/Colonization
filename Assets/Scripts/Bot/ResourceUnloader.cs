@@ -11,13 +11,13 @@ public class ResourceUnloader : Unloader
 
     public override IResource ReleaseResource()
     {
-        IResource collectable = _storage.Item;
-        collectable.Drop();
+        IResource resource = _storage.Item;
+        resource.Drop();
         ClearStorage();
 
-        Unloaded?.Invoke(collectable);
+        Unloaded?.Invoke(resource);
 
-        return collectable;
+        return resource;
     }
 
     protected override void ClearStorage()

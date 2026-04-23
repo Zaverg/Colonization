@@ -39,18 +39,15 @@ public class InputReader : MonoBehaviour
 
     private void OnLeftButtonDown(InputAction.CallbackContext context)
     {
-        Transform uiHit = _rayShooter.ShootToUI();
-        Transform hit = _rayShooter.ShootToWorld();
+        Transform result = null;
 
-        Transform result;
-
-        if (uiHit != null)
+        if (_rayShooter.RaycastUI(out Transform uiHit))
         {
             result = uiHit;
         }
-        else
+        else if (_rayShooter.RaycastWorld(out RaycastHit hit))
         {
-            result = hit;
+            result = hit.transform;
             OnClick?.Invoke(result);
         }
 

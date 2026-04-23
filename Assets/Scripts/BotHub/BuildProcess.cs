@@ -10,7 +10,7 @@ public class BuildProcess : MonoBehaviour, IClickable, IReleasable<BuildProcess>
     private BuildType _buildType;
     private float _buildTime;
     private IFactory _factory;
-    private IStateMachine _builder;
+    private IBot _builder;
     private List<BuildingShapeUnit> _shapes;
 
     private Timer _timer;
@@ -21,20 +21,20 @@ public class BuildProcess : MonoBehaviour, IClickable, IReleasable<BuildProcess>
 
     private Grid _grid;
     private Vector2Int _lastGridPosition;
-    [SerializeField] private List<Vector2Int> _occupyArea;
+    [SerializeField] private List<Vector2Int> _occupiedArea;
 
     // private Animator _animator;
 
-    public event Func<List<Vector2Int>> PositionChanged;
+    public event Func<List<Vector2Int>> PositionChanged; // заменить на callback?
     public event Action<BuildProcess> Installed;
-    public event Action<Building, IStateMachine> Completed;
+    public event Action<Building, IBot> Completed;
     public event Action<BuildProcess> Released;
 
     public IReadOnlyList<BuildingShapeUnit> Shapes => _shapes;
     public Transform Transform => transform;
     public BuildType BuilderType => _buildType;
 
-    public IReadOnlyList<Vector2Int> OccupyArea => _occupyArea;
+    public IReadOnlyList<Vector2Int> OccupyArea => _occupiedArea;
 
 
     public void Update()
@@ -44,7 +44,7 @@ public class BuildProcess : MonoBehaviour, IClickable, IReleasable<BuildProcess>
         if (_lastGridPosition != currentGridPosition)
         {
             _lastGridPosition = currentGridPosition;
-            _occupyArea = PositionChanged?.Invoke();
+            _occupiedArea = PositionChanged?.Invoke();
         }
     }
 
@@ -72,9 +72,9 @@ public class BuildProcess : MonoBehaviour, IClickable, IReleasable<BuildProcess>
         _shapes = GetComponentsInChildren<BuildingShapeUnit>().ToList();
     }
 
-    public void SetFinishCallBack(Action<Building, IStateMachine> callBack)
+    public void SetFinishCallback(Action<Building, IBot> callback)
     {
-        Completed = callBack;
+        Completed = callback;
     }
 
     public Vector3 Install()
@@ -85,7 +85,7 @@ public class BuildProcess : MonoBehaviour, IClickable, IReleasable<BuildProcess>
         return transform.position;
     }
 
-    public void StartBuild(IStateMachine builder)
+    public void StartBuild(IBot builder)
     {
         _preview.gameObject.SetActive(true);
         _previewCollider.enabled = true;
@@ -116,7 +116,7 @@ public class BuildProcess : MonoBehaviour, IClickable, IReleasable<BuildProcess>
     private void FinishBuild()
     {
         Building building = _factory.Create(transform.position, true);
-        building.SetGridArea(_occupyArea);
+        building.SetGridArea(_occupiedArea);
 
         Completed?.Invoke(building, _builder);
 

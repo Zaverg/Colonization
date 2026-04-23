@@ -4,7 +4,7 @@ using System.Collections.Generic;
 using System;
 
 [RequireComponent(typeof(NavMeshAgent), typeof(CollectorBotAnimator))]
-public class CollectorBot : MonoBehaviour, IStateMachine
+public class CollectorBot : MonoBehaviour, IBot
 {
     [SerializeField] private Mover _mover;
     [SerializeField] private Taker _taker;
@@ -13,12 +13,12 @@ public class CollectorBot : MonoBehaviour, IStateMachine
     [SerializeField] private Builder _builder;
 
     private Queue<CollectorBotTask> _tasks = new Queue<CollectorBotTask>();
-    private Dictionary<StateType, CollectorBotState> _states = new Dictionary<StateType, CollectorBotState>();
+    private Dictionary<StateType, BotState> _states = new Dictionary<StateType, BotState>();
 
-    private CollectorBotAnimator _animationController;
+    private CollectorBotAnimator _animator;
 
     private CollectorBotTask _currentTask;
-    private CollectorBotState _currentState;
+    private BotState _currentState;
 
     public event Action<CollectorBot> OnBotAvailable;
 
@@ -29,20 +29,20 @@ public class CollectorBot : MonoBehaviour, IStateMachine
     public IBuilder Builder => _builder;
     public Transform Transform => transform;
     public CollectorBotTask CurrentTask => _currentTask;
-    public CollectorBotAnimator AnimationController => _animationController;
+    public CollectorBotAnimator Animator => _animator;
 
     public void Awake()
     {
         _states[StateType.Idle] = new IdleState();
         _states[StateType.Moving] = new MovingState();
         _states[StateType.Taking] = new TakingState();
-        _states[StateType.Dropping] = new UnloaderState();
+        _states[StateType.Unloading] = new UnloaderState();
         _states[StateType.Mining] = new MiningState();
         _states[StateType.Building] = new BuildState();
 
         _currentState = _states[StateType.Idle];
 
-        _animationController = GetComponent<CollectorBotAnimator>();
+        _animator = GetComponent<CollectorBotAnimator>();
 
         _currentState.Entry(this);
     }
@@ -67,7 +67,7 @@ public class CollectorBot : MonoBehaviour, IStateMachine
 
     private void SwitchToState()
     {
-        CollectorBotState state = GetState();
+        BotState state = GetState();
 
         _currentState.Completed -= SwitchToState;
         _currentState.Exit();
@@ -76,7 +76,7 @@ public class CollectorBot : MonoBehaviour, IStateMachine
         _currentState.Entry(this);
     }
 
-    private CollectorBotState GetState() 
+    private BotState GetState() 
     {
         if (_tasks.Count > 0)
         {

@@ -6534,18 +6534,18 @@ MonoBehaviour:
   _base: {fileID: 3594492689337000716, guid: 7bfa8504c29cea3438b432a9a64a424b, type: 3}
   _mineralSpawner: {fileID: 577384416}
   _coroutineRunner: {fileID: 2014956048}
-  _fabricCollectorBot: {fileID: 1783512907}
+  _collectorBotSpawner: {fileID: 1783512907}
   _baseConfig: {fileID: 11400000, guid: e1434c0631ee72b47b587715f06fd3e0, type: 2}
-  _buildProcessSpawn: {fileID: 79042767}
+  _buildProcessSpawner: {fileID: 79042767}
   _cellRegister: {fileID: 1035324133}
-  _objectPullMineral: {fileID: 2082182112}
+  _mineralObjectPool: {fileID: 2082182112}
   _map: {fileID: 1521665639}
   _grid: {fileID: 1134475035}
   _mineralRegistry: {fileID: 56175972}
   _inputReader: {fileID: 1807272153}
   _baseMenu: {fileID: 662556866}
   _baseMenuViewer: {fileID: 1413233096}
-  _collectorBotBaseFactory: {fileID: 1865541604}
+  _botHubFactory: {fileID: 1865541604}
   _resourceCounterViewer: {fileID: 737876285}
   _timerViewer: {fileID: 1515056502}
   _buildProcessPool: {fileID: 86390875}
@@ -6595,7 +6595,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 339ac1310bddc1b439ea73040e53cdce, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  _base: {fileID: 3594492689337000716, guid: 7bfa8504c29cea3438b432a9a64a424b, type: 3}
+  _botHubPrefab: {fileID: 3594492689337000716, guid: 7bfa8504c29cea3438b432a9a64a424b, type: 3}
   _config: {fileID: 11400000, guid: e1434c0631ee72b47b587715f06fd3e0, type: 2}
 --- !u!4 &1865541605
 Transform:

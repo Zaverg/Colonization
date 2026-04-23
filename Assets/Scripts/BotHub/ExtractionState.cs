@@ -2,7 +2,7 @@
 
 public class ExtractionState : BaseState
 {
-    private ICollectorBase _collectorBase;
+    private IBotHub _collectorBase;
     private MiningTask _miningTask;
 
     public override event Action Completed;
@@ -12,7 +12,7 @@ public class ExtractionState : BaseState
         _miningTask = miningTask;
     }
 
-    public override void Entry(ICollectorBase collectorBase)
+    public override void Entry(IBotHub collectorBase)
     {
         _collectorBase = collectorBase;
     }
@@ -22,7 +22,7 @@ public class ExtractionState : BaseState
         if (_collectorBase.ResourceCounter.CollectedResources >= _collectorBase.CountResourceToCreateBot)
         {
             CollectorBot newBot = _collectorBase.CollectorBotSpawner.Spawn(_collectorBase.SpawnBotPlace.position, true);
-            _collectorBase.ResourceCounter.SubtractCounter(_collectorBase.CountResourceToCreateBot);
+            _collectorBase.ResourceCounter.Subtract(_collectorBase.CountResourceToCreateBot);
             _collectorBase.BotDispatcher.EnqueueBot(newBot);
         }
         

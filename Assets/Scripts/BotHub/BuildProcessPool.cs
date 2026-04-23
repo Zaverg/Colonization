@@ -7,14 +7,14 @@ public class BuildProcessPool : ObjectPool<BuildProcess>
         base.Initialize();
     }
 
-    public BuildProcess GetBuildProcess()
+    public BuildProcess PullBuildProcess()
     {
-        BuildProcess buildProcess = GetObject();
+        BuildProcess buildProcess = PullObject();
 
         return buildProcess;
     }
 
-    public void PullBuildProcess(BuildProcess buildProcess)
+    public void PutBuildProcess(BuildProcess buildProcess)
     {
         PutObject(buildProcess);
     }

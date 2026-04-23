@@ -10,8 +10,8 @@ public abstract class Resource : MonoBehaviour, IGridOccupant, IResource
     public Transform Transform => transform;
 
     public abstract event Action<IResource> Took;
-    public abstract event Action<IResource> Unlodered;
-    public abstract event Action<IGridOccupant> OnFreeCells;
+    public abstract event Action<IResource> Unloaded;
+    public abstract event Action<IGridOccupant> ReleasedCells;
 
     public MineralConfig Config => _mineralConfig;
 

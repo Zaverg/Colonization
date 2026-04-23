@@ -4,31 +4,29 @@ using UnityEngine;
 public class MiningTask : CollectorBaseTask
 {
     private MineralRegistry _mineralRegistry;
-    private BotDispatcher _collectorBotDispatcher;
     private ICoroutineRunner _coroutineRunner;
 
-    private Vector3 _deliveryPos;
+    private Vector3 _deliveryPosition;
 
-    public MiningTask(MineralRegistry mineralRegistry, BotDispatcher collectorBotDispatcher, ICoroutineRunner coroutineRunner, Vector3 deliveryPos)
+    public MiningTask(MineralRegistry mineralRegistry, ICoroutineRunner coroutineRunner, Vector3 deliveryPosition)
     {
         _mineralRegistry = mineralRegistry;
-        _collectorBotDispatcher = collectorBotDispatcher;
         _coroutineRunner = coroutineRunner;
 
-        _deliveryPos = deliveryPos;
+        _deliveryPosition = deliveryPosition;
     }
     
     public override Queue<CollectorBotTask> CreateTask()
     {
-        IResource mineral = _mineralRegistry.GetAvailableMineral();
+        IResource resource = _mineralRegistry.GetAvailableMineral();
 
         Queue<CollectorBotTask> tasks = new Queue<CollectorBotTask>();
 
-        tasks.Enqueue(new CollectorBotTask(StateType.Moving, mineral.Transform.position));
-        tasks.Enqueue(new CollectorBotTask(StateType.Mining, mineral: mineral, coroutineStarter: _coroutineRunner));
-        tasks.Enqueue(new CollectorBotTask(StateType.Taking, mineral: mineral));
-        tasks.Enqueue(new CollectorBotTask(StateType.Moving, _deliveryPos));
-        tasks.Enqueue(new CollectorBotTask(StateType.Dropping));
+        tasks.Enqueue(new CollectorBotTask(StateType.Moving, resource.Transform.position));
+        tasks.Enqueue(new CollectorBotTask(StateType.Mining, resource: resource, coroutineRunner: _coroutineRunner));
+        tasks.Enqueue(new CollectorBotTask(StateType.Taking, resource: resource));
+        tasks.Enqueue(new CollectorBotTask(StateType.Moving, _deliveryPosition));
+        tasks.Enqueue(new CollectorBotTask(StateType.Unloading));
 
         return tasks;
     }

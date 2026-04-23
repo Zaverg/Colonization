@@ -7,7 +7,7 @@ public interface IResource
     public MineralConfig Config { get; }
 
     public event Action<IResource> Took;
-    public event Action<IResource> Unlodered;
+    public event Action<IResource> Unloaded;
 
     public void Take();
     public void Drop();

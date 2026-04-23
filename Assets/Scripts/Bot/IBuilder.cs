@@ -2,5 +2,5 @@
 
 public interface IBuilder
 {
-    public void StartBuild(BuildProcess buildObject, IStateMachine stateMachine);
+    public void StartBuild(BuildProcess buildObject, IBot stateMachine);
 }

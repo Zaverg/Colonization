@@ -27,7 +27,7 @@ public abstract class ObjectPool<T> : MonoBehaviour where T : Component, IReleas
         _allObjects = new List<T>();
     }
 
-    protected T GetObject()
+    protected T PullObject()
     {
         T newObject = null;
 

@@ -3,7 +3,7 @@
 [RequireComponent(typeof(Animator))]
 public class CollectorBotAnimator : MonoBehaviour
 {
-    private static readonly int s_move = Animator.StringToHash("IsMove");
+    private static readonly int s_MoveHash = Animator.StringToHash("IsMove");
 
     private Animator _animator;
 
@@ -14,6 +14,6 @@ public class CollectorBotAnimator : MonoBehaviour
 
     public void SetMoveAnimation(bool isMove)
     {
-        _animator.SetBool(s_move, isMove);
+        _animator.SetBool(s_MoveHash, isMove);
     }
 }

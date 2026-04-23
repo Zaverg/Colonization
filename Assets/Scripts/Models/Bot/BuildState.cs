@@ -1,14 +1,14 @@
 ﻿using System;
 
-public class BuildState : CollectorBotState
+public class BuildState : BotState
 {
-    private IStateMachine _stateMachine;
+    private IBot _bot;
     public override event Action Completed;
 
-    public override void Entry(IStateMachine stateMachine)
+    public override void Entry(IBot stateMachine)
     {
-        _stateMachine = stateMachine;
-        _stateMachine.Builder.StartBuild(_stateMachine.CurrentTask.BuildProcess, _stateMachine);
+        _bot = stateMachine;
+        _bot.Builder.StartBuild(_bot.CurrentTask.BuildProcess, _bot);
     }
 
     public override void Run()
@@ -18,6 +18,6 @@ public class BuildState : CollectorBotState
 
     public override void Exit()
     {
-        _stateMachine = null;
+        _bot = null;
     }
 }

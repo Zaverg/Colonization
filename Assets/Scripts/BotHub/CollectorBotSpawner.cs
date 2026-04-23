@@ -11,12 +11,12 @@ public class CollectorBotSpawner : MonoBehaviour
         _coroutineRunner = coroutineRunner;
     }
 
-    public CollectorBot Spawn(Vector3 position, bool visible)
+    public CollectorBot Spawn(Vector3 position, bool startActive)
     {
         CollectorBot bot = Instantiate(_prefab, position, Quaternion.identity);
         bot.GetComponent<CollectorBotMiner>().SetCoroutineRunner(_coroutineRunner);
 
-        bot.gameObject.SetActive(visible);
+        bot.gameObject.SetActive(startActive);
 
         return bot;
     }

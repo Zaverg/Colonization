@@ -21,7 +21,7 @@ public class BuildProcessPlacer : MonoBehaviour
             return;
         }
 
-        _buildProcess.Completed += CompelatedBuild;
+        _buildProcess.Completed += OnBuildCompleted;
 
         Vector3 position = _buildProcess.Install();
         _cellRegister.ReserveArea(_buildProcess.OccupyArea.ToList());
@@ -63,9 +63,9 @@ public class BuildProcessPlacer : MonoBehaviour
         return _cellRegister.TryGetOccupyArea(new List<BuildingShapeUnit>(_buildProcess.Shapes)); ;
     }
 
-    public void CompelatedBuild(Building building, IStateMachine stateMachine)
+    public void OnBuildCompleted(Building building, IBot stateMachine)
     {
-        _buildProcess.Completed -= CompelatedBuild;
+        _buildProcess.Completed -= OnBuildCompleted;
         _cellRegister.OccupyArea(building);
 
         _buildProcess = null;

@@ -2,14 +2,14 @@
 using System;
 using System.Collections.Generic;
 
-public class BotHub : Building, IClickable, ICollectorBase
+public class BotHub : Building, IClickable, IBotHub
 {
     [SerializeField] private int _countResourceToCreateBot = 3;
     [SerializeField] private int _countResourceToBuildBase = 5;
     [SerializeField] private Flag _flag;
     [SerializeField] private Transform _spawnBotPlace;
 
-    private float _scanTime = 5;
+    [SerializeField] private float _scanInterval = 5;
 
     private BaseState _currentState;
     private ExtractionState _extractionState;
@@ -18,7 +18,7 @@ public class BotHub : Building, IClickable, ICollectorBase
     private Dictionary<CollectorBotTaskName, CollectorBaseTask> _tasks = new Dictionary<CollectorBotTaskName, CollectorBaseTask>();
     private CollectorBaseTask _mainTask;
 
-    private BotDispatcher _collectorBotDispatcher;
+    private BotDispatcher _botDispatcher;
     private CollectorBotBaseConfig _config;
     private MineralRegistry _mineralRegistry;
     private Scanner _scanner;
@@ -26,14 +26,14 @@ public class BotHub : Building, IClickable, ICollectorBase
     private Timer _timer;
     private ResourceCounter _resourceCounter;
 
-    public event Action<ICollectorBase> Click;
-    public event Action<ICollectorBase> Disabled;
+    public event Action<IBotHub> Click;
+    public event Action<IBotHub> Disabled;
 
     public Timer Timer => _timer;
     public ResourceCounter ResourceCounter => _resourceCounter;
     public int CountResourceToCreateBot => _countResourceToCreateBot;
     public int CountResourceToBuildBase => _countResourceToBuildBase;
-    public BotDispatcher BotDispatcher => _collectorBotDispatcher;
+    public BotDispatcher BotDispatcher => _botDispatcher;
     public Flag Flag => _flag;
     public MineralRegistry MineralRegistry => _mineralRegistry;
     public CollectorBotSpawner CollectorBotSpawner => _collectorBotSpawner;
@@ -48,8 +48,8 @@ public class BotHub : Building, IClickable, ICollectorBase
         if (_flag == null)
             return;
 
-        _flag.Installed += PlaceFlag;
-        _flag.Deactivated += TakeFlag;
+        _flag.Installed += OnFlagInstalled;
+        _flag.Deactivated += OnFlagDeactivated;
     }
 
     private void OnDisable()
@@ -60,8 +60,8 @@ public class BotHub : Building, IClickable, ICollectorBase
         if (_flag == null)
             return;
 
-        _flag.Installed -= PlaceFlag;
-        _flag.Deactivated -= TakeFlag;
+        _flag.Installed -= OnFlagInstalled;
+        _flag.Deactivated -= OnFlagDeactivated;
 
         Disabled?.Invoke(this);
     }
@@ -89,12 +89,12 @@ public class BotHub : Building, IClickable, ICollectorBase
         _scanner = new Scanner(transform.position, _config.ScanLayer, _config.ScanRadius);
 
         _timer = new Timer(collectorBaseService.CoroutineRunner);
-        _timer.SetDuration(_scanTime);
+        _timer.SetDuration(_scanInterval);
 
-        _collectorBotSpawner = collectorBaseService.CollectorBotFactory;
-        _collectorBotDispatcher = new BotDispatcher(_resourceCounter);
+        _collectorBotSpawner = collectorBaseService.CollectorBotSpawner;
+        _botDispatcher = new BotDispatcher(_resourceCounter);
 
-        MiningTask miningTask = new MiningTask(_mineralRegistry, _collectorBotDispatcher, collectorBaseService.CoroutineRunner, transform.position);
+        MiningTask miningTask = new MiningTask(_mineralRegistry, collectorBaseService.CoroutineRunner, transform.position);
         BaseBuildTask baseBuildTask = new BaseBuildTask(this);
 
         _tasks[CollectorBotTaskName.MineralMining] = miningTask;
@@ -111,9 +111,9 @@ public class BotHub : Building, IClickable, ICollectorBase
         Click?.Invoke(this);
     }
 
-    private void PlaceFlag(CollectorBotTaskName name)
+    private void OnFlagInstalled(CollectorBotTaskName name)
     {
-        if (_collectorBotDispatcher.AllCollectorsCount <= 1)
+        if (_botDispatcher.AllCollectorsCount <= 1)
         {
             _flag.Deactivate();
 
@@ -124,7 +124,7 @@ public class BotHub : Building, IClickable, ICollectorBase
         SwitchState(_flagPlaceState);
     }
 
-    private void TakeFlag()
+    private void OnFlagDeactivated()
     {
         SwitchState(_extractionState);
     }

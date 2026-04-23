@@ -4,14 +4,14 @@ using UnityEngine;
 
 public class MineralRegistry : MonoBehaviour
 {
-    private HashSet<IResource> _takenMeneral = new HashSet<IResource>();
+    private HashSet<IResource> _takenMineral = new HashSet<IResource>();
     private HashSet<IResource> _availableMinerals = new HashSet<IResource>();
 
     public int AvailableMineralsCount => _availableMinerals.Count;
 
     public void Register(IResource collectable)
     {
-        if (_takenMeneral.Contains(collectable) == false)
+        if (_takenMineral.Contains(collectable) == false)
         {
             if (collectable.Transform.gameObject.activeSelf)
                 _availableMinerals.Add(collectable);
@@ -23,18 +23,18 @@ public class MineralRegistry : MonoBehaviour
         IResource collectable = _availableMinerals.ElementAt(0);
 
         _availableMinerals.Remove(collectable);
-        _takenMeneral.Add(collectable);
+        _takenMineral.Add(collectable);
 
-        collectable.Unlodered += RemoveMineral;
+        collectable.Unloaded += ReleaseMineral;
 
         return collectable;
     }
 
-    public void RemoveMineral(IResource collectable)
+    public void ReleaseMineral(IResource collectable)
     {
-        collectable.Unlodered -= RemoveMineral;
+        collectable.Unloaded -= ReleaseMineral;
         collectable.ReturnToPool();
 
-        _takenMeneral.Remove(collectable);
+        _takenMineral.Remove(collectable);
     }
 }

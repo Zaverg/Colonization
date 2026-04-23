@@ -1,12 +1,11 @@
 ﻿using System;
-using UnityEngine;
 
 public class FlagPlaceState : BaseState
 {
-    private ICollectorBase _collectorBase;
+    private IBotHub _collectorBase;
     private MiningTask _miningTask;
     private CollectorBaseTask _mainTask;
-    private bool _isGoing;
+    private bool _isBuilderAssigned;
 
     private CollectorBot _assignedBot;
 
@@ -17,7 +16,7 @@ public class FlagPlaceState : BaseState
         _miningTask = miningTask;
     }
 
-    public override void Entry(ICollectorBase collectorBase)
+    public override void Entry(IBotHub collectorBase)
     {
         _collectorBase = collectorBase;
         _mainTask = _collectorBase.MainTask;
@@ -30,14 +29,14 @@ public class FlagPlaceState : BaseState
 
         CollectorBot collectorBot = _collectorBase.BotDispatcher.GetAvailableBot();
 
-        if (_isGoing == false && _collectorBase.ResourceCounter.CollectedResources >= _collectorBase.CountResourceToBuildBase)
+        if (_isBuilderAssigned == false && _collectorBase.ResourceCounter.CollectedResources >= _collectorBase.CountResourceToBuildBase)
         {
             _assignedBot = collectorBot;
 
             _collectorBase.Flag.Deactivated += _assignedBot.ResetTasks;
             _assignedBot.AssignTasks(_mainTask.CreateTask());
             
-            _isGoing = true;
+            _isBuilderAssigned = true;
 
             return;
         }
@@ -57,6 +56,6 @@ public class FlagPlaceState : BaseState
         }
 
         _collectorBase = null;
-        _isGoing = false;
+        _isBuilderAssigned = false;
     }
 }

@@ -9,7 +9,7 @@ public class Building : MonoBehaviour, IGridOccupant
 
     public IReadOnlyList<Vector2Int> OccupyCells => _occupyCells;
 
-    public event Action<IGridOccupant> OnFreeCells;
+    public event Action<IGridOccupant> ReleasedCells;
 
     public void SetGridArea(List<Vector2Int> area)
     {

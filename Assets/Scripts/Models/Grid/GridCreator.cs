@@ -6,7 +6,7 @@ public class GridCreator
 {
     private readonly static int s_areaIndex = NavMesh.GetAreaFromName("Walkable");
 
-    private int _areaMask = 1 << s_areaIndex;
+    private int _walkableAreaMask = 1 << s_areaIndex;
 
     public List<List<Cell>> Create(Map map, int cellSize)
     {
@@ -15,17 +15,18 @@ public class GridCreator
 
         List<List<Cell>> grid = new List<List<Cell>>();
 
-        (int, int) sizeMap = (Mathf.CeilToInt(endMap.x - startMap.x) / cellSize, Mathf.CeilToInt(endMap.y - startMap.y) / cellSize);
+        (int, int) sizeMap = (Mathf.CeilToInt(endMap.x - startMap.x) / cellSize, 
+            Mathf.CeilToInt(endMap.y - startMap.y) / cellSize);
 
-        for (int i = 0; i < sizeMap.Item1; i += cellSize)
+        for (int row = 0; row < sizeMap.Item1; row++)
         {
             List<Cell> columns = new List<Cell>();
 
-            for (int j = 0; j < sizeMap.Item2; j += cellSize)
+            for (int column = 0; column < sizeMap.Item2; column++)
             {
                 float halfCell = cellSize / 2f;
 
-                Vector2 surfacePosition = new Vector2(startMap.x + i + halfCell, startMap.y + j + halfCell);
+                Vector2 surfacePosition = new Vector2(startMap.x + row * cellSize + halfCell, startMap.y + column * cellSize + halfCell);
                 Cell cell = TryCreateCell(surfacePosition, grid.Count, columns.Count, halfCell);
 
                 if (cell != null)
@@ -47,7 +48,7 @@ public class GridCreator
 
         if (Physics.Raycast(rayStart, Vector3.down, out RaycastHit hit, raycastStartY * 2))
         {
-            if (NavMesh.SamplePosition(hit.point, out NavMeshHit navHit, halfCell, _areaMask))
+            if (NavMesh.SamplePosition(hit.point, out NavMeshHit navHit, halfCell, _walkableAreaMask))
             {
                 Vector3 worldPosition = new Vector3(navHit.position.x, navHit.position.y, navHit.position.z);
                 Vector2Int gridPosition = new Vector2Int(row, column);

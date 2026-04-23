@@ -3,9 +3,9 @@ using UnityEngine;
 
 public class BaseBuildTask : CollectorBaseTask
 {
-    private ICollectorBase _collectorBase;
+    private IBotHub _collectorBase;
 
-    public BaseBuildTask(ICollectorBase collectorBase)
+    public BaseBuildTask(IBotHub collectorBase)
     {
         _collectorBase = collectorBase;
     }
@@ -18,7 +18,7 @@ public class BaseBuildTask : CollectorBaseTask
 
         Vector3 flagPosition = _collectorBase.Flag.transform.position;
 
-        buildProcess.SetFinishCallBack(CallBack);
+        buildProcess.SetFinishCallback(OnBuildCompleted);
 
         tasks.Enqueue(new CollectorBotTask(StateType.Moving, flagPosition));
         tasks.Enqueue(new CollectorBotTask(StateType.Building, buildProcess: buildProcess));
@@ -26,16 +26,16 @@ public class BaseBuildTask : CollectorBaseTask
         return tasks;
     }
 
-    private void CallBack(Building buildable, IStateMachine builder)
+    private void OnBuildCompleted(Building building, IBot builder)
     {
-        BotHub collectorBotBase = buildable as BotHub;
-        CollectorBot collectorBot = builder as CollectorBot;
+        BotHub newBotHub = building as BotHub;
+        CollectorBot bot = builder as CollectorBot;
 
         _collectorBase.Flag.Deactivate();
     
-        _collectorBase.BotDispatcher.FreeBot(collectorBot);
-        collectorBotBase.BotDispatcher.EnqueueBot(collectorBot);
+        _collectorBase.BotDispatcher.UnregisterBot(bot);
+        newBotHub.BotDispatcher.EnqueueBot(bot);
 
-        _collectorBase.ResourceCounter.SubtractCounter(_collectorBase.CountResourceToBuildBase);
+        _collectorBase.ResourceCounter.Subtract(_collectorBase.CountResourceToBuildBase);
     }
 }

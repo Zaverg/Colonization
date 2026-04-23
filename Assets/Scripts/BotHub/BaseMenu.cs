@@ -7,7 +7,7 @@ public class BaseMenu : MonoBehaviour, IMenu
     [SerializeField] private BuildProcessPlacer _buildProcessPlacer;
     [SerializeField] private BuildProcessSpawner _buildProcessFactory;
 
-    [Header("Viwers")]
+    [Header("Viewers")]
     [SerializeField] private TimerViewer _timerViewer;
     [SerializeField] private BaseMenuViewer _baseMenuViewer;
     [SerializeField] private ResourceCounterViewer _resourceCountViewer;
@@ -15,13 +15,13 @@ public class BaseMenu : MonoBehaviour, IMenu
     [Header("Buttons")]
     [SerializeField] private BaseBuildButton _baseBuildButton;
 
-    private ICollectorBase _collectorBase;
+    private IBotHub _collectorBase;
 
     public event Action<IMenu> OnActiveChanged;
 
-    public ICollectorBase CurrentBase => _collectorBase;
+    public IBotHub CurrentBase => _collectorBase;
 
-    public void Show(ICollectorBase collectorBase)
+    public void Show(IBotHub collectorBase)
     { 
         _collectorBase = collectorBase;
 
@@ -35,7 +35,7 @@ public class BaseMenu : MonoBehaviour, IMenu
         _baseBuildButton.FlagActivated += _collectorBase.Flag.OnButtonClick;
         //_baseBuildButton.OnBuild += _buildProcessFactory.Spawn;
         _baseBuildButton.OnBuild += _buildProcessPlacer.SpawnBuilder;
-        _baseBuildButton.OnPressButton += WaitClick;
+        _baseBuildButton.OnPressButton += SubscribeToInputClick;
 
         _baseMenuViewer.gameObject.SetActive(true);
 
@@ -50,12 +50,12 @@ public class BaseMenu : MonoBehaviour, IMenu
         _baseBuildButton.FlagActivated -= _collectorBase.Flag.OnButtonClick;
         //_baseBuildButton.OnBuild -= _buildProcessFactory.Spawn;
         _baseBuildButton.OnBuild -= _buildProcessPlacer.SpawnBuilder;
-        _baseBuildButton.OnPressButton -= WaitClick;
+        _baseBuildButton.OnPressButton -= SubscribeToInputClick;
 
         _baseMenuViewer.gameObject.SetActive(false);
     } 
 
-    private void WaitClick()
+    private void SubscribeToInputClick()
     {   
         _inputReader.OnClick += OnClick;
     }

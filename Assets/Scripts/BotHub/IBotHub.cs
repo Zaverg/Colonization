@@ -1,13 +1,13 @@
 ﻿using System;
 using UnityEngine;
 
-public interface ICollectorBase
+public interface IBotHub
 {
     public int CountResourceToCreateBot { get; }
     public int CountResourceToBuildBase { get; }
 
-    public event Action<ICollectorBase> Click;
-    public event Action<ICollectorBase> Disabled; 
+    public event Action<IBotHub> Click;
+    public event Action<IBotHub> Disabled; 
 
     public Timer Timer { get; }
     public ResourceCounter ResourceCounter { get; }

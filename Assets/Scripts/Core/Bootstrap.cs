@@ -7,12 +7,12 @@ public class Bootstrap : MonoBehaviour
     [SerializeField] private BotHub _base;
     [SerializeField] private MineralSpawner _mineralSpawner;
     [SerializeField] private CoroutineRunner _coroutineRunner;
-    [SerializeField] private CollectorBotSpawner _fabricCollectorBot;
+    [SerializeField] private CollectorBotSpawner _collectorBotSpawner;
     [SerializeField] private CollectorBotBaseConfig _baseConfig;
-    [SerializeField] private BuildProcessSpawner _buildProcessSpawn;
+    [SerializeField] private BuildProcessSpawner _buildProcessSpawner;
 
     [SerializeField] private CellRegister _cellRegister;
-    [SerializeField] private ObjectPoolMineral _objectPullMineral;
+    [SerializeField] private ObjectPoolMineral _mineralObjectPool;
     [SerializeField] private Map _map;
     [SerializeField] private Grid _grid;
 
@@ -21,7 +21,7 @@ public class Bootstrap : MonoBehaviour
     [SerializeField] private InputReader _inputReader;
     [SerializeField] private BaseMenu _baseMenu;
     [SerializeField] private BaseMenuViewer _baseMenuViewer;
-    [SerializeField] private BotBaseFactory _collectorBotBaseFactory;
+    [SerializeField] private BotHubFactory _botHubFactory;
     [SerializeField] private ResourceCounterViewer _resourceCounterViewer;
     [SerializeField] private TimerViewer _timerViewer;
     [SerializeField] private MenuActivator _menuActivator;
@@ -33,7 +33,7 @@ public class Bootstrap : MonoBehaviour
     private BaseService _collectorBaseService;
     private GridCreator _gridCreator;
 
-    private bool _isInitialize = false;
+    private bool _isInitialized = false;
 
     private void Awake()
     {
@@ -45,7 +45,7 @@ public class Bootstrap : MonoBehaviour
         _inputReader.Initialize();
 
         _map.Initialize();
-        _objectPullMineral.Initialize();
+        _mineralObjectPool.Initialize();
 
         _gridCreator = new GridCreator();
         List<List<Cell>> grid = _gridCreator.Create(_map, _grid.CellSizeGrid);
@@ -55,65 +55,63 @@ public class Bootstrap : MonoBehaviour
 
         _mineralSpawner.Initialize(_coroutineRunner, _mineralRegistry);
 
-        _fabricCollectorBot.Initialize(_prefab, _coroutineRunner);
+        _collectorBotSpawner.Initialize(_prefab, _coroutineRunner);
 
         _menuActivator = new MenuActivator();
         _buildProcessPool.Initialize();
 
         _collectorBaseService = new BaseService(_coroutineRunner, _baseConfig, _mineralRegistry, _baseMenu, 
-            _fabricCollectorBot, _collectorBotBaseFactory, _buildProcessPool);
+            _collectorBotSpawner, _botHubFactory, _buildProcessPool);
 
-        _collectorBotBaseFactory.Initialize(_collectorBaseService);
+        _botHubFactory.Initialize(_collectorBaseService);
 
-        _isInitialize = true;
+        _isInitialized = true;
     }
 
     private void OnEnable()
     {
-        if (_isInitialize == false)
+        if (_isInitialized == false)
             return;
 
-        _collectorBotBaseFactory.Created += OnBaseCreated;
+        _botHubFactory.Created += OnBaseCreated;
         _baseMenu.OnActiveChanged += _menuActivator.SwitchActiveMenu;
-        _inputReader.OnClick += OnSubscribeInputReader;
+        _inputReader.OnClick += HandleInputClick;
     }
 
     private void OnDisable()
     {
-        if (_isInitialize == false)
+        if (_isInitialized == false)
             return;
 
-        _collectorBotBaseFactory.Created -= OnBaseCreated;
+        _botHubFactory.Created -= OnBaseCreated;
         _baseMenu.OnActiveChanged -= _menuActivator.SwitchActiveMenu;
-        _inputReader.OnClick -= OnSubscribeInputReader;
+        _inputReader.OnClick -= HandleInputClick;
     }
 
     private void Start()
     {
-        BotHub collectorBase = _collectorBotBaseFactory.Create(new Vector3(0, 0, 0), true) as BotHub;
+        BotHub botHub = _botHubFactory.Create(new Vector3(0, 0, 0), true) as BotHub;
         
         for (int i = 0; i < _countStartBot; i++)
         {
-            CollectorBot bot = _fabricCollectorBot.Spawn(collectorBase.SpawnBotPlace.position, true) as CollectorBot;
-            collectorBase.BotDispatcher.EnqueueBot(bot);
+            CollectorBot bot = _collectorBotSpawner.Spawn(botHub.SpawnBotPlace.position, true);
+            botHub.BotDispatcher.EnqueueBot(bot);
         }
     }
 
-    private void OnBaseCreated(ICollectorBase collectorBase)
+    private void OnBaseCreated(IBotHub collectorBase)
     {
-        // collectorBase.Flag.Activated += _buildProcessPlacer.SetFlag;
         collectorBase.Disabled += OnBaseDisabled;
         collectorBase.Click += _baseMenu.Show;
     }
 
-    private void OnBaseDisabled(ICollectorBase collectorBase)
+    private void OnBaseDisabled(IBotHub collectorBase)
     {
-        // collectorBase.Flag.Activated -= _buildProcessPlacer.SetFlag;
         collectorBase.Disabled -= OnBaseDisabled;
         collectorBase.Click -= _baseMenu.Show;
     }
 
-    private void OnSubscribeInputReader(Transform transform)
+    private void HandleInputClick(Transform transform)
     {
         _menuActivator.OnClosedMenu(transform);
     }

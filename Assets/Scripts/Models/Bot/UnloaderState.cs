@@ -1,25 +1,25 @@
 ﻿using System;
 
-public class UnloaderState : CollectorBotState
+public class UnloaderState : BotState
 {
-    private IStateMachine _stateMachine;
+    private IBot _bot;
 
     public override event Action Completed;
 
-    public override void Entry(IStateMachine stateMachine) 
+    public override void Entry(IBot stateMachine) 
     {
-        _stateMachine = stateMachine;
-        _stateMachine.Unloader.ReleaseResource();
+        _bot = stateMachine;
+        _bot.Unloader.ReleaseResource();
     }
 
     public override void Run() 
     {
-        if (_stateMachine.Unloader.IsStorageEmpty)
+        if (_bot.Unloader.IsStorageEmpty)
             Completed?.Invoke();
     }
 
     public override void Exit()
     {
-        _stateMachine = null;
+        _bot = null;
     }
 }

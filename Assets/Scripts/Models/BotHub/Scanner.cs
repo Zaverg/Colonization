@@ -7,29 +7,29 @@ public class Scanner
     private float _scaneRadius;
     private LayerMask _layr;
 
-    private Collider[] collidersBuffer = new Collider[5];
+    private Collider[] _collidersBuffer = new Collider[5];
 
     public event Action<IResource> Detected;
 
-    public Scanner(Vector3 center,LayerMask layer, float radius = 0)
+    public Scanner(Vector3 center,LayerMask layr, float radius = 0)
     {
         _center = center;
-        _layr = layer;
+        _layr = layr;
         _scaneRadius = radius;
     }
 
     public void Scan() 
     {
-        if (Physics.OverlapSphereNonAlloc(_center, _scaneRadius, collidersBuffer, _layr) == 0)
+        if (Physics.OverlapSphereNonAlloc(_center, _scaneRadius, _collidersBuffer, _layr) == 0)
             return;
 
-        for (int i = 0; i < collidersBuffer.Length; i++)
+        for (int i = 0; i < _collidersBuffer.Length; i++)
         {
-            if (collidersBuffer[i] == null) 
+            if (_collidersBuffer[i] == null) 
                 continue;
 
-            if (collidersBuffer[i].TryGetComponent(out IResource colectable))
-                Detected.Invoke(colectable);
+            if (_collidersBuffer[i].TryGetComponent(out IResource resource))
+                Detected?.Invoke(resource);
         }
     }
 }

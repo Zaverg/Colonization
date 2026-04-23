@@ -3,20 +3,19 @@ using UnityEngine;
 
 public class CoroutineRunner : MonoBehaviour, ICoroutineRunner
 {
-    public Coroutine StartChildCoroutine(IEnumerator coroutine)
+    public Coroutine StartCoroutine(IEnumerator coroutine)
     {
         if (coroutine == null)
             return null;
 
-        return StartCoroutine(coroutine);
+        return base.StartCoroutine(coroutine);
     }
 
-    public void StopChildCoroutine(Coroutine coroutine)
+    public void StopCoroutine(Coroutine coroutine)
     {
         if (coroutine == null)
             return;
 
-        StopCoroutine(coroutine);
-        coroutine = null;
+        base.StopCoroutine(coroutine);
     }
 }

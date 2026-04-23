@@ -8,15 +8,15 @@ public class ResourceCounter
 
     public int CollectedResources => _collectedResources;
 
-    public void UpdateCounter(IResource collectable)
+    public void UpdateCounter(IResource resource)
     {
-        collectable.Unlodered -= UpdateCounter;
+        resource.Unloaded -= UpdateCounter;
 
         _collectedResources++;
         MineralCountChanged?.Invoke(_collectedResources);
     }
 
-    public void SubtractCounter(int count)
+    public void Subtract(int count)
     {
         if (count <= 0)
             return;

@@ -4,7 +4,7 @@ using System.Collections.Generic;
 
 public interface IGridOccupant
 {
-    public event Action<IGridOccupant> OnFreeCells;
+    public event Action<IGridOccupant> ReleasedCells;
 
     public Transform Transform { get; }
     public IReadOnlyList<Vector2Int> OccupyCells { get; }

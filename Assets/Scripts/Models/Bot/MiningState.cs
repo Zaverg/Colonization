@@ -1,30 +1,30 @@
 using System;
 
-public class MiningState : CollectorBotState
+public class MiningState : BotState
 {
-    private IStateMachine _stateMachine;
+    private IBot _bot;
 
     public override event Action Completed;
 
-    public override void Entry(IStateMachine stateMachine)
+    public override void Entry(IBot bot)
     {
-        _stateMachine = stateMachine;
+        _bot = bot;
 
-        IResource collectable = _stateMachine.CurrentTask.Mineral;
-        float duration = collectable.Config.MiningDuration;
+        IResource resource = _bot.CurrentTask.Resource;
+        float duration = resource.Config.MiningDuration;
 
-        _stateMachine.Miner.SetDuration(duration);
-        _stateMachine.Miner.StartMining();
+        _bot.Miner.SetDuration(duration);
+        _bot.Miner.StartMining();
     }
 
     public override void Run() 
     {
-        if (_stateMachine.Miner.HasMined)
+        if (_bot.Miner.HasMined)
             Completed?.Invoke();
     }
 
     public override void Exit()
     {
-        _stateMachine = null;
+        _bot = null;
     }
 }

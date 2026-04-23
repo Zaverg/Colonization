@@ -23,7 +23,7 @@ public class BuildProcessSpawner : MonoBehaviour
         BuildProcessConfig config = _configs.Where(config => config.BuildType == buildType).FirstOrDefault();
         Debug.Log(config);
 
-        BuildProcess buildProcess = _pool.GetBuildProcess();
+        BuildProcess buildProcess = _pool.PullBuildProcess();
 
         if (buildProcess.BuilderType == BuildType.None)
             buildProcess.Initialize(_grid, _coroutineRunner);

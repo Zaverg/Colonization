@@ -39,7 +39,7 @@ public class CellRegister : MonoBehaviour
         _occupiedCells.Add(cell);
        
         occupant.SetGridPosition(cell.GridPosition);
-        occupant.OnFreeCells += OnFreeCells;
+        occupant.ReleasedCells += OnFreeCells;
 
         occupant.Transform.position = cell.WorldPosition;
     }
@@ -58,7 +58,7 @@ public class CellRegister : MonoBehaviour
 
     public void OccupyArea(IGridOccupant occupant)
     {
-        occupant.OnFreeCells += OnFreeCells;
+        occupant.ReleasedCells += OnFreeCells;
 
         foreach (Vector2Int position in occupant.OccupyCells)
         {
@@ -124,7 +124,7 @@ public class CellRegister : MonoBehaviour
 
     private void OnFreeCells(IGridOccupant occupant)
     {
-        occupant.OnFreeCells -= OnFreeCells;
+        occupant.ReleasedCells -= OnFreeCells;
         FreeCells(occupant.OccupyCells.ToList());
     }
 }

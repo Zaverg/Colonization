@@ -8,18 +8,18 @@ public class Mineral : Resource, IReleasable<Mineral>
 
     public event Action<Mineral> Released;
     public override event Action<IResource> Took;
-    public override event Action<IResource> Unlodered;
-    public override event Action<IGridOccupant> OnFreeCells;
+    public override event Action<IResource> Unloaded;
+    public override event Action<IGridOccupant> ReleasedCells;
 
     public override void Take()
     {
         Took?.Invoke(this);
-        OnFreeCells?.Invoke(this);
+        ReleasedCells?.Invoke(this);
     }
 
     public override void Drop()
     {
-        Unlodered?.Invoke(this);
+        Unloaded?.Invoke(this);
     }
 
     public override void ReturnToPool()

@@ -2,18 +2,18 @@ using UnityEngine;
 
 public class MenuActivator
 {
-    public IMenu _current;
+    private IMenu _current;
 
-    public void SwitchActiveMenu(IMenu stats)
+    public void SwitchActiveMenu(IMenu menu)
     {
         if (_current != null)
             _current.Deactivate();
 
         _current = null;
 
-        if (stats != null)
+        if (menu != null)
         {
-            _current = stats;
+            _current = menu;
             _current.Activate();
         }
     }

@@ -1,20 +1,13 @@
-﻿using System;
-using Unity.VisualScripting;
-using UnityEngine;
-using UnityEngine.InputSystem;
+﻿using UnityEngine;
 
 public class CursorFollower : MonoBehaviour
 {
     [SerializeField] private Grid _grid;
 
-    private Camera _mainCamera;
-    private Mouse _mouse;
     private RayShooter _rayShooter;
 
     public void Awake()
     {
-        _mainCamera = Camera.main;
-        _mouse = Mouse.current;
         _rayShooter = new RayShooter();
     }
 
@@ -34,11 +27,7 @@ public class CursorFollower : MonoBehaviour
 
     private void Follow()
     {
-        Vector3 mousePosition = Mouse.current.position.ReadValue();
-
-        Ray ray = _mainCamera.ScreenPointToRay(mousePosition);
-
-        if (Physics.Raycast(ray, out RaycastHit hit, 1000f))
+        if (_rayShooter.RaycastWorld(out RaycastHit hit))
         {
             Vector3 worldPosition = hit.point;
 

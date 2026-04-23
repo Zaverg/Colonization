@@ -1,6 +1,6 @@
 ﻿using UnityEngine;
 
-public interface IStateMachine
+public interface IBot
 {
     public Transform Transform { get; }
     public CollectorBotTask CurrentTask { get; }
@@ -11,5 +11,5 @@ public interface IStateMachine
     public IUnloader Unloader { get; }
     public IBuilder Builder { get; }
 
-    public CollectorBotAnimator AnimationController { get; }
+    public CollectorBotAnimator Animator { get; }
 }

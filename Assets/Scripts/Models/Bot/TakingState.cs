@@ -1,27 +1,27 @@
 ﻿using System;
 
-public class TakingState : CollectorBotState
+public class TakingState : BotState
 {
-    private IStateMachine _stateMachine;
+    private IBot _bot;
 
     public override event Action Completed;
 
-    public override void Entry(IStateMachine stateMachine) 
+    public override void Entry(IBot bot) 
     {
-        _stateMachine = stateMachine;
-        IResource collectable = stateMachine.CurrentTask.Mineral;
+        _bot = bot;
+        IResource resource = bot.CurrentTask.Resource;
 
-        _stateMachine.Taker.PlaceResourceInStorage(collectable);
+        _bot.Taker.PlaceResourceInStorage(resource);
     }
 
     public override void Run() 
     {
-        if (_stateMachine.Taker.IsStorageFilled)
+        if (_bot.Taker.IsStorageFilled)
             Completed?.Invoke();
     }
 
     public override void Exit() 
     {
-        _stateMachine = null;
+        _bot = null;
     }
 }

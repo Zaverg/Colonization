@@ -20,7 +20,7 @@ public class ObjectPoolMineral : ObjectPool<Mineral>
 
     public Mineral GetMineral(MineralType type)
     {
-        Mineral mineral = GetObject();
+        Mineral mineral = PullObject();
 
         if (mineral.Config != null && mineral.Config.Type == type)
             return mineral;

@@ -26,7 +26,7 @@ public class BotDispatcher
 
     public void EnqueueBot(CollectorBot bot)
     {
-        UnSubscribeToBot(bot);
+        UnsubscribeToBot(bot);
         
         _availableCollectors.Enqueue(bot);
 
@@ -34,9 +34,9 @@ public class BotDispatcher
             _allCollectors.Add(bot);
     }
 
-    public void FreeBot(CollectorBot bot)
+    public void UnregisterBot(CollectorBot bot)
     {
-        UnSubscribeToBot(bot);
+        UnsubscribeToBot(bot);
     }
 
     private void SubscribeToBot(CollectorBot bot)
@@ -45,7 +45,7 @@ public class BotDispatcher
         bot.Unloader.Unloaded += _resourceCounter.UpdateCounter;
     }
 
-    private void UnSubscribeToBot(CollectorBot bot)
+    private void UnsubscribeToBot(CollectorBot bot)
     {
         bot.OnBotAvailable -= EnqueueBot;
         bot.Unloader.Unloaded -= _resourceCounter.UpdateCounter;
