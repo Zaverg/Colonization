@@ -5,8 +5,22 @@ public class BuildProcessConfig : ScriptableObject
 {
     [SerializeField] private BuildType _buildType;
     [SerializeField] private Transform _prefab;
-    [SerializeField] private float _buildTime;
+    [SerializeField] private float _buildDuration;
+    private BotHubBuildingAnimation _buildingAnimation;
+
     public BuildType BuildType => _buildType;
     public Transform Prefab => _prefab;
-    public float BuildTime => _buildTime;
+    public float BuildTime => _buildDuration;
+
+    public BotHubBuildingAnimation BuildingAnimation 
+    { 
+        get
+        {
+            if (_buildingAnimation == null)
+               _buildingAnimation = new BotHubBuildingAnimation();
+
+            return _buildingAnimation;
+
+        } 
+    }
 }

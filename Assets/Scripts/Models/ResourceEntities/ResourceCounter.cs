@@ -4,7 +4,7 @@ public class ResourceCounter
 {
     private int _collectedResources;
 
-    public event Action<int> MineralCountChanged;
+    public event Action<int> CountChanged;
 
     public int CollectedResources => _collectedResources;
 
@@ -13,15 +13,15 @@ public class ResourceCounter
         resource.Unloaded -= UpdateCounter;
 
         _collectedResources++;
-        MineralCountChanged?.Invoke(_collectedResources);
+        CountChanged?.Invoke(_collectedResources);
     }
 
     public void Subtract(int count)
     {
-        if (count <= 0)
+        if (count <= 0 || count > _collectedResources)
             return;
 
         _collectedResources -= count;
-        MineralCountChanged?.Invoke(_collectedResources);
+        CountChanged?.Invoke(_collectedResources);
     }
 }

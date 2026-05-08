@@ -1,4 +1,3 @@
-using System;
 using UnityEngine;
 
 public abstract class Mover : MonoBehaviour, IMover
@@ -8,4 +7,6 @@ public abstract class Mover : MonoBehaviour, IMover
     public abstract void Move();
 
     public abstract bool HasReachedTarget();
+
+    public abstract void Stop();
 }

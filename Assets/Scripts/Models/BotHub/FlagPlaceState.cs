@@ -2,60 +2,62 @@
 
 public class FlagPlaceState : BaseState
 {
-    private IBotHub _collectorBase;
+    private IBotHub _botHub;
+    private BuildTask _buildingTask;
     private MiningTask _miningTask;
-    private CollectorBaseTask _mainTask;
-    private bool _isBuilderAssigned;
 
-    private CollectorBot _assignedBot;
+    private CollectorBot _assignedBotToBuild;
 
-    public override event Action Completed;
+    public override event Action<Type> Completed;
 
-    public FlagPlaceState(MiningTask miningTask)
+    public FlagPlaceState(BuildTask buildingTask, MiningTask miningTask)
     {
+        _buildingTask = buildingTask;
         _miningTask = miningTask;
     }
 
-    public override void Entry(IBotHub collectorBase)
+    public override void Entry(IBotHub botHub)
     {
-        _collectorBase = collectorBase;
-        _mainTask = _collectorBase.MainTask;
+        _botHub = botHub;
+
+        if (_botHub.BotDispatcher.AllBotsCount <= 1)
+        {
+            _botHub.Flag.Deactivate();
+
+            Completed?.Invoke(typeof(DefaultState));
+        }
     }
 
     public override void Run()
     {
-        if (_collectorBase.BotDispatcher.AvailableCollectorsCount == 0)
+        if (_botHub.BotDispatcher.AvailableBotsCount == 0)
             return;
-
-        CollectorBot collectorBot = _collectorBase.BotDispatcher.GetAvailableBot();
-
-        if (_isBuilderAssigned == false && _collectorBase.ResourceCounter.CollectedResources >= _collectorBase.CountResourceToBuildBase)
+        
+        if (_assignedBotToBuild == null && _botHub.ResourceCounter.CollectedResources >= _botHub.PriceList.CountResourceToBuildBotHub)
         {
-            _assignedBot = collectorBot;
+            _assignedBotToBuild = _botHub.BotDispatcher.GetAvailableBot();
 
-            _collectorBase.Flag.Deactivated += _assignedBot.ResetTasks;
-            _assignedBot.AssignTasks(_mainTask.CreateTask());
-            
-            _isBuilderAssigned = true;
+            _botHub.Flag.Deactivated += _assignedBotToBuild.ResetTasks;
+            _assignedBotToBuild.AssignTasks(_buildingTask.CreateTask());;
 
             return;
         }
 
-        if (_collectorBase.MineralRegistry.AvailableMineralsCount > 0)
+        if (_botHub.MineralRegistry.AvailableMineralsCount > 0)
+        {
+            CollectorBot collectorBot = _botHub.BotDispatcher.GetAvailableBot();
             collectorBot.AssignTasks(_miningTask.CreateTask());
-        else
-            _collectorBase.BotDispatcher.EnqueueBot(collectorBot);
+        }
     }
 
     public override void Exit()
     {
-        if (_assignedBot != null)
+        if (_assignedBotToBuild != null)
         {
-            _collectorBase.Flag.Deactivated -= _assignedBot.ResetTasks;
-            _assignedBot = null;
+            _botHub.Flag.Deactivated -= _assignedBotToBuild.ResetTasks;
+            _assignedBotToBuild = null;
         }
 
-        _collectorBase = null;
-        _isBuilderAssigned = false;
+        _botHub = null;
     }
 }

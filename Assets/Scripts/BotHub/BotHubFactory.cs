@@ -1,33 +1,32 @@
 using System;
+using System.Collections.Generic;
 using UnityEngine;
 
-public class BotHubFactory : Factory
+public class BotHubFactory : BuildFactory
 {
     [SerializeField] private BotHub _botHubPrefab;
-    [SerializeField] private CollectorBotBaseConfig _config;
+    [SerializeField] private MineralRegistry _mineralRegistry;
+    [SerializeField] private CollectorBotFactory _collectorBotSpawner;
+    [SerializeField] private PriceList _priceList;
+    [SerializeField] private CoroutineRunner _coroutineRunner;
 
-    private BaseService _collectorBaseService;
+    [SerializeField] private CellRegister _cellRegister;
 
-    public event Action<IBotHub> Created;
+    public event Action<BotHub> Created;
 
-    public void Initialize(BaseService service)
+    public override Building Create(Vector3 position, List<Vector2Int> gridPosition)
     {
-        _collectorBaseService = service;
-    }
+        BotHub botHub = Instantiate(_botHubPrefab, position, Quaternion.identity);
+        botHub.gameObject.SetActive(false);
 
-    public override Building Create(Vector3 position, bool startActive)
-    {
-        BotHub collectorBotBase = Instantiate(_botHubPrefab, position, Quaternion.identity);
-        collectorBotBase.gameObject.SetActive(false);
+        botHub.Initialize(_mineralRegistry, _collectorBotSpawner, _coroutineRunner, _priceList);
+        botHub.gameObject.SetActive(true);
 
-        collectorBotBase.Click += _collectorBaseService.BaseMenu.Show;
+        botHub.SetGridArea(gridPosition);
+        _cellRegister.OccupyArea(botHub);
 
-        collectorBotBase.Initialize(_collectorBaseService);
+        Created?.Invoke(botHub);
 
-        collectorBotBase.gameObject.SetActive(startActive);
-
-        Created?.Invoke(collectorBotBase);
-
-        return collectorBotBase;
+        return botHub;
     }
 }

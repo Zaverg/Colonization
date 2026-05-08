@@ -19,16 +19,13 @@ public class NavMeshMover : Mover
         _agent.stoppingDistance = _stoppingDistance;
     }
 
-    public override void SetTarget(Vector3 target) 
+    public override void SetTarget(Vector3 target)
     {
-        if (target == null)
-            return;
-
         _targetPosition = target;
         _agent.SetDestination(_targetPosition);
     }
 
-    public override void Move() 
+    public override void Move()
     {
         if (_agent == null)
             return;
@@ -44,14 +41,23 @@ public class NavMeshMover : Mover
 
     public override bool HasReachedTarget()
     {
+        if (_agent == null)
+            return false;
+
         if (_agent.pathPending)
             return false;
 
-        bool hasReachedTarget = _agent.remainingDistance <= _agent.stoppingDistance; 
-
-        if (hasReachedTarget)
+        if (_agent.remainingDistance <= _agent.stoppingDistance)
+        {
             _agent.ResetPath();
+            return true;
+        }
 
-        return hasReachedTarget;
+        return false;
+    }
+
+    public override void Stop()
+    {
+        _agent.ResetPath();
     }
 }

@@ -1,7 +1,7 @@
 ﻿using System.Collections.Generic;
 using UnityEngine;
 
-public class MiningTask : CollectorBaseTask
+public class MiningTask : Task
 {
     private MineralRegistry _mineralRegistry;
     private ICoroutineRunner _coroutineRunner;
@@ -15,7 +15,7 @@ public class MiningTask : CollectorBaseTask
 
         _deliveryPosition = deliveryPosition;
     }
-    
+
     public override Queue<CollectorBotTask> CreateTask()
     {
         IResource resource = _mineralRegistry.GetAvailableMineral();

@@ -16,7 +16,7 @@ public class MovingState : BotState
 
     public override void Run()
     {
-        _bot.Mover.Move();
+       //_bot.Mover.Move();
 
         if (_bot.Mover.HasReachedTarget())
         {
@@ -26,6 +26,7 @@ public class MovingState : BotState
 
     public override void Exit()
     {
+        _bot.Mover.Stop();
         _bot.Animator.SetMoveAnimation(false);
         _bot = null;
     }

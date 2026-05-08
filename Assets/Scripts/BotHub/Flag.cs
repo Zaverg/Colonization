@@ -3,11 +3,9 @@ using UnityEngine;
 
 public class Flag : MonoBehaviour
 {
-    private CollectorBotTaskName _taskName;
     private BuildProcess _buildProcess;
 
-    public event Action<Flag> Activated;
-    public event Action<CollectorBotTaskName> Installed;
+    public event Action Installed;
     public event Action Deactivated;
 
     public BuildProcess BuildProcess => _buildProcess;
@@ -16,19 +14,13 @@ public class Flag : MonoBehaviour
     {
         gameObject.SetActive(true);
         transform.position = position;
-        Installed?.Invoke(_taskName);
+        Installed?.Invoke();
     }
 
     public void SetBuildProcess(BuildProcess process)
     {
         if (process != null)
             _buildProcess = process;
-    }
-     
-    public void OnButtonClick(CollectorBotTaskName taskName)
-    {
-        _taskName = taskName;
-        Activated?.Invoke(this);
     }
 
     public void Deactivate()

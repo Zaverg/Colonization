@@ -61,8 +61,8 @@ public class CollectorBot : MonoBehaviour, IBot
 
     public void ResetTasks()
     {
-        _currentState.Exit();
         _tasks.Clear();
+        SwitchToState();
     }
 
     private void SwitchToState()

@@ -1,7 +1,6 @@
 ﻿using UnityEngine;
 using System.Collections.Generic;
 using System.Linq;
-using Unity.VisualScripting;
 
 public class CellRegister : MonoBehaviour
 {
@@ -51,8 +50,6 @@ public class CellRegister : MonoBehaviour
             Cell cell = _grid.GetCell(position.x, position.y);
 
             _freeCells.Remove(cell);
-
-            Debug.Log("Reserve cell - " + cell.GridPosition);
         }
     }
 
@@ -68,20 +65,18 @@ public class CellRegister : MonoBehaviour
                 _freeCells.Remove(cell);
 
             _occupiedCells.Add(cell);
-
-            Debug.Log("Occupy cell - " + cell.GridPosition);
         }
     }
 
-    public List<Vector2Int> TryGetOccupyArea(List<BuildingShapeUnit> buildingShapeUnits)
+    public List<Vector2Int> TryGetOccupyArea(List<Vector3> peaks)
     {
         List<Vector2Int> area = new List<Vector2Int>();
 
-        if (buildingShapeUnits == null || buildingShapeUnits.Count == 0)
+        if (peaks == null || peaks.Count == 0)
             return area;
 
-        Vector2Int rightDownGrid = _grid.ConvertWorldToGridPosition(buildingShapeUnits[0].transform.position);
-        Vector2Int leftUpGrid = _grid.ConvertWorldToGridPosition(buildingShapeUnits[1].transform.position);
+        Vector2Int rightDownGrid = _grid.ConvertWorldToGridPosition(peaks[0]);
+        Vector2Int leftUpGrid = _grid.ConvertWorldToGridPosition(peaks[1]);
 
         if (_grid.IsInGrid(rightDownGrid) == false || _grid.IsInGrid(leftUpGrid) == false)
             return area;
@@ -116,8 +111,6 @@ public class CellRegister : MonoBehaviour
             {
                 _occupiedCells.Remove(cell);
                 _freeCells.Add(cell);
-
-                Debug.Log("Free cell - " + cell.GridPosition);
             }
         }
     }

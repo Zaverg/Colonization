@@ -1,26 +1,40 @@
 using System;
 using UnityEngine;
 
-public class Scanner
+public class Scanner : MonoBehaviour 
 {
-    private Vector3 _center;
-    private float _scaneRadius;
-    private LayerMask _layr;
+    [SerializeField] private float _scaneInterval;
+    [SerializeField] private float _scaneRadius;
+    [SerializeField] private LayerMask _layr;
+
+    private Timer _timer;
 
     private Collider[] _collidersBuffer = new Collider[5];
 
     public event Action<IResource> Detected;
 
-    public Scanner(Vector3 center,LayerMask layr, float radius = 0)
+    public Timer Timer => _timer;
+
+    public void OnDisable()
     {
-        _center = center;
-        _layr = layr;
-        _scaneRadius = radius;
+        if (_timer == null)
+            return;
+
+        _timer.Ended -= Scan;
+    }
+
+    public void Initialize(Timer timer)
+    {
+        _timer = timer;
+        _timer.SetDuration(_scaneInterval);
+        _timer.Ended += Scan;
+
+        _timer.Run();
     }
 
     public void Scan() 
     {
-        if (Physics.OverlapSphereNonAlloc(_center, _scaneRadius, _collidersBuffer, _layr) == 0)
+        if (Physics.OverlapSphereNonAlloc(transform.position, _scaneRadius, _collidersBuffer, _layr) == 0)
             return;
 
         for (int i = 0; i < _collidersBuffer.Length; i++)
@@ -31,5 +45,7 @@ public class Scanner
             if (_collidersBuffer[i].TryGetComponent(out IResource resource))
                 Detected?.Invoke(resource);
         }
+
+        _timer.Run();
     }
 }

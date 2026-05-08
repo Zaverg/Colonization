@@ -1,24 +1,27 @@
+using System;
 using System.Collections.Generic;
 
 public class BotDispatcher
 {
-    private List<CollectorBot> _allCollectors;
-    private Queue<CollectorBot> _availableCollectors;
+    private List<CollectorBot> _allBots;
+    private Queue<CollectorBot> _availableBots;
     private ResourceCounter _resourceCounter;
 
-    public int AvailableCollectorsCount => _availableCollectors.Count;
-    public int AllCollectorsCount => _allCollectors.Count;
+    public event Action<int> CountChanged;
+
+    public int AvailableBotsCount => _availableBots.Count;
+    public int AllBotsCount => _allBots.Count;
 
     public BotDispatcher(ResourceCounter resourceCounter)
     {
-        _allCollectors = new List<CollectorBot>();
-        _availableCollectors = new Queue<CollectorBot>();
+        _allBots = new List<CollectorBot>();
+        _availableBots = new Queue<CollectorBot>();
         _resourceCounter = resourceCounter;
     }
 
     public CollectorBot GetAvailableBot()
     {
-        CollectorBot collectorBot = _availableCollectors.Dequeue();
+        CollectorBot collectorBot = _availableBots.Dequeue();
         SubscribeToBot(collectorBot);
 
         return collectorBot;
@@ -28,14 +31,19 @@ public class BotDispatcher
     {
         UnsubscribeToBot(bot);
         
-        _availableCollectors.Enqueue(bot);
+        _availableBots.Enqueue(bot);
 
-        if (_allCollectors.Contains(bot) == false)
-            _allCollectors.Add(bot);
+        if (_allBots.Contains(bot) == false)
+        {
+            _allBots.Add(bot);
+
+            CountChanged?.Invoke(_allBots.Count);
+        }
     }
 
     public void UnregisterBot(CollectorBot bot)
     {
+        _allBots.Remove(bot);
         UnsubscribeToBot(bot);
     }
 
