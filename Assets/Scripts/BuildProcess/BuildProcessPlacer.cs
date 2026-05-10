@@ -6,10 +6,9 @@ public class BuildProcessPlacer : MonoBehaviour
 {
     [SerializeField] private CellRegister _cellRegister;
     [SerializeField] private BuildProcessFactory _buildProcessFactory;
-    [SerializeField] private BotHubMenu _botHubMenu;
     [SerializeField] private InputReader _inputReader;
-    [SerializeField] private Grid _grid;
 
+    private IGrid _grid;
     private Flag _flag;
     private BuildProcess _buildProcess;
 
@@ -32,33 +31,34 @@ public class BuildProcessPlacer : MonoBehaviour
         }
     }
 
+    public void Initialize(IGrid grid)
+    {
+        _grid = grid;
+    }
+
     public void CompletePlacement(Transform surface)
     {
         _inputReader.OnClick -= CompletePlacement;
        
         if (surface.TryGetComponent<Map>(out _) == false || _gridPositions.Count == 0)
         {
-            _buildProcess.Release();
-            _buildProcess = null;
+            _buildProcess.gameObject.SetActive(false);
 
             return;
         }
 
         _cellRegister.ReserveArea(_gridPositions);
-
         _buildProcess.Install(_gridPositions);
 
-        _flag.Install(_buildProcess.transform.position);
-        _flag.SetBuildProcess(_buildProcess);
+        _flag.Install(_buildProcess);
 
-        _buildProcess.gameObject.SetActive(false);
         _buildProcess = null;
         _flag = null;
     }
 
-    public void StartPlacement(BuildType type)
+    public void StartPlacement(Flag flag)
     {
-        _flag = _botHubMenu.CurrentBase.Flag;
+        _flag = flag;
 
         if (_flag.gameObject.activeSelf)
         {
@@ -68,10 +68,10 @@ public class BuildProcessPlacer : MonoBehaviour
 
         if (_buildProcess != null)
         {
-            _buildProcess.Release();
+            _buildProcess.gameObject.SetActive(false);
         }
 
-        _buildProcess = _buildProcessFactory.Create(type);
+        _buildProcess = _buildProcessFactory.Create();
 
         _inputReader.OnClick -= CompletePlacement;
         _inputReader.OnClick += CompletePlacement;

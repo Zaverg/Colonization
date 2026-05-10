@@ -2,6 +2,6 @@
 {
     public void UpdateView(float value)
     {
-        Text.text = SubText + string.Format("{0:F0}", value); ;
+        Text.text = text + string.Format("{0:F0}", value); ;
     }
 }

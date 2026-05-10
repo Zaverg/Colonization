@@ -1,44 +1,44 @@
 ﻿using UnityEngine;
-using System.Collections.Generic;
-using System.Linq;
-using System;
 
 public class BuildProcessFactory : MonoBehaviour
 {
-    [SerializeField] private BuildProcessPool _pool;
-    [SerializeField] private List<BuildProcessConfig> _configs;
-    [SerializeField] private Grid _grid;
+    [SerializeField] private BuildProcess _prefab;
+    [SerializeField] private BuildProcessConfig _config;
     [SerializeField] private CoroutineRunner _coroutineRunner;
-    [SerializeField] private List<BuildTypeFactory> _typeFactories;
-    [SerializeField] private BuildProcessMenu _buildProcessMenu;
+    [SerializeField] private BotHubFactory _botHubFactory;
 
-    public event Action<BuildProcess> Spawned;
+    private IGrid _grid;
 
-    public BuildProcess Create(BuildType buildType)
+    public void Initialize(IGrid grid)
     {
-        BuildProcessConfig config = _configs.Where(config => config.BuildType == buildType).FirstOrDefault();
+        _grid = grid;
+    }
 
-        BuildProcess buildProcess = _pool.PullBuildProcess();
-
-        if (buildProcess.BuilderType == BuildType.None)
-        {
-            buildProcess.Initialize(_grid, _coroutineRunner);
-
-        }
-
-        BuildFactory factory = _typeFactories.Where(factoryTypr => factoryTypr.BuildType == buildType).FirstOrDefault().Factory;
-        buildProcess.SetConfig(config, factory);
+    public BuildProcess Create()
+    {
+        BuildProcess buildProcess = Instantiate(_prefab);
+        buildProcess.Initialize(_grid, _coroutineRunner, _config, _botHubFactory);
         
-        buildProcess.GetComponent<ClickableObject>().Click += _buildProcessMenu.Show;
-        buildProcess.Released += OnBuildProcessReleased;
+        TimerViewer timerViewer = buildProcess.GetComponentInChildren<TimerViewer>(true);
 
-        Spawned?.Invoke(buildProcess);
+        if (timerViewer != null)
+        {
+            buildProcess.Timer.Changed += timerViewer.UpdateView;
+            buildProcess.Released += OnBuildProcessRelease;
+        }
 
         return buildProcess;
     }
 
-    public void OnBuildProcessReleased(BuildProcess buildProcess)
+    public void OnBuildProcessRelease(BuildProcess buildProcess)
     {
-        buildProcess.GetComponent<ClickableObject>().Click -= _buildProcessMenu.Show;
+        buildProcess.Released -= OnBuildProcessRelease;
+
+        TimerViewer timerViewer = buildProcess.GetComponentInChildren<TimerViewer>(true);
+
+        if (timerViewer != null)
+            buildProcess.Timer.Changed -= timerViewer.UpdateView;
+
+        Destroy(buildProcess);
     }
 }

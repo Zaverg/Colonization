@@ -3,17 +3,17 @@ using System.Collections.Generic;
 using UnityEngine;
 
 [RequireComponent(typeof(CursorFollower))]
-public class BuildProcess : MonoBehaviour, IReleasable<BuildProcess>
+public class BuildProcess : MonoBehaviour
 {
-    private BuildType _buildType;
     private float _buildDutation;
 
     private BoxCollider _collider;
-    private BuildFactory _factory;
+    private BotHubFactory _factory;
     private IBot _builder;
 
     private Timer _timer;
     private CursorFollower _cursorFollower;
+    private Canvas _canvas;
 
     private Material _previewMaterial;
     private Transform _preview;
@@ -21,25 +21,26 @@ public class BuildProcess : MonoBehaviour, IReleasable<BuildProcess>
 
     private List<Vector2Int> _occupiedArea = new List<Vector2Int>();
 
-    public event Action<Building, IBot> Completed;
+    public event Action<BotHub, IBot> Completed;
     public event Action<BuildProcess> Released;
 
-    public BuildType BuilderType => _buildType;
     public IReadOnlyList<Vector2Int> OccupyArea => _occupiedArea;
     public Timer Timer => _timer;
+    public bool IsBuilding { get; private set; } = false;
 
-    public void Initialize(Grid grid, ICoroutineRunner coroutineRunner)
+    public void OnDisable()
+    {
+        Released?.Invoke(this);
+    }
+
+    public void Initialize(IGrid grid, ICoroutineRunner coroutineRunner, BuildProcessConfig config, BotHubFactory factory)
     {
         _collider = GetComponent<BoxCollider>();
         _collider.enabled = false;
         _cursorFollower = GetComponent<CursorFollower>();
         _cursorFollower.SetGrid(grid);
         _timer = new Timer(coroutineRunner);
-    }
 
-    public void SetConfig(BuildProcessConfig config, BuildFactory factory)
-    {
-        _buildType = config.BuildType;
         _preview = Instantiate(config.Prefab);
         _buildDutation = config.BuildTime;
         _buildingAnimation = config.BuildingAnimation;
@@ -50,6 +51,8 @@ public class BuildProcess : MonoBehaviour, IReleasable<BuildProcess>
         _preview.SetParent(transform);
         _preview.transform.position = transform.position;
 
+        _canvas = GetComponentInChildren<Canvas>(true);
+        
         _factory = factory;
     }
 
@@ -63,7 +66,7 @@ public class BuildProcess : MonoBehaviour, IReleasable<BuildProcess>
         return area;
     }
 
-    public void SetOnCompleteCallback(Action<Building, IBot> callback)
+    public void SetOnCompleteCallback(Action<BotHub, IBot> callback)
     {
         Completed = callback;
     }
@@ -78,11 +81,13 @@ public class BuildProcess : MonoBehaviour, IReleasable<BuildProcess>
 
     public void StartBuild(IBot builder)
     {
-        gameObject.SetActive(true);
-
+        IsBuilding = true;
         _builder = builder;
 
         float buildDuration = _buildDutation * _builder.Builder.BuildSpeedСoefficient;
+
+        if (_canvas != null)
+            _canvas.gameObject.SetActive(true);
 
         _preview.gameObject.SetActive(true);
         _collider.enabled = true;
@@ -94,24 +99,14 @@ public class BuildProcess : MonoBehaviour, IReleasable<BuildProcess>
         _buildingAnimation.StartAnimation(_previewMaterial, buildDuration);
     }
 
-    public void Release()
-    {
-        _cursorFollower.enabled = true;
-        _collider.enabled = false;
-        _occupiedArea.Clear();
-
-        Destroy(_preview.gameObject);
-        Released?.Invoke(this);
-    }
-
     private void FinishBuild()
     {
         _timer.Ended -= FinishBuild;
 
-        Building building = _factory.Create(transform.position, _occupiedArea);
+        BotHub botHub = _factory.Create(transform.position, _occupiedArea);
 
-        Completed?.Invoke(building, _builder);
+        Completed?.Invoke(botHub, _builder);
 
-        Release();
+        gameObject.SetActive(false);
     }
 }

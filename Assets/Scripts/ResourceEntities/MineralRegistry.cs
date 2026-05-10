@@ -9,12 +9,12 @@ public class MineralRegistry : MonoBehaviour
 
     public int AvailableMineralsCount => _availableMinerals.Count;
 
-    public void Register(IResource collectable)
+    public void Register(IResource mineral)
     {
-        if (_takenMineral.Contains(collectable) == false)
+        if (_takenMineral.Contains(mineral) == false)
         {
-            if (collectable.Transform.gameObject.activeSelf)
-                _availableMinerals.Add(collectable);
+            if (mineral.Transform.gameObject.activeSelf)
+                _availableMinerals.Add(mineral);
         }
     }
    
@@ -30,11 +30,11 @@ public class MineralRegistry : MonoBehaviour
         return collectable;
     }
 
-    public void ReleaseMineral(IResource collectable)
+    public void ReleaseMineral(IResource mineral)
     {
-        collectable.Unloaded -= ReleaseMineral;
-        collectable.ReturnToPool();
+        mineral.Unloaded -= ReleaseMineral;
+        mineral.OnRelease();
 
-        _takenMineral.Remove(collectable);
+        _takenMineral.Remove(mineral);
     }
 }

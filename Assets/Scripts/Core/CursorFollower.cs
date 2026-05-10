@@ -2,7 +2,7 @@
 
 public class CursorFollower : MonoBehaviour
 {
-    [SerializeField] private Grid _grid;
+    [SerializeField] private IGrid _grid;
 
     private RayShooter _rayShooter;
 
@@ -18,7 +18,7 @@ public class CursorFollower : MonoBehaviour
         Follow();
     }
 
-    public void SetGrid(Grid grid)
+    public void SetGrid(IGrid grid)
     {
         if (grid == null) return;
 

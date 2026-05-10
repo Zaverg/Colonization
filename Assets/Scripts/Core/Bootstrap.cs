@@ -3,57 +3,77 @@ using UnityEngine;
 
 public class Bootstrap : MonoBehaviour
 {
-    [SerializeField] private MapInitializer _mapInitializer;
-    [SerializeField] private BuildInitialize _buildInitialize;
-    [SerializeField] private UiInitializer _uiInitializer;
-
+    [Header("Core")]
+    [SerializeField] private InputReader _inputReader;
     [SerializeField] private CoroutineRunner _coroutineRunner;
 
-    private bool _isInitialized = false;
-    
+    [Header("BotHub")]
+    [SerializeField] private CollectorBotFactory _collectorBotFactory;
+    [SerializeField] private BotHubFactory _botHubFactory;
+    [SerializeField] private int _countStartBot = 3;
+
+    [Header("Mineral")]
+    [SerializeField] private MineralSpawner _mineralSpawner;
+    [SerializeField] private ObjectPoolMineral _mineralObjectPool;
+    [SerializeField] private TimerViewer _timerViewerSpawn;
+
+    [Header("Map")]
+    [SerializeField] private CellRegister _cellRegister;
+    [SerializeField] private Map _map;
+    [SerializeField] private Grid _grid;
+
+    [Header("BuildPlacer")]
+    [SerializeField] private BuildProcessPlacer _buildProcessPlacer;
+    [SerializeField] private BuildProcessFactory _buildProcessFactory;
+
+    private GridCreator _gridCreator;
+
     private void Awake()
     {
-        _mapInitializer.Initialize(_coroutineRunner);
-        _uiInitializer.Initialize();
+        _inputReader.gameObject.SetActive(false);
+        _mineralSpawner.gameObject.SetActive(false);
+        _cellRegister.gameObject.SetActive(false);
 
-        _buildInitialize.Initialize(_coroutineRunner);
+        _map.Initialize();
+        _gridCreator = new GridCreator();
+        List<List<Cell>> grid = _gridCreator.Create(_map, _grid.CellSizeGrid);
+        _grid.Initialize(grid);
+        _cellRegister.Initialize(_grid);
 
-        _isInitialized = true;
+        _mineralObjectPool.Initialize();
+        _mineralSpawner.Initialize(_coroutineRunner);
+
+        _buildProcessFactory.Initialize(_grid);
+        _buildProcessPlacer.Initialize(_grid);
+
+        _inputReader.Initialize();
     }
 
     private void OnEnable()
     {
-        if (_isInitialized == false)
-            return;
-
-        _buildInitialize.BotHubFactory.Created += _uiInitializer.OnBaseCreated;
-        _uiInitializer.Subscribe();
+        _mineralSpawner.Timer.Changed += _timerViewerSpawn.UpdateView;
     }
 
     private void OnDisable()
     {
-        if (_isInitialized == false)
-            return;
-
-        _buildInitialize.BotHubFactory.Created -= _uiInitializer.OnBaseCreated;
-        _uiInitializer.Unsubscribe();
+        _mineralSpawner.Timer.Changed -= _timerViewerSpawn.UpdateView;
     }
 
     public void Start()
     {
-        BuildProcess buildProcess = _buildInitialize.BuildProcessSpawner.Create(BuildType.CollectorBase);
-        buildProcess.transform.position = _mapInitializer.Map.transform.position;
-        List<Vector2Int> gridPosition = _mapInitializer.CellRegister.TryGetOccupyArea(buildProcess.CalculateArea());
+        BuildProcess buildProcess = _buildProcessFactory.Create();
+        buildProcess.transform.position = _map.transform.position;
+        List<Vector2Int> gridPosition = _cellRegister.TryGetOccupyArea(buildProcess.CalculateArea());
 
         buildProcess.Install(gridPosition);
 
-        BotHub botHub = _buildInitialize.BotHubFactory.Create(_mapInitializer.Map.transform.position, gridPosition) as BotHub;
+        BotHub botHub = _botHubFactory.Create(_map.transform.position, gridPosition);
 
-        buildProcess.Release();
+        Destroy(buildProcess.gameObject);
 
-        for (int i = 0; i < _buildInitialize.CountStartBot; i++)
+        for (int i = 0; i < _countStartBot; i++)
         {
-            CollectorBot bot = _buildInitialize.CollectorBotFactory.Create(botHub.SpawnBotPlace.position);
+            CollectorBot bot = _collectorBotFactory.Create(botHub.SpawnBotPlace.position);
             botHub.BotDispatcher.EnqueueBot(bot);
         }
     }

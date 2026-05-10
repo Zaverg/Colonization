@@ -20,13 +20,13 @@ public class CollectorBot : MonoBehaviour, IBot
     private CollectorBotTask _currentTask;
     private BotState _currentState;
 
-    public event Action<CollectorBot> OnBotAvailable;
+    public event Action<CollectorBot> BotFreed;
 
-    public IMover Mover => _mover;
-    public ITaker Taker => _taker;
-    public IMiner Miner => _miner;
-    public IUnloader Unloader => _unloader;
-    public IBuilder Builder => _builder;
+    public Mover Mover => _mover;
+    public Taker Taker => _taker;
+    public Miner Miner => _miner;
+    public Unloader Unloader => _unloader;
+    public Builder Builder => _builder;
     public Transform Transform => transform;
     public CollectorBotTask CurrentTask => _currentTask;
     public CollectorBotAnimator Animator => _animator;
@@ -85,7 +85,7 @@ public class CollectorBot : MonoBehaviour, IBot
             return _states[_currentTask.StateType];
         }
        
-        OnBotAvailable?.Invoke(this);
+        BotFreed?.Invoke(this);
 
         return _states[StateType.Idle];
     }

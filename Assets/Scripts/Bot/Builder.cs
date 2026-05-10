@@ -1,6 +1,6 @@
 ﻿using UnityEngine;
 
-public class Builder : MonoBehaviour, IBuilder
+public class Builder : MonoBehaviour
 {
     [SerializeField] private float _buildSpeedСoefficient = 1f;
 
@@ -8,7 +8,6 @@ public class Builder : MonoBehaviour, IBuilder
 
     public void StartBuild(BuildProcess buildObject, IBot bot)
     {
-        buildObject.gameObject.SetActive(true);
         buildObject.StartBuild(bot);
     }
 }

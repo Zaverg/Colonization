@@ -1,9 +1,8 @@
 using System;
-using UnityEngine;
 
 public interface IClickable
 {
-    public event Action<ClickableObject> Click;
+    public event Action<IClickable> Clicked;
 
     public void OnClick();
 }

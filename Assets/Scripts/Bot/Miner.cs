@@ -1,10 +1,35 @@
 using UnityEngine;
 
-public abstract class Miner : MonoBehaviour, IMiner
+public class Miner : MonoBehaviour
 {
-    public abstract bool HasMined { get; }
+    [SerializeField] private CoroutineRunner _coroutineRunner;
 
-    public abstract void SetDuration(float duration);
+    private Timer _timer;
 
-    public abstract void StartMining();
+    public bool HasMined => _timer.IsComplete;
+
+    public void Awake()
+    {
+        _timer = new Timer(_coroutineRunner);
+    }
+
+    public void SetDuration(float duration)
+    {
+        _timer.SetDuration(duration);
+    }
+
+    public void StartMining()
+    {
+        _timer.Run();
+    }
+
+    public void SetCoroutineRunner(CoroutineRunner coroutineRunner)
+    {
+        if (coroutineRunner == null)
+            return;
+
+        _coroutineRunner = coroutineRunner;
+
+        _timer = new Timer(_coroutineRunner);
+    }
 }

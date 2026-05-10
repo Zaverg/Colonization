@@ -5,11 +5,11 @@ public interface IBot
     public Transform Transform { get; }
     public CollectorBotTask CurrentTask { get; }
 
-    public IMover Mover { get; }
-    public ITaker Taker { get; }
-    public IMiner Miner { get; }
-    public IUnloader Unloader { get; }
-    public IBuilder Builder { get; }
+    public Mover Mover { get; }
+    public Taker Taker { get; }
+    public Miner Miner { get; }
+    public Unloader Unloader { get; }
+    public Builder Builder { get; }
 
     public CollectorBotAnimator Animator { get; }
 }

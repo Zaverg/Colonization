@@ -2,7 +2,8 @@
 using System.Collections.Generic;
 using UnityEngine;
 
-public class BotHub : Building, IBotHub
+[RequireComponent(typeof(ResourceCounter), typeof(BotDispatcher))]
+public class BotHub : MonoBehaviour, IBotHub, IGridOccupant
 {
     [SerializeField] private Flag _flag;
     [SerializeField] private Scanner _scanner;
@@ -16,6 +17,8 @@ public class BotHub : Building, IBotHub
     private MineralRegistry _mineralRegistry;
     private PriceList _priceList;
 
+    private List<Vector2Int> _occupyCells = new List<Vector2Int>();
+
     public event Action<BotHub> Disabled;
 
     public MineralRegistry MineralRegistry => _mineralRegistry;
@@ -25,17 +28,11 @@ public class BotHub : Building, IBotHub
     public BotDispatcher BotDispatcher => _botDispatcher;
     public Flag Flag => _flag;
     public Transform SpawnBotPlace => _spawnBotPlace;
+    public Transform Transform => transform;
 
+    IReadOnlyList<Vector2Int> IGridOccupant.OccupyCells => _occupyCells;
 
-    private void OnEnable()
-    {
-        if (_mineralRegistry == null)
-            return;
-
-        _flag.Installed += OnFlagInstalled;
-        _flag.Deactivated += OnFlagDeactivated;
-        _scanner.Detected += _mineralRegistry.Register;
-    }
+    public event Action<IGridOccupant> ReleasedCells;
 
     private void OnDisable()
     {
@@ -64,8 +61,10 @@ public class BotHub : Building, IBotHub
 
     public void Initialize(MineralRegistry mineralRegister, CollectorBotFactory collectorBotFactory, CoroutineRunner coroutineRunner, PriceList priceList)
     {
-        _resourceCounter = new ResourceCounter();
-        _botDispatcher = new BotDispatcher(_resourceCounter);
+        _resourceCounter = GetComponent<ResourceCounter>();
+        _botDispatcher = GetComponent<BotDispatcher>();
+
+        _botDispatcher.Initialize(_resourceCounter);
 
         Timer timer = new Timer(coroutineRunner);
         _scanner.Initialize(timer);
@@ -83,6 +82,18 @@ public class BotHub : Building, IBotHub
         _states[typeof(FlagPlaceState)] = flagPlaceState;
 
         _currentState = defaultState;
+
+        _flag.Installed += OnFlagInstalled;
+        _flag.Deactivated += OnFlagDeactivated;
+        _scanner.Detected += _mineralRegistry.Register;
+    }
+
+    public void SetGridArea(List<Vector2Int> area)
+    {
+        if (area == null || area.Count == 0)
+            return;
+
+        _occupyCells = area;
     }
 
     private void OnFlagInstalled()
@@ -97,8 +108,6 @@ public class BotHub : Building, IBotHub
     
     private void SwitchState(Type typeState)
     {
-        Debug.Log("SwitchState");
-
         _currentState.Exit();
         _currentState = _states[typeState];
         _currentState.Entry(this);

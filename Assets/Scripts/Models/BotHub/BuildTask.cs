@@ -18,7 +18,7 @@ public class BuildTask : Task
 
         Vector3 flagPosition = _botHub.Flag.transform.position;
 
-        buildProcess.SetOnCompleteCallback(OnBuildCompleted);
+        buildProcess.SetOnCompleteCallback(OnBuildComplete);
 
         tasks.Enqueue(new CollectorBotTask(StateType.Moving, flagPosition));
         tasks.Enqueue(new CollectorBotTask(StateType.Building, buildProcess: buildProcess));
@@ -27,9 +27,9 @@ public class BuildTask : Task
         return tasks;
     }
     
-    private void OnBuildCompleted(Building building, IBot builder)
+    private void OnBuildComplete(BotHub botHub, IBot builder)
     {
-        BotHub newBotHub = building as BotHub;
+        BotHub newBotHub = botHub;
         CollectorBot bot = builder as CollectorBot;
 
         _botHub.Flag.Deactivated -= bot.ResetTasks;

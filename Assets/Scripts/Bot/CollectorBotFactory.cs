@@ -8,7 +8,7 @@ public class CollectorBotFactory : MonoBehaviour
     public CollectorBot Create(Vector3 position)
     {
         CollectorBot bot = Instantiate(_prefab, position, Quaternion.identity);
-        bot.GetComponent<CollectorBotMiner>().SetCoroutineRunner(_coroutineRunner);
+        bot.GetComponent<Miner>().SetCoroutineRunner(_coroutineRunner);
 
         return bot;
     }

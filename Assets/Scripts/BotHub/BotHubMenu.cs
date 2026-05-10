@@ -1,56 +1,53 @@
-using System;
 using UnityEngine;
 
-public class BotHubMenu : MonoBehaviour, IMenu
+public class BotHubMenu : MonoBehaviour
 {
+    [SerializeField] private BotHub _botHub;
+    [SerializeField] private BotHubBuildButton _botHubBuildButton;
+    [SerializeField] private CounterViewer _allCollectorBots;
+    [SerializeField] private CounterViewer _resourceCounter;
     [SerializeField] private BuildProcessPlacer _buildProcessPlacer;
-    [SerializeField] private BuildProcessFactory _buildProcessFactory;
 
-    [SerializeField] private BotHubMenuViewer _menuViewer;
-    [SerializeField] private MenuAnimation _menuAnimation;
-    [SerializeField] private float _durationAnimation;
+    public void OnDisable()
+    {
+        _botHub.BotDispatcher.CountChanged -= _allCollectorBots.UpdateView;
+        _botHub.ResourceCounter.CountChanged -= _resourceCounter.UpdateView;
 
-    private IBotHub _botHub;
+        _botHubBuildButton.Clicked -= OnClickBuildBotHubButton;
+    }
 
-    public event Action<IMenu> Activated;
-
-    public IBotHub CurrentBase => _botHub;
-
-    public void Show(ClickableObject clickableObject)
-    { 
-        _botHub = clickableObject.GetComponent<BotHub>();
-
-        if (_botHub.Flag.BuildProcess != null && _botHub.Flag.BuildProcess.gameObject.activeSelf || _botHub.BotDispatcher.AllBotsCount <= 1)
-            _menuViewer.BotHubBuildButton.SetActive(false);
+    public void Update()
+    {
+        if (_botHubBuildButton.gameObject.activeSelf)
+        {
+            if (_botHub.Flag.BuildProcess != null && _botHub.BotDispatcher.AllBotsCount <= 1)
+                _botHubBuildButton.SetActive(false);
+        }
         else
-            _menuViewer.BotHubBuildButton.SetActive(true);
-
-        Activated?.Invoke(this);
+        {
+            if (_botHub.Flag.BuildProcess == null && _botHub.BotDispatcher.AllBotsCount > 1)
+                _botHubBuildButton.SetActive(true);
+        }
     }
 
-    public void Activate()
+    public void Initialize(BuildProcessPlacer buildProcessPlacer)
     {
-        _botHub.ResourceCounter.CountChanged += _menuViewer.Resource.UpdateView;
-        _botHub.Scanner.Timer.Changed += _menuViewer.TimerViewer.UpdateView;
-        _botHub.BotDispatcher.CountChanged += _menuViewer.AllCollectorBots.UpdateView;
+        _buildProcessPlacer = buildProcessPlacer;
 
-        _menuViewer.BotHubBuildButton.OnBuild += _buildProcessPlacer.StartPlacement;
-
-        _menuAnimation.OpenMenu(_durationAnimation);
-
-        _menuViewer.Resource.UpdateView(_botHub.ResourceCounter.CollectedResources);
-        _menuViewer.TimerViewer.UpdateView(_botHub.Scanner.Timer.CurrentSeconds);
-        _menuViewer.AllCollectorBots.UpdateView(_botHub.BotDispatcher.AllBotsCount);
+        _botHub.BotDispatcher.CountChanged += _allCollectorBots.UpdateView;
+        _botHub.ResourceCounter.CountChanged += _resourceCounter.UpdateView;
+        _botHubBuildButton.Clicked += OnClickBuildBotHubButton;
     }
 
-    public void Deactivate()
+    public void OnClickBuildBotHubButton(IClickable clickable)
     {
-        _botHub.ResourceCounter.CountChanged -= _menuViewer.Resource.UpdateView;
-        _botHub.Scanner.Timer.Changed -= _menuViewer.TimerViewer.UpdateView;
-        _botHub.BotDispatcher.CountChanged -= _menuViewer.AllCollectorBots.UpdateView;
+        if (_botHub.Flag.BuildProcess != null && _botHub.Flag.BuildProcess.IsBuilding)
+            return;
 
-        _menuViewer.BotHubBuildButton.OnBuild -= _buildProcessPlacer.StartPlacement;
+        if (_botHub.BotDispatcher.AllBotsCount <= 1)
+            return;
 
-        _menuAnimation.CloseMenu(_durationAnimation);
-    } 
+        if (_buildProcessPlacer != null)
+            _buildProcessPlacer.StartPlacement(_botHub.Flag);
+    }
 }

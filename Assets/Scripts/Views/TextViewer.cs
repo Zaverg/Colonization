@@ -5,10 +5,10 @@ public abstract class TextViewer : MonoBehaviour
 {
     [SerializeField] protected TextMeshProUGUI Text;
 
-    public string SubText { get; private set; }
+    public string text { get; private set; }
 
     private void Awake()
     {
-        SubText = Text.text;
+        text = Text.text;
     }
 }

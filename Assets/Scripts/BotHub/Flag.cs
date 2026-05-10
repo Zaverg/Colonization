@@ -10,17 +10,13 @@ public class Flag : MonoBehaviour
 
     public BuildProcess BuildProcess => _buildProcess;
 
-    public void Install(Vector3 position)
+    public void Install(BuildProcess buildProcess)
     {
         gameObject.SetActive(true);
-        transform.position = position;
+        _buildProcess = buildProcess;
+        transform.position = _buildProcess.transform.position;
+       
         Installed?.Invoke();
-    }
-
-    public void SetBuildProcess(BuildProcess process)
-    {
-        if (process != null)
-            _buildProcess = process;
     }
 
     public void Deactivate()

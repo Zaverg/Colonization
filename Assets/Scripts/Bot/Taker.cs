@@ -1,8 +1,18 @@
 using UnityEngine;
 
-public abstract class Taker : MonoBehaviour, ITaker
+public class Taker : MonoBehaviour
 {
-    public abstract bool IsStorageFilled { get; }
+    [SerializeField] private Storage _storage;
 
-    public abstract void PlaceResourceInStorage(IResource collectable);
+    public bool IsStorageFilled => _storage.Item != null;
+
+    public void PlaceResourceInStorage(IResource item)
+    {
+        _storage.SetItem(item);
+
+        item.Transform.SetParent(_storage.transform);
+        item.Transform.position = _storage.transform.position;
+
+        item.Take();
+    }
 }

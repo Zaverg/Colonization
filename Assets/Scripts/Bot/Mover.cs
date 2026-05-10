@@ -1,12 +1,63 @@
 using UnityEngine;
+using UnityEngine.AI;
 
-public abstract class Mover : MonoBehaviour, IMover
+[RequireComponent(typeof(NavMeshAgent))]
+public class Mover : MonoBehaviour
 {
-    public abstract void SetTarget(Vector3 target);
+    [SerializeField] private float _intervalUpdatePath;
+    [SerializeField] private float _stoppingDistance;
 
-    public abstract void Move();
+    private float _currentSeconds;
+    private float _lastUpdateTime;
 
-    public abstract bool HasReachedTarget();
+    private NavMeshAgent _agent;
+    private Vector3 _targetPosition;
 
-    public abstract void Stop();
+    public void Awake()
+    {
+        _agent = transform.GetComponent<NavMeshAgent>();
+        _agent.stoppingDistance = _stoppingDistance;
+    }
+
+    public void SetTarget(Vector3 target)
+    {
+        _targetPosition = target;
+        _agent.SetDestination(_targetPosition);
+    }
+
+    public void Move()
+    {
+        if (_agent == null)
+            return;
+
+        _currentSeconds += Time.deltaTime;
+
+        if (_currentSeconds - _lastUpdateTime >= _intervalUpdatePath)
+        {
+            _agent.SetDestination(_targetPosition);
+            _lastUpdateTime = _currentSeconds;
+        }
+    }
+
+    public bool HasReachedTarget()
+    {
+        if (_agent == null)
+            return false;
+
+        if (_agent.pathPending)
+            return false;
+
+        if (_agent.remainingDistance <= _agent.stoppingDistance)
+        {
+            _agent.ResetPath();
+            return true;
+        }
+
+        return false;
+    }
+
+    public void Stop()
+    {
+        _agent.ResetPath();
+    }
 }

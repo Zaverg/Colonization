@@ -27,7 +27,6 @@ public class DefaultState : BaseState
         }
         else if (_botHub.ResourceCounter.CollectedResources >= _botHub.PriceList.CountResourceToCreateBot)
         {
-            UnityEngine.Debug.Log(_collectorBotFactory);
             CollectorBot newBot = _collectorBotFactory.Create(_botHub.SpawnBotPlace.position);
             _botHub.ResourceCounter.Subtract(_botHub.PriceList.CountResourceToCreateBot);
             _botHub.BotDispatcher.EnqueueBot(newBot);

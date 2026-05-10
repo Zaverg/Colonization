@@ -4,19 +4,13 @@ using UnityEngine.UI;
 
 public class BotHubBuildButton : MonoBehaviour, IClickable
 {
-    public event Action<BuildType> OnBuild;
-    public event Action OnPressButton;
-    public event Action<ClickableObject> Click;
+    public event Action<IClickable> Clicked;
 
     private bool _active;
 
     public void OnClick()
     {
-        if (_active == false)
-            return;
-
-        OnBuild?.Invoke(BuildType.CollectorBase);
-        OnPressButton?.Invoke();
+        Clicked?.Invoke(this);
     }
 
     public void SetActive(bool active)

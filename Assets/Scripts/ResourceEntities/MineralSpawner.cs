@@ -4,21 +4,20 @@ using System.Collections;
 
 public class MineralSpawner : MonoBehaviour
 {
-    [SerializeField] private Map _map;
-    [SerializeField] private CellRegister _spawnGrid;
-
+    [SerializeField] private float _spawnInterval;
     [SerializeField, Range(0, 5)] private int _maxMinerals;
 
+    [SerializeField] private Map _map;
+    [SerializeField] private CellRegister _spawnGrid;
     [SerializeField] private ObjectPoolMineral _mineralPool;
-
-    [SerializeField] private float _spawnInterval;
-    [SerializeField] private TimerViewer _timerView;
 
     [SerializeField] private MineralRegistry _mineralRegistry;
 
     private Timer _timer;
     private int _currentCount;
     private Coroutine _coroutine;
+
+    public Timer Timer => _timer;
  
     private void OnEnable()
     {
@@ -26,7 +25,6 @@ public class MineralSpawner : MonoBehaviour
             return;
 
         _timer.Ended += StartSpawning;
-        _timer.Changed += _timerView.UpdateView;
     }
 
     private void OnDisable()
@@ -35,7 +33,6 @@ public class MineralSpawner : MonoBehaviour
             return;
 
         _timer.Ended -= StartSpawning;
-        _timer.Changed -= _timerView.UpdateView;
     }
 
     private void Start()

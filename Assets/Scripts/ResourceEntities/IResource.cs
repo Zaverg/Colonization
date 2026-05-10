@@ -11,5 +11,5 @@ public interface IResource
 
     public void Take();
     public void Drop();
-    public void ReturnToPool();
+    public void OnRelease();
 }
